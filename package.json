@@ -1,0 +1,30 @@
+{
+  "name": "treetracker-web-map-core",
+  "version": "1.0.0",
+  "description": "This is the core module for Greenstand web map application.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dadiorchen/treetracker-web-map-core.git"
+  },
+	"dependencies": {
+		"leaflet": "^1.7.1",
+		"leaflet-utfgrid": "git+https://github.com/dadiorchen/Leaflet.UTFGrid.git",
+		"leaflet.gridlayer.googlemutant": "^0.12.1",
+		"loglevel": "^1.7.0"
+  },
+  "keywords": [
+    "GIS",
+    "leaflet",
+    "map"
+  ],
+  "author": "Greenstand",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dadiorchen/treetracker-web-map-core/issues"
+  },
+  "homepage": "https://github.com/dadiorchen/treetracker-web-map-core#readme"
+}
