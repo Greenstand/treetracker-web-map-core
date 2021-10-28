@@ -4,6 +4,7 @@
   "description": "This is the core module for Greenstand web map application.",
   "main": "index.js",
   "scripts": {
+    "cy": "cypress open",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
