@@ -10,11 +10,12 @@
     "type": "git",
     "url": "git+https://github.com/dadiorchen/treetracker-web-map-core.git"
   },
-	"dependencies": {
-		"leaflet": "^1.7.1",
-		"leaflet-utfgrid": "git+https://github.com/dadiorchen/Leaflet.UTFGrid.git",
-		"leaflet.gridlayer.googlemutant": "^0.12.1",
-		"loglevel": "^1.7.0"
+  "dependencies": {
+    "cypress": "^8.7.0",
+    "leaflet": "^1.7.1",
+    "leaflet-utfgrid": "git+https://github.com/dadiorchen/Leaflet.UTFGrid.git",
+    "leaflet.gridlayer.googlemutant": "^0.12.1",
+    "loglevel": "^1.7.1"
   },
   "keywords": [
     "GIS",
