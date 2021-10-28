@@ -4,7 +4,7 @@
   "description": "This is the core module for Greenstand web map application.",
   "main": "index.js",
   "scripts": {
-    "dev": "serve .",
+    "dev": "serve ./dist",
     "cy": "cypress open",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -17,6 +17,7 @@
     "leaflet": "^1.7.1",
     "leaflet-utfgrid": "git+https://github.com/dadiorchen/Leaflet.UTFGrid.git",
     "leaflet.gridlayer.googlemutant": "^0.12.1",
+    "lodash": "^4.17.21",
     "loglevel": "^1.7.1"
   },
   "keywords": [
