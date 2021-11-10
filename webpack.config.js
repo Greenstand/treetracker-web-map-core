@@ -11,6 +11,10 @@ module.exports = {
     port: 5000,
   },
   output: {
+    library:{
+      name: "greenstand",
+      type: "var"
+    },
     filename: 'main.js',
     path: path.resolve(__dirname, 'dist'),
   },

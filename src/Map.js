@@ -4,6 +4,11 @@
 import axios from 'axios';
 import expect from 'expect-runtime';
 import log from 'loglevel';
+import _ from "lodash";
+import 'leaflet';
+import 'leaflet/dist/leaflet.css';
+import 'leaflet-utfgrid/L.UTFGrid';
+import 'leaflet.gridlayer.googlemutant';
 
 import mapConfig from './mapConfig';
 import { getInitialBounds } from './mapTools';
