@@ -40,13 +40,29 @@
         return false;
     }
 </script>
+<style>
+    .panel {
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin: 10px;
+    }
+</style>
 
 <body>
     <h3>Welcome to Greenstand web map!</h3>
-    <div>
+    <div class="panel">
         <h5>Control the map</h5>
         <form action="" onsubmit="return dosubmit();">
             userid <input id="userid" name="userid" type="input" value="" placeholder="the planter/user id">
+            <input type="submit" name="submit" value="Submit" />
+        </form>
+    </div>
+    <div class="panel">
+        <h5>Fly to</h5>
+        <form action="" onsubmit="return dosubmitFlyto();">
+            lat <input id="lat" name="lat" type="input" value="" placeholder="latitude">
+            lon <input id="lon" name="lon" type="input" value="" placeholder="longitude">
+            zoomlevel <input id="zoom" name="zoom" type="input" value="" placeholder="zoom level">
             <input type="submit" name="submit" value="Submit" />
         </form>
     </div>
