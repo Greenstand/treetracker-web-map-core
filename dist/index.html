@@ -39,15 +39,41 @@
         reload();
         return false;
     }
+
+    function dosubmitFlyto() {
+        console.log("dosubmit flyto...");
+        const lat = document.getElementById("lat").value;
+        const lon = document.getElementById("lon").value;
+        const zoom = document.getElementById("zoom").value;
+        console.log("filto:", lat, lon, zoom);
+        map.flyTo(parseInt(lat), parseInt(lon), parseInt(zoom));
+        return false;
+    }
 </script>
+<style>
+    .panel {
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin: 10px;
+    }
+</style>
 
 <body>
     <h3>Welcome to Greenstand web map!</h3>
-    <div>
+    <div class="panel">
         <h5>Control the map</h5>
         <form action="" onsubmit="return dosubmit();">
             userid <input id="userid" name="userid" type="input" value="" placeholder="the planter/user id">
-            <input type="submit" name="submit" value="Submit" />
+            <input type="submit" name="controlSubmit" value="Submit" />
+        </form>
+    </div>
+    <div class="panel">
+        <h5>Fly to</h5>
+        <form action="" onsubmit="return dosubmitFlyto();">
+            lat <input id="lat" name="lat" type="input" value="" placeholder="latitude">
+            lon <input id="lon" name="lon" type="input" value="" placeholder="longitude">
+            zoomlevel <input id="zoom" name="zoom" type="input" value="" placeholder="zoom level">
+            <input type="submit" name="flytoSubmit" value="Submit" />
         </form>
     </div>
 </body>
@@ -56,6 +82,15 @@
     const mapContainer = document.createElement('div');
     mapContainer.innerHTML = "<div id='map' style='height: 600px;width: 800px;' ></div>";
     document.body.appendChild(mapContainer);
+    
+    function handleMoveEnd(){
+        console.warn('update url');
+        window.history.pushState(
+          'treetrakcer',
+          '',
+          `/?bounds=${map.getCurrentBounds()}`,
+        );
+    }
 
     window.onload = () => {
         const parameters = getParameters();
@@ -64,11 +99,11 @@
             onClickTree: () => console.log("onClickTree"),
             onFindNearestAt: () => console.log("onFindNearstAt"),
             onError: () => console.log("onError"),
+            onMoveEnd: handleMoveEnd,
             filters: parameters,
         });
         map.mount(document.getElementById("map"));
     };
 
 </script>
-
 </html>

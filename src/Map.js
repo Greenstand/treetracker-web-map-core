@@ -14,6 +14,8 @@ import mapConfig from './mapConfig';
 import { getInitialBounds } from './mapTools';
 import Requester from './Requester';
 
+import EventEmitter from "events";
+
 class MapError extends Error {}
 
 export default class Map {
@@ -43,6 +45,13 @@ export default class Map {
 
     // requester
     this.requester = new Requester();
+    
+    // events
+    this.events = new EventEmitter();
+    
+    if(options.onMoveEnd){
+      this.events.on("moveEnd", options.onMoveEnd);
+    }
   }
 
   /** *************************** static *************************** */
@@ -152,7 +161,7 @@ export default class Map {
       // mount event
       this.map.on('moveend', (e) => {
         log.warn('move end', e);
-        this.updateUrl();
+        this.events.emit("moveEnd");
       });
 
       if (this.filters.treeid) {
@@ -728,14 +737,6 @@ export default class Map {
   //    return Map.getClusterRadius(zoomLevel);
   //  }
 
-  updateUrl() {
-    log.warn('update url');
-    window.history.pushState(
-      'treetrakcer',
-      '',
-      `/?${this.getFilterParameters()}&bounds=${this.getCurrentBounds()}`,
-    );
-  }
 
   getCurrentBounds() {
     return this.map.getBounds().toBBoxString();
