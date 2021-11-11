@@ -1,23 +1,74 @@
 <html>
-    <script src="./main.js" type="text/javascript"></script>
-    <body>
-        Welcome to Greenstand web map!
-    </body>
-    <script type="text/javascript">
-        const mapContainer = document.createElement('div');
-        mapContainer.innerHTML = "<div id='map' style='height: 600px;width: 800px;' ></div>";
-        document.body.appendChild(mapContainer);
+<script src="./main.js" type="text/javascript"></script>
+<script>
+    function getParameters() {
+        const parameters =
+            (window.location.search &&
+                window.location.search
+                    .slice(1)
+                    .split('&')
+                    .reduce((a, c) => {
+                        const [key, value] = c.split('=');
+                        // eslint-disable-next-line no-param-reassign
+                        a[key] = value;
+                        return a;
+                    }, {})) ||
+            {};
+        console.info('getParameters:', parameters);
+        //        if (!parameters.map_name) {
+        //            const map_name = parseMapName(window.location.hostname);
+        //            if (map_name) {
+        //                console.info('Got map name from domain');
+        //                parameters.map_name = map_name;
+        //            }
+        //        }
+        return parameters;
+    }
 
-        window.onload = () => {
-          const map = new greenstand.Map({
+    function dosubmit() {
+        console.log("submitting...");
+        async function reload() {
+            //map.flyTo(0,0,5);
+            const userid = document.getElementById("userid").value;
+            map.setFilters({
+                userid,
+            });
+            await map.loadInitialView();
+            map.rerender();
+        }
+        reload();
+        return false;
+    }
+</script>
+
+<body>
+    <h3>Welcome to Greenstand web map!</h3>
+    <div>
+        <h5>Control the map</h5>
+        <form action="" onsubmit="return dosubmit();">
+            userid <input id="userid" name="userid" type="input" value="" placeholder="the planter/user id">
+            <input type="submit" name="submit" value="Submit" />
+        </form>
+    </div>
+</body>
+<script type="text/javascript">
+    var map;
+    const mapContainer = document.createElement('div');
+    mapContainer.innerHTML = "<div id='map' style='height: 600px;width: 800px;' ></div>";
+    document.body.appendChild(mapContainer);
+
+    window.onload = () => {
+        const parameters = getParameters();
+        map = new greenstand.Map({
             onLoad: () => console.log("onload"),
             onClickTree: () => console.log("onClickTree"),
             onFindNearestAt: () => console.log("onFindNearstAt"),
             onError: () => console.log("onError"),
-            filters: {},
-          });
-          map.mount(document.getElementById("map"));
-        };
+            filters: parameters,
+        });
+        map.mount(document.getElementById("map"));
+    };
 
-    </script>
+</script>
+
 </html>
