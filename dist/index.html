@@ -99,9 +99,9 @@
             onClickTree: () => console.log("onClickTree"),
             onFindNearestAt: () => console.log("onFindNearstAt"),
             onError: () => console.log("onError"),
-            onMoveEnd: handleMoveEnd,
             filters: parameters,
         });
+        map.on("moveEnd", handleMoveEnd);
         map.mount(document.getElementById("map"));
     };
 
