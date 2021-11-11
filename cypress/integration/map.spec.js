@@ -6,7 +6,7 @@ describe("Map", () => {
     cy.contains("Welcome");
     cy.wait(1000);
     cy.get('input[name=userid]').type(940);
-    cy.get('input[name=submit]')
+    cy.get('input[name=controlSubmit]')
       .click();
   });
   
@@ -20,7 +20,7 @@ describe("Map", () => {
     cy.contains("Welcome");
     cy.wait(1000);
     cy.get('input[name=userid]').type(940);
-    cy.get('input[name=submit]')
+    cy.get('input[name=flytoSubmit]')
       .click();
   });
 
