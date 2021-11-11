@@ -39,6 +39,16 @@
         reload();
         return false;
     }
+
+    function dosubmitFlyto() {
+        console.log("dosubmit flyto...");
+        const lat = document.getElementById("lat").value;
+        const lon = document.getElementById("lon").value;
+        const zoom = document.getElementById("zoom").value;
+        console.log("filto:", lat, lon, zoom);
+        map.flyTo(parseInt(lat), parseInt(lon), parseInt(zoom));
+        return false;
+    }
 </script>
 <style>
     .panel {
@@ -72,6 +82,15 @@
     const mapContainer = document.createElement('div');
     mapContainer.innerHTML = "<div id='map' style='height: 600px;width: 800px;' ></div>";
     document.body.appendChild(mapContainer);
+    
+    function handleMoveEnd(){
+        console.warn('update url');
+        window.history.pushState(
+          'treetrakcer',
+          '',
+          `/?bounds=${map.getCurrentBounds()}`,
+        );
+    }
 
     window.onload = () => {
         const parameters = getParameters();
@@ -80,6 +99,7 @@
             onClickTree: () => console.log("onClickTree"),
             onFindNearestAt: () => console.log("onFindNearstAt"),
             onError: () => console.log("onError"),
+            onMoveEnd: handleMoveEnd,
             filters: parameters,
         });
         map.mount(document.getElementById("map"));
