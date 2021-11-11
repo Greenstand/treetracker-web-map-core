@@ -49,9 +49,6 @@ export default class Map {
     // events
     this.events = new EventEmitter();
     
-    if(options.onMoveEnd){
-      this.events.on("moveEnd", options.onMoveEnd);
-    }
   }
 
   /** *************************** static *************************** */
@@ -115,6 +112,15 @@ export default class Map {
   }
 
   /** *************************** methods ************************** */
+  on(eventName, handler){
+    //TODO check event name enum
+    if(handler){
+      this.events.on(eventName, handler);
+    }
+  }
+  
+  //TODO remove listner
+
   async mount(domElement) {
     const mapOptions = {
       minZoom: this.minZoom,
