@@ -2,10 +2,14 @@
   "name": "treetracker-web-map-core",
   "version": "1.0.0",
   "description": "This is the core module for Greenstand web map application.",
-  "main": "index.js",
+  "main": "dist/main.js",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "dev": "webpack serve",
     "cy": "cypress open",
+    "pre-publish": "webpack --mode=production",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
