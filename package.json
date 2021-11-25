@@ -1,6 +1,6 @@
 {
   "name": "treetracker-web-map-core",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "This is the core module for Greenstand web map application.",
   "main": "dist/main.js",
   "files": [
