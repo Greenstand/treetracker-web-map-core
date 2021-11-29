@@ -16,6 +16,10 @@ import Requester from './Requester';
 
 import EventEmitter from "events";
 
+import Spin from "./Spin";
+import Alert from "./Alert";
+import TileLoadingMonitor from './TileLoadingMonitor';
+
 class MapError extends Error {}
 
 export default class Map {
@@ -128,7 +132,25 @@ export default class Map {
       zoomControl: false,
     };
 
-    this.map = this.L.map(domElement, mapOptions);
+    const divContainer = document.createElement('div');
+    divContainer.style.width = "100%";
+    divContainer.style.height = "100%";
+    divContainer.style.position = "relative";
+    divContainer.innerHTML = `
+      <div id="greenstand-leaflet" style="position: relative;width: 100%;height: 100%;"></div>
+      <div id="greenstand-map-spin" style="z-index: 999; position: absolute; width: 100%; top: 0px; left: 0px" ></div>
+      <div id="greenstand-map-alert" style="z-index: 999; position: absolute; width: 100%; top: 0px; left: 0px" ></div>
+    `;
+    domElement.appendChild(divContainer);
+    const mountTarget = document.getElementById('greenstand-leaflet');
+    const mountSpinTarget = document.getElementById('greenstand-map-spin');
+    const mountAlertTarget = document.getElementById('greenstand-map-alert');
+    this.spin = new Spin();
+    this.spin.mount(mountSpinTarget);
+    this.alert = new Alert();
+    this.alert.mount(mountAlertTarget);
+
+    this.map = this.L.map(mountTarget, mapOptions);
     this.map.setView(this.initialCenter, this.minZoom);
     this.map.attributionControl.setPrefix('');
 
@@ -330,8 +352,29 @@ export default class Map {
         // updateWhenIdle: true,
         zIndex: 99999,
         subdomains: this.tileServerSubdomains,
-        errorTileUrl: 'http://localhost:5000/2b3e1faf89f94a483539.png',
+        errorTileUrl: 'http://localhost:5000/nodata.png',
       },
+    );
+    // spin monitor
+    this.tileLoadingMonitor = new TileLoadingMonitor(
+      this.layerTile,
+      {
+        showLoadingThreshold: 4000,
+        slowThreshold: 8000,
+        onShowLoading: () => {
+          log.warn('show loading');
+          this.spin.show();
+        },
+        onSlowAlert: () => {
+          log.warn('slow alert');
+          this.alert.show("Seems loading greenstand data is a bit slow, please be patient")
+        },
+        onLoad: () => {
+          log.warn('load finished');
+          this.spin.hide();
+          this.alert.hide();
+        },
+      }
     );
     this.layerTile.addTo(this.map);
 
@@ -389,6 +432,7 @@ export default class Map {
     this.layerUtfGrid.on('loading', () => {
       log.warn("tile load begin...");
     });
+
 
     this.layerUtfGrid.addTo(this.map);
 

@@ -31,5 +31,36 @@
     <button onclick="showSpin()">show spin</button>
     <button onclick="hideSpin()">hide spin</button>
     <hr/>
+    <h3>Alert</h3>
+    <div
+      style="position: relative; width: 600px; height: 600px; border: 1px solid #ccc; display: inline-block;" 
+      id="alert-div"
+       > 
+      the content for alert
+      the content for alert
+      the content for alert
+      the content for alert
+      the content for alert
+      the content for alert
+      the content for alert
+      the content for alert
+      the content for alert
+      the content for alert
+      the content for alert
+      the content for alert
+      the content for alert
+      the content for alert
+      the content for alert
+    </div>
+    <button onclick="showAlert()">show alert</button>
+    <button onclick="hideAlert()">hide alert</button>
+    <script>
+      // mount
+      var alertDiv = document.getElementById('alert-div');
+      let alert = new greenstand.Alert();
+      alert.mount(alertDiv);
+      const showAlert = () => alert.show("An alert message");
+      const hideAlert = () => alert.hide();
+    </script>
   </body>
 </html>

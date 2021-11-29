@@ -17,6 +17,7 @@ class TileLoadingMonitor {
 
     this.tileLayer.on("loading", this._handleLoading);
     this.tileLayer.on("load", this._handleLoad);
+    this.tileLayer.on("tileerror", this._handleTileError);
 
     this.showLoadingTimer = undefined;
     this.slowTimer = undefined;
@@ -42,6 +43,12 @@ class TileLoadingMonitor {
     clearTimeout(this.slowTimer);
     delete this.slowTimer;
     log.warn("cleaned:", this.showLoadingTimer, this.slowTimer);
+    this.options.onLoad();
+  }
+
+  _handleTileError = (event) => {
+    log.warn("error loading tile...");
+    // TODO handle error
     this.options.onLoad();
   }
 

@@ -21,4 +21,14 @@ describe("Components", () => {
 
   })
 
+  it("Alert", () => {
+    cy.visit("http://localhost:5000/test_components.html");
+    cy.contains("show alert")
+      .click();
+    // cy.get(".alert")
+    //   .should("not.be.visible");  
+    cy.contains("An alert message");
+
+  })
+
 })
