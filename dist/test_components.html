@@ -1,0 +1,35 @@
+<html>
+  <script src="./main.js" type="text/javascript"></script>
+  <body>
+    <h1>Components</h1>
+    <hr/>
+    <h2>Spin</h2>
+    <div
+      style="position: relative; width: 600px; height: 600px; border: 1px solid #ccc; display: inline-block;" 
+       > 
+      <div id="spin-1" style="position: absolute; width: 100%; top: 0px; left: 0px" ></div>
+      content
+    </div>
+    <script>
+      let spin;
+      function mountSpin(id){
+        console.warn('click spin');
+        var spinTarget = document.getElementById(id);
+        spin = new greenstand.Spin();
+        spin.mount(spinTarget);
+      }
+
+      function showSpin(){
+        spin.show();
+      }
+
+      function hideSpin(){
+        spin.hide();
+      }
+    </script>
+    <button onclick="mountSpin('spin-1')">mount spin</button>
+    <button onclick="showSpin()">show spin</button>
+    <button onclick="hideSpin()">hide spin</button>
+    <hr/>
+  </body>
+</html>

@@ -8,31 +8,39 @@ const log = require('loglevel');
 jest.useFakeTimers("modern");
 
 describe("TileLoadingMonitor", () => {
+  let emitter, tileLayer, showLoading, slowAlert, load, monitor;
 
-  it("be able to fire 'showLoading' event", async () => {
+  beforeEach(() => {
     // create event emitter
-    const emitter = new EventEmitter();
+    emitter = new EventEmitter();
 
-    const tileLayer = {
+    tileLayer = {
       on: (e, h) => {log.warn("on:", e, h); emitter.on(e, h)},
     };
 
-    const showLoading = jest.fn(() => {
+    showLoading = jest.fn(() => {
       log.warn("fake showLoading");
     });
-    const slowAlert = jest.fn(() => {
+    slowAlert = jest.fn(() => {
       log.warn("fake slowAlert");
     });
-    const monitor = new TileLoadingMonitor(tileLayer, {
+    load = jest.fn(() => {
+      log.warn("fake load");
+    });
+    monitor = new TileLoadingMonitor(tileLayer, {
       showLoadingThreshold: 4000,
       slowThreshold: 8000,
       onShowLoading: showLoading,
       onSlowAlert: slowAlert,
+      onLoad: load,
     });
+  });
 
+
+  it("a normal sequence of loading", async () => {
     // run tile
     //emitter.emit("loading");
-    monitor.handleLoading();
+    monitor._handleLoading();
 
     // timer will fire after 1000ms
     jest.advanceTimersByTime(1000);
@@ -44,6 +52,32 @@ describe("TileLoadingMonitor", () => {
     jest.advanceTimersByTime(8000);
     expect(showLoading).toHaveBeenCalledTimes(1);
     expect(slowAlert).toHaveBeenCalledTimes(1);
+
+    // tile loaded
+    monitor._handleLoad();
+    expect(load).toHaveBeenCalledTimes(1);
+
+  })
+
+  it("a normal repeat map moving cause repeat loading of tile", async () => {
+    // run tile
+    //emitter.emit("loading");
+    monitor._handleLoading();
+
+    // timer will fire after 1000ms
+    jest.advanceTimersByTime(1000);
+    expect(showLoading).toHaveBeenCalledTimes(0);
+    expect(slowAlert).toHaveBeenCalledTimes(0);
+    jest.advanceTimersByTime(4000);
+    expect(showLoading).toHaveBeenCalledTimes(1);
+    expect(slowAlert).toHaveBeenCalledTimes(0);
+    jest.advanceTimersByTime(8000);
+    expect(showLoading).toHaveBeenCalledTimes(1);
+    expect(slowAlert).toHaveBeenCalledTimes(1);
+
+    // tile loaded
+    monitor._handleLoad();
+    expect(load).toHaveBeenCalledTimes(1);
 
   })
 

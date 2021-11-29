@@ -15,13 +15,14 @@ class TileLoadingMonitor {
       ...options,
     }
 
-    this.tileLayer.on("loading", this.handleLoading);
+    this.tileLayer.on("loading", this._handleLoading);
+    this.tileLayer.on("load", this._handleLoad);
 
     this.showLoadingTimer = undefined;
     this.slowTimer = undefined;
   }
 
-  handleLoading = (event) => {
+  _handleLoading = (event) => {
     log.warn("start loading tile...");
     log.warn("wait for show loading for %d sed", this.options.showLoadingThreshold);
     this.showLoadingTimer = setTimeout(() => {
@@ -32,7 +33,16 @@ class TileLoadingMonitor {
       log.warn("show slow...");
       this.options.onSlowAlert();
     }, this.options.slowThreshold);
-    
+  }
+
+  _handleLoad = (event) => {
+    log.warn("stop loading tile...");
+    clearTimeout(this.showLoadingTimer);
+    delete this.showLoadingTimer;
+    clearTimeout(this.slowTimer);
+    delete this.slowTimer;
+    log.warn("cleaned:", this.showLoadingTimer, this.slowTimer);
+    this.options.onLoad();
   }
 
 }
