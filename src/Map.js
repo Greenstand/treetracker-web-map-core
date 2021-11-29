@@ -330,6 +330,7 @@ export default class Map {
         // updateWhenIdle: true,
         zIndex: 99999,
         subdomains: this.tileServerSubdomains,
+        errorTileUrl: 'http://localhost:5000/2b3e1faf89f94a483539.png',
       },
     );
     this.layerTile.addTo(this.map);
@@ -364,7 +365,7 @@ export default class Map {
     });
 
     this.layerUtfGrid.on('load', () => {
-      log.info('all grid loaded');
+      log.info('all grid loaded!');
       this.checkArrow();
     });
 
@@ -378,7 +379,15 @@ export default class Map {
     });
 
     this.layerUtfGrid.on('tileload', () => {
-      // log.warn("tile load:", e);
+      log.warn("tile load!");
+    });
+
+    this.layerUtfGrid.on('tileerror', () => {
+      log.error("tile error!");
+    });
+
+    this.layerUtfGrid.on('loading', () => {
+      log.warn("tile load begin...");
     });
 
     this.layerUtfGrid.addTo(this.map);
