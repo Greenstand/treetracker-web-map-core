@@ -39,7 +39,7 @@ describe("Map", () => {
     cy.url().should('match',/bounds=/);
   });
 
-  it.only("loading take too many time", () => {
+  it("loading take too many time", () => {
     // use cypress to intercept the request, with a delay of 10 seconds
     cy.intercept('GET', /^.*tiles\/.*png$/, {
       statusCode: 504,
