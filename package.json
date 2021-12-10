@@ -10,7 +10,8 @@
     "dev": "webpack serve",
     "cy": "cypress open",
     "pre-publish": "webpack --mode=production",
-    "test": "jest"
+    "test": "jest",
+    "prepare": "husky install"
   },
   "repository": {
     "type": "git",
@@ -39,8 +40,11 @@
   },
   "homepage": "https://github.com/dadiorchen/treetracker-web-map-core#readme",
   "devDependencies": {
+    "@commitlint/cli": "^15.0.0",
+    "@commitlint/config-conventional": "^15.0.0",
     "css-loader": "^6.5.0",
     "cypress-watch-and-reload": "^1.5.4",
+    "husky": "^7.0.4",
     "jest": "^27.3.1",
     "serve": "^12.0.1",
     "style-loader": "^3.3.1",
