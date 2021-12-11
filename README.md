@@ -24,6 +24,8 @@ build project as production module
 npm run pre-publish
 ```
 
+execute the github action to release the tag
+
 ## Using
 
 import module in different app
