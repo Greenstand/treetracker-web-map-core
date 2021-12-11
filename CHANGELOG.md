@@ -1,3 +1,11 @@
+## [1.0.3](https://github.com/Greenstand/treetracker-web-map-core/compare/v1.0.2...v1.0.3) (2021-12-11)
+
+
+### Bug Fixes
+
+* test version ([b1834ae](https://github.com/Greenstand/treetracker-web-map-core/commit/b1834ae7346d4fa6cfaba7d51b8e9bc2756ba332))
+* test version ([ca5d804](https://github.com/Greenstand/treetracker-web-map-core/commit/ca5d804538130b2ac233f701eb8eafc3b4331129))
+
 ## [1.0.2](https://github.com/Greenstand/treetracker-web-map-core/compare/v1.0.1...v1.0.2) (2021-12-11)
 
 
