@@ -31,3 +31,4 @@ import module in different app
 ```js
 import { Map } from 'treetracker-web-map-core';
 ```
+
