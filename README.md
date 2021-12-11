@@ -24,7 +24,7 @@ build project as production module
 npm run pre-publish
 ```
 
-execute the github action to release the tag
+execute the github action to release the tag.
 
 ## Using
 

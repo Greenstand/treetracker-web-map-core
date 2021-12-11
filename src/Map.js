@@ -22,6 +22,8 @@ import TileLoadingMonitor from './TileLoadingMonitor';
 
 class MapError extends Error {}
 
+console.log("Greenstand web map core");
+
 export default class Map {
   constructor(options) {
     // default
