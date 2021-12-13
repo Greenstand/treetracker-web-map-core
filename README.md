@@ -26,6 +26,8 @@ npm run pre-publish
 
 execute the github action to release the tag.
 
+check issue 41 [here](https://github.com/Greenstand/treetracker-web-map-core/issues/41)
+
 ## Using
 
 import module in different app
