@@ -16,6 +16,34 @@ npm run dev
 npm run cy
 ```
 
+## Linting and Formatting
+
+**_Note: All of these actions will be automatically run when appropriate with lint-staged during the git pre-commit stage._**
+
+check for lint errors
+
+```sh
+npm run lint
+```
+
+check for lint errors with auto fix
+
+```sh
+npm run lint:fix
+```
+
+format with prettier
+
+```sh
+npm run format
+```
+
+sort package.json
+
+```sh
+npx sort-package-json
+```
+
 ## Publishing
 
 build project as production module
