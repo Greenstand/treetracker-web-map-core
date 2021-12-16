@@ -1,5 +1,5 @@
 {
-	"cypress-watch-and-reload": {
-		"watch": "src/*"
-	}
+  "cypress-watch-and-reload": {
+    "watch": "src/*"
+  }
 }

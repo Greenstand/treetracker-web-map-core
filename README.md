@@ -33,6 +33,5 @@ check issue 41 [here](https://github.com/Greenstand/treetracker-web-map-core/iss
 import module in different app
 
 ```js
-import { Map } from 'treetracker-web-map-core';
+import { Map } from 'treetracker-web-map-core'
 ```
-
