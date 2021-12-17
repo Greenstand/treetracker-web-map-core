@@ -9,14 +9,12 @@ module.exports = {
   plugins: ['jest', 'cypress'],
   extends: [
     'eslint:recommended',
+    'plugin:import/recommended',
     'prettier', // must be last
   ],
   parserOptions: {
     ecmaVersion: 13,
     sourceType: 'module',
-    ecmaFeatures: {
-      jsx: true,
-    },
   },
   rules: {
     'no-unused-vars': 'warn',

@@ -1,5 +1,3 @@
-/* eslint-disable no-console */
-/* eslint-disable no-new */
 import expectRuntime from 'expect-runtime'
 import React from 'react'
 
