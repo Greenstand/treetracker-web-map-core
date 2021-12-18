@@ -18,6 +18,7 @@ import EventEmitter from "events";
 
 import Spin from "./Spin";
 import Alert from "./Alert";
+import ButtonPanel from "./ButtonPanel";
 import TileLoadingMonitor from './TileLoadingMonitor';
 
 class MapError extends Error {}
@@ -142,19 +143,41 @@ export default class Map {
       <div id="greenstand-leaflet" style="position: relative;width: 100%;height: 100%;"></div>
       <div id="greenstand-map-spin" style="z-index: 999; position: absolute; width: 100%; top: 0px; left: 0px" ></div>
       <div id="greenstand-map-alert" style="z-index: 999; position: absolute; width: 100%; top: 0px; left: 0px" ></div>
+      <div id="greenstand-map-buttonPanel" style="z-index: 999; position: absolute; top: 0px; left:50%; transform: translateX(-50%)" ></div>
     `;
     domElement.appendChild(divContainer);
     const mountTarget = document.getElementById('greenstand-leaflet');
     const mountSpinTarget = document.getElementById('greenstand-map-spin');
     const mountAlertTarget = document.getElementById('greenstand-map-alert');
+    const mountButtonPanelTarget = document.getElementById(
+      'greenstand-map-buttonPanel'
+    );
     this.spin = new Spin();
     this.spin.mount(mountSpinTarget);
     this.alert = new Alert();
     this.alert.mount(mountAlertTarget);
+    this.buttonPanel = new ButtonPanel();
+    this.buttonPanel.mount(mountButtonPanelTarget);
 
     this.map = this.L.map(mountTarget, mapOptions);
     this.map.setView(this.initialCenter, this.minZoom);
     this.map.attributionControl.setPrefix('');
+
+    mountButtonPanelTarget.addEventListener('click', (e) => {
+      if (e.target.id === 'right-arrow') {
+        try {
+          this.goNextPoint();
+        } catch (e) {
+          log.warn('go next failed', e);
+        }
+      } else if (e.target.id === 'left-arrow') {
+        try {
+          this.goPrevPoint();
+        } catch (e) {
+          log.warn('go prev failed', e);
+        }
+      }
+    });
 
     // load google map
     await this.loadGoogleSatellite();
