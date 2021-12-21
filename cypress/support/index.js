@@ -18,4 +18,4 @@ import './commands'
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
-require('cypress-watch-and-reload/support');
+require('cypress-watch-and-reload/support')

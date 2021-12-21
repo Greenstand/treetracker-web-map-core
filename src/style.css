@@ -1,4 +1,3 @@
-
 .spin {
   width: 100%;
 }
@@ -12,7 +11,7 @@
   background-color: rgb(167, 202, 237);
 }
 
-.spin-container>.sub1 {
+.spin-container > .sub1 {
   position: absolute;
   left: 0px;
   bottom: 0px;
@@ -21,10 +20,11 @@
   transform-origin: left center;
   background-color: rgb(25, 118, 210);
   width: auto;
-  animation: 2.1s cubic-bezier(0.65, 0.815, 0.735, 0.395) 0s infinite normal none running animation-ozg7p2;
+  animation: 2.1s cubic-bezier(0.65, 0.815, 0.735, 0.395) 0s infinite normal
+    none running animation-ozg7p2;
 }
 
-.spin-container>.sub2 {
+.spin-container > .sub2 {
   position: absolute;
   left: 0px;
   bottom: 0px;
@@ -33,7 +33,8 @@
   transform-origin: left center;
   background-color: rgb(25, 118, 210);
   width: auto;
-  animation: 2.1s cubic-bezier(0.165, 0.84, 0.44, 1) 1.15s infinite normal none running animation-19gglwu;
+  animation: 2.1s cubic-bezier(0.165, 0.84, 0.44, 1) 1.15s infinite normal none
+    running animation-19gglwu;
 }
 
 @-webkit-keyframes animation-19gglwu {
@@ -42,32 +43,32 @@
     right: 100%;
   }
 
-    60% {
-      left: 107%;
-      right: -8%;
-    }
-
-    100% {
-      left: 107%;
-      right: -8%;
-    }
+  60% {
+    left: 107%;
+    right: -8%;
   }
 
-  @keyframes animation-19gglwu {
-    0% {
-      left: -200%;
-      right: 100%;
-    }
+  100% {
+    left: 107%;
+    right: -8%;
+  }
+}
 
-    60% {
-      left: 107%;
-      right: -8%;
-    }
+@keyframes animation-19gglwu {
+  0% {
+    left: -200%;
+    right: 100%;
+  }
 
-    100% {
-      left: 107%;
-      right: -8%;
-    }
+  60% {
+    left: 107%;
+    right: -8%;
+  }
+
+  100% {
+    left: 107%;
+    right: -8%;
+  }
 }
 
 @-webkit-keyframes animation-ozg7p2 {
@@ -114,22 +115,22 @@
 
 .alert {
   margin-top: 1rem;
-  align-items: center!important;
-  display: flex!important;
+  align-items: center !important;
+  display: flex !important;
   color: #664d03;
   /* background-color: #fff3cd; */
   background-color: rgb(255 243 204 / 90%);
   border-color: #ffecb5;
   position: relative;
-  padding: .5rem .5rem;
+  padding: 0.5rem 0.5rem;
   margin-bottom: 1rem;
   border: 1px solid transparent;
-  border-radius: .25rem;
+  border-radius: 0.25rem;
   box-sizing: border-box;
 }
 .alert-svg {
-  margin-right: .5rem!important;
-  flex-shrink: 0!important;
+  margin-right: 0.5rem !important;
+  flex-shrink: 0 !important;
   vertical-align: middle;
   width: 24;
   height: 24;

@@ -1,13 +1,12 @@
 /* The Alert component */
-import "./style.css";
+import './style.css'
 
-export default class Alert{
-  constructor(){
-  }
+export default class Alert {
+  constructor() {}
 
-  mount(element){
+  mount(element) {
     // create a div and mount to the element
-    this.alert = document.createElement("div");
+    this.alert = document.createElement('div')
     this.alert.innerHTML = `
       <div class="alert-container" >
         <div class="alert" >
@@ -22,17 +21,19 @@ export default class Alert{
           </div>
         </div>
       </div>
-      `;
-    this.alert.style.display = "none";
-    element.appendChild(this.alert);
+      `
+    this.alert.style.display = 'none'
+    element.appendChild(this.alert)
   }
 
-  show(message){
-    document.getElementsByClassName("greenstand-alert-message-box")[0].innerHTML = message;
-    this.alert.style.display = "block";
+  show(message) {
+    document.getElementsByClassName(
+      'greenstand-alert-message-box',
+    )[0].innerHTML = message
+    this.alert.style.display = 'block'
   }
 
-  hide(){
-    this.alert.style.display = "none";
+  hide() {
+    this.alert.style.display = 'none'
   }
 }

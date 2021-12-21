@@ -1,0 +1,4 @@
+node_modules/
+dist/
+coverage/
+mapTools.cy.js
