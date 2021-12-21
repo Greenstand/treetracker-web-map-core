@@ -2,20 +2,34 @@
   "name": "treetracker-web-map-core",
   "version": "1.0.4",
   "description": "This is the core module for Greenstand web map application.",
+  "keywords": [
+    "GIS",
+    "leaflet",
+    "map"
+  ],
+  "homepage": "https://github.com/dadiorchen/treetracker-web-map-core#readme",
+  "bugs": {
+    "url": "https://github.com/dadiorchen/treetracker-web-map-core/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Greenstand/treetracker-web-map-core.git"
+  },
+  "license": "ISC",
+  "author": "Greenstand",
   "main": "dist/main.js",
   "files": [
     "dist"
   ],
   "scripts": {
-    "dev": "webpack serve",
     "cy": "cypress open",
+    "dev": "webpack serve",
+    "format": "prettier ./ --write",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "pre-publish": "webpack --mode=production",
-    "test": "jest",
-    "prepare": "husky install"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Greenstand/treetracker-web-map-core.git"
+    "prepare": "husky install",
+    "test": "jest"
   },
   "dependencies": {
     "axios": "^0.24.0",
@@ -28,25 +42,22 @@
     "lodash": "^4.17.21",
     "loglevel": "^1.7.1"
   },
-  "keywords": [
-    "GIS",
-    "leaflet",
-    "map"
-  ],
-  "author": "Greenstand",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/dadiorchen/treetracker-web-map-core/issues"
-  },
-  "homepage": "https://github.com/dadiorchen/treetracker-web-map-core#readme",
   "devDependencies": {
     "@commitlint/cli": "^15.0.0",
     "@commitlint/config-conventional": "^15.0.0",
     "css-loader": "^6.5.0",
     "cypress-watch-and-reload": "^1.5.4",
+    "eslint": "^8.4.1",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-cypress": "^2.12.1",
+    "eslint-plugin-import": "^2.25.3",
+    "eslint-plugin-jest": "^25.3.0",
     "husky": "^7.0.4",
     "jest": "^27.3.1",
+    "lint-staged": "^12.1.2",
+    "prettier": "2.5.1",
     "serve": "^12.0.1",
+    "sort-package-json": "^1.53.1",
     "style-loader": "^3.3.1",
     "webpack": "^5.60.0",
     "webpack-cli": "^4.9.1",
