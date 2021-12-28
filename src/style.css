@@ -139,3 +139,30 @@
   background-color: #fff3cd;
   border-color: #ffecb5;
 }
+
+.greenstand-point-selected-box {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 3.5rem;
+  height: 3.5rem;
+  border: 3px #94bddd solid;
+  border-radius: 8px;
+  box-shadow: 0 0 8px #2d93e0, 0 0 6px #2d93e0 inset;
+  animation-name: selectedBox;
+  animation-duration: 1000ms;
+  animation-fill-mode: forwards;
+}
+
+@keyframes selectedBox {
+  0% {
+    opacity: 1;
+  }
+  40% {
+    opacity: 0.9;
+  }
+  100% {
+    display: none;
+    opacity: 0;
+  }
+}
