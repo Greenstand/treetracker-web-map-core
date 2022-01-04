@@ -33,7 +33,7 @@ export default class Map {
         minZoom: 2,
         maxZoom: 20,
         initialCenter: [20, 0],
-        tileServerUrl: 'https://{s}.treetracker.org/tiles/',
+        tileServerUrl: 'https://{s}.treetracker.org/tiles/new/',
         tileServerSubdomains: ['dev-k8s'],
         apiServerUrl: 'https://dev-k8s.treetracker.org/webmap/',
         width: window.innerWidth,
