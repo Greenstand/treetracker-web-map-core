@@ -28,9 +28,10 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16.x'
+          registry-url: 'https://registry.npmjs.org'
       - name: Publish
         run: |
-          npm config set //registry.npmjs.org/:_authToken ${NPM_AUTH_TOKEN}
+          npm config set //registry.npmjs.org/:_authToken=${NPM_AUTH_TOKEN}
           npm install -D husky
           npx husky install
           npm publish --ignore-scripts
