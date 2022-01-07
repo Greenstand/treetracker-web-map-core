@@ -31,6 +31,7 @@ jobs:
       - name: Publish
         run: |
           npm config set //registry.npmjs.org/:_authToken ${NPM_AUTH_TOKEN}
-          npm publish
+          npm set-scripts prepare ""
+          npm publish --omit=dev --ignore-scripts
         env:
           NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
