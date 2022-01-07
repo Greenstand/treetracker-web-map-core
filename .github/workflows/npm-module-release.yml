@@ -31,6 +31,8 @@ jobs:
       - name: Publish
         run: |
           npm config set //registry.npmjs.org/:_authToken ${NPM_AUTH_TOKEN}
-          npm publish --omit=dev --ignore-scripts
+          npm install -D husky
+          npx husky install
+          npm publish --ignore-scripts
         env:
           NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
