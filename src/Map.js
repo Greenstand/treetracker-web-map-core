@@ -368,7 +368,7 @@ export default class Map {
       },
       onSlowAlert: () => {
         log.warn('slow alert')
-        this.alert.show('Trees grow slower than this map loads ...')
+        this.alert.show('Trees grow slower than this map loads, be patient...')
       },
       onLoad: () => {
         log.warn('load finished')
