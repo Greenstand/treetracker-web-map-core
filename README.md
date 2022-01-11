@@ -69,3 +69,4 @@ import { Map } from 'treetracker-web-map-core'
 
 [npm-image]: https://img.shields.io/npm/v/treetracker-web-map-core.svg
 [npm-url]: https://npmjs.org/package/treetracker-web-map-core
+
