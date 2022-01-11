@@ -1,3 +1,23 @@
+# [1.1.0](https://github.com/Greenstand/treetracker-web-map-core/compare/v1.0.4...v1.1.0) (2022-01-11)
+
+### Bug Fixes
+
+- automated npm package publishing ([#52](https://github.com/Greenstand/treetracker-web-map-core/issues/52)) ([fedfbce](https://github.com/Greenstand/treetracker-web-map-core/commit/fedfbceb22b71176de3878696e1fa851a265a9fd))
+- configuring npm auth token ([eabf9d0](https://github.com/Greenstand/treetracker-web-map-core/commit/eabf9d0f85afc19fd7088ea33e435faf116dcc2f))
+- configuring npm auth token ([36730de](https://github.com/Greenstand/treetracker-web-map-core/commit/36730deda22fd32ef20dec7eae9454b75175a130))
+- ignore husky installation in CI ([3ec9c18](https://github.com/Greenstand/treetracker-web-map-core/commit/3ec9c18e505a151a7fb442d3014138e05736b36d))
+- ignore husky installation in CI ([520c6d2](https://github.com/Greenstand/treetracker-web-map-core/commit/520c6d2f3678cd5cdd085da7ba63b20b0befd62f))
+- ignore husky installation in CI ([53fde39](https://github.com/Greenstand/treetracker-web-map-core/commit/53fde3963be2feb17140b6a208c0b2a58b8cbf1d))
+
+### Features
+
+- add babel to emit es5 ([d1c07a2](https://github.com/Greenstand/treetracker-web-map-core/commit/d1c07a2957ed8a218547dcfb159627daf3e1fdbd))
+- automated the NPM module release ([21b43c8](https://github.com/Greenstand/treetracker-web-map-core/commit/21b43c807fd4604cfbbc2604cb5f932403ff39a6))
+- change tile server url for new icons, add highlighted and selected state for icons ([416d8ad](https://github.com/Greenstand/treetracker-web-map-core/commit/416d8ade7d8905157ccf77ea9083ab010a95f93b))
+- install eslint ([c88d8ad](https://github.com/Greenstand/treetracker-web-map-core/commit/c88d8ad6886378ff0872928de24cc545a61cb2e9))
+- install prettier ([20d98a7](https://github.com/Greenstand/treetracker-web-map-core/commit/20d98a7cf5e5647561d031264b09b927c05ac603))
+- install sort-package-json ([6d23d2b](https://github.com/Greenstand/treetracker-web-map-core/commit/6d23d2b620adf9ed75c97ec88255e953437598bd))
+
 ## [1.0.4](https://github.com/Greenstand/treetracker-web-map-core/compare/v1.0.3...v1.0.4) (2021-12-13)
 
 ### Bug Fixes
