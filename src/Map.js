@@ -155,28 +155,29 @@ export default class Map {
     this.spin.mount(mountSpinTarget)
     this.alert = new Alert()
     this.alert.mount(mountAlertTarget)
-    this.buttonPanel = new ButtonPanel()
+    this.buttonPanel = new ButtonPanel(this.goNextPoint, this.goPrevPoint)
+    console.log(this.buttonPanel)
     this.buttonPanel.mount(mountButtonPanelTarget)
 
     this.map = this.L.map(mountTarget, mapOptions)
     this.map.setView(this.initialCenter, this.minZoom)
     this.map.attributionControl.setPrefix('')
 
-    mountButtonPanelTarget.addEventListener('click', (e) => {
-      if (e.target.id === 'right-arrow') {
-        try {
-          this.goNextPoint()
-        } catch (e) {
-          log.warn('go next failed', e)
-        }
-      } else if (e.target.id === 'left-arrow') {
-        try {
-          this.goPrevPoint()
-        } catch (e) {
-          log.warn('go prev failed', e)
-        }
-      }
-    })
+    // mountButtonPanelTarget.addEventListener('click', (e) => {
+    //   if (e.target.id === 'right-arrow') {
+    //     try {
+    //       this.goNextPoint()
+    //     } catch (e) {
+    //       log.warn('go next failed', e)
+    //     }
+    //   } else if (e.target.id === 'left-arrow') {
+    //     try {
+    //       this.goPrevPoint()
+    //     } catch (e) {
+    //       log.warn('go prev failed', e)
+    //     }
+    //   }
+    // })
 
     // load google map
     await this.loadGoogleSatellite()
