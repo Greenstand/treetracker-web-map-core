@@ -572,7 +572,7 @@ export default class Map {
         icon: new this.L.DivIcon({
           className: 'greenstand-point-highlight',
           html: `
-                <div class="greenstand-point-highlight-box"  >
+                <div class="greenstand-point-highlight-box green"  >
                 <div></div>
                 </div>
               `,
@@ -584,7 +584,7 @@ export default class Map {
         icon: new this.L.DivIcon({
           className: 'greenstand-cluster-highlight',
           html: `
-                <div class="greenstand-cluster-highlight-box ${
+                <div class="greenstand-cluster-highlight-box green ${
                   data.count > 1000 ? '' : 'small'
                 }"  >
                 <div>${Map.formatClusterText(data.count)}</div>
@@ -647,7 +647,7 @@ export default class Map {
       icon: new window.L.DivIcon({
         className: 'greenstand-point-selected',
         html: `
-            <div class="greenstand-point-selected-box"  >
+            <div class="greenstand-point-selected-box green"  >
             <div></div>
             </div>
           `,
