@@ -1,6 +1,7 @@
 /*
  * The main model for the treetracker model
  */
+import regeneratorRuntime from 'regenerator-runtime'
 import axios from 'axios'
 import expect from 'expect-runtime'
 import log from 'loglevel'
