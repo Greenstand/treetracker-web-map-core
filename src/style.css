@@ -191,3 +191,40 @@
   font-family: Roboto, Arial, sans-serif;
   font-size: 14px;
 }
+
+/* Markers - Green(new) */
+.greenstand-point-selected-box.green {
+  background: url(./images/tree-selected-green.svg);
+  background-size: contain;
+  position: relative;
+  top: -4px;
+  width: 32px;
+  height: 35.76px;
+}
+
+.greenstand-point-highlight-box.green {
+  background: url(./images/tree-highlighted-green.svg);
+  background-size: contain;
+  position: relative;
+  top: -4px;
+  width: 32px;
+  height: 35.76px;
+}
+
+.greenstand-cluster-highlight-box.green {
+  background: url(./images/cluster-highlighted-green.svg) no-repeat;
+  background-size: contain;
+  width: 48px;
+  height: 63px;
+  position: relative;
+  top: 1px;
+}
+
+.greenstand-cluster-highlight-box.green.small {
+  background: url(./images/cluster-highlighted-green.svg) no-repeat;
+  background-size: contain;
+  width: 48px;
+  height: 63px;
+  position: relative;
+  top: 1px;
+}
