@@ -1,3 +1,9 @@
+# [1.3.0](https://github.com/Greenstand/treetracker-web-map-core/compare/v1.2.0...v1.3.0) (2022-01-13)
+
+### Features
+
+- deploy test ([de2c855](https://github.com/Greenstand/treetracker-web-map-core/commit/de2c855db81cb62f229bc77aa24bab9256d9e33f))
+
 # [1.2.0](https://github.com/Greenstand/treetracker-web-map-core/compare/v1.1.0...v1.2.0) (2022-01-13)
 
 ### Bug Fixes
