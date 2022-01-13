@@ -1,3 +1,15 @@
+# [1.2.0](https://github.com/Greenstand/treetracker-web-map-core/compare/v1.1.0...v1.2.0) (2022-01-13)
+
+### Bug Fixes
+
+- install regenerator-runtime and import it to src/Map and src/Requestor ([2c8b7e7](https://github.com/Greenstand/treetracker-web-map-core/commit/2c8b7e7061860faad8f4088c2d3fa63685600696))
+- restore deleted css styles for old icons ([355c330](https://github.com/Greenstand/treetracker-web-map-core/commit/355c330d706bd1c651baf6e1f9e4d6df2df12292))
+
+### Features
+
+- set npm publishing to manual fixes [#56](https://github.com/Greenstand/treetracker-web-map-core/issues/56) ([#60](https://github.com/Greenstand/treetracker-web-map-core/issues/60)) ([932bed6](https://github.com/Greenstand/treetracker-web-map-core/commit/932bed6c2ef1742e5de83adc4474447a2566cab7))
+- update highlighted and selected tree icons ([080f0dc](https://github.com/Greenstand/treetracker-web-map-core/commit/080f0dc8818213ca488333459b83e246989a3bb7))
+
 # [1.1.0](https://github.com/Greenstand/treetracker-web-map-core/compare/v1.0.4...v1.1.0) (2022-01-11)
 
 ### Bug Fixes
