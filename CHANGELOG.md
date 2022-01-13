@@ -1,3 +1,9 @@
+## [1.3.1](https://github.com/Greenstand/treetracker-web-map-core/compare/v1.3.0...v1.3.1) (2022-01-13)
+
+### Bug Fixes
+
+- missing gen runtime" ([74ef59c](https://github.com/Greenstand/treetracker-web-map-core/commit/74ef59cadea4b5fc9b609e130e7874b3cc2a7b43))
+
 # [1.3.0](https://github.com/Greenstand/treetracker-web-map-core/compare/v1.2.0...v1.3.0) (2022-01-13)
 
 ### Features
