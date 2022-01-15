@@ -34,7 +34,7 @@ export default class Map {
         minZoom: 2,
         maxZoom: 20,
         initialCenter: [20, 0],
-        tileServerUrl: 'https://{s}.treetracker.org/tiles/new/',
+        tileServerUrl: 'https://{s}.treetracker.org/tiles/',
         tileServerSubdomains: ['dev-k8s'],
         apiServerUrl: 'https://dev-k8s.treetracker.org/webmap/',
         width: window.innerWidth,
@@ -339,13 +339,14 @@ export default class Map {
   }
 
   async loadTileServer() {
+    const { iconSuiteUrlPath } = this.getIconSuiteParameters(this.iconSuite)
     // tile
     const filterParameters = this.getFilterParameters()
     const filterParametersString = filterParameters
       ? `?${filterParameters}`
       : ''
     this.layerTile = new this.L.tileLayer(
-      `${this.tileServerUrl}{z}/{x}/{y}.png${filterParametersString}`,
+      `${this.tileServerUrl}${iconSuiteUrlPath}{z}/{x}/{y}.png${filterParametersString}`,
       {
         minZoom: this.minZoom,
         maxZoom: this.maxZoom,
@@ -380,7 +381,7 @@ export default class Map {
     this.layerTile.addTo(this.map)
 
     this.layerUtfGrid = new this.L.utfGrid(
-      `${this.tileServerUrl}{z}/{x}/{y}.grid.json${filterParametersString}`,
+      `${this.tileServerUrl}${iconSuiteUrlPath}{z}/{x}/{y}.grid.json${filterParametersString}`,
       {
         minZoom: this.minZoom,
         maxZoom: this.maxZoom,
@@ -568,12 +569,13 @@ export default class Map {
   }
 
   highlightMarker(data) {
+    const { iconSuiteClass } = this.getIconSuiteParameters(this.iconSuite)
     if (data.type === 'point') {
       this.layerHighlight = new this.L.marker([data.lat, data.lon], {
         icon: new this.L.DivIcon({
           className: 'greenstand-point-highlight',
           html: `
-                <div class="greenstand-point-highlight-box green"  >
+                <div class="greenstand-point-highlight-box ${iconSuiteClass}"  >
                 <div></div>
                 </div>
               `,
@@ -585,9 +587,9 @@ export default class Map {
         icon: new this.L.DivIcon({
           className: 'greenstand-cluster-highlight',
           html: `
-                <div class="greenstand-cluster-highlight-box green ${
-                  data.count > 1000 ? '' : 'small'
-                }"  >
+                <div class="greenstand-cluster-highlight-box ${iconSuiteClass} ${
+            data.count > 1000 ? '' : 'small'
+          }"  >
                 <div>${Map.formatClusterText(data.count)}</div>
                 </div>
               `,
@@ -639,6 +641,7 @@ export default class Map {
   }
 
   selectMarker(data) {
+    const { iconSuiteClass } = this.getIconSuiteParameters(this.iconSuite)
     log.info('change tree mark selected')
     // before set the selected tree icon, remote if any
     this.unselectMarker()
@@ -648,7 +651,7 @@ export default class Map {
       icon: new window.L.DivIcon({
         className: 'greenstand-point-selected',
         html: `
-            <div class="greenstand-point-selected-box green"  >
+            <div class="greenstand-point-selected-box ${iconSuiteClass}"  >
             <div></div>
             </div>
           `,
@@ -758,6 +761,16 @@ export default class Map {
       } else {
         this.map.setView(view.center, view.zoomLevel, { animate: false })
       }
+    }
+  }
+
+  getIconSuiteParameters(iconSuite) {
+    switch (iconSuite) {
+      case 'green':
+        return { iconSuiteClass: 'green', iconSuiteUrlPath: 'new/' }
+      // add cases for future iconSuites here
+      default:
+        return { iconSuiteClass: '', iconSuiteUrlPath: '' }
     }
   }
 
