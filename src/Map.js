@@ -156,7 +156,6 @@ export default class Map {
     this.alert = new Alert()
     this.alert.mount(mountAlertTarget)
     this.buttonPanel = new ButtonPanel(this.goNextPoint, this.goPrevPoint)
-    console.log(this.buttonPanel)
     this.buttonPanel.mount(mountButtonPanelTarget)
 
     this.map = this.L.map(mountTarget, mapOptions)
@@ -829,7 +828,9 @@ export default class Map {
 
   goNextPoint() {
     log.info('go next tree')
+    console.log('go NEXT')
     const currentPoint = this.layerSelected.payload
+    console.log(currentPoint)
     expect(currentPoint).match({
       lat: expect.any(Number),
     })
