@@ -1,42 +1,20 @@
-on: [push, pull_request]
-name: Build and Publish
+name: Publish NPM Package
+on:
+  workflow_dispatch:
 jobs:
-  build:
-    name: Build
+  publish:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Use Node.js '16.x'
-        uses: actions/setup-node@v1
+      - uses: actions/setup-node@v1
         with:
           node-version: '16.x'
-      - name: Cache node_modules
-        id: cache-modules
-        uses: actions/cache@v1
-        with:
-          path: node_modules
-          key: 16.x-${{ runner.OS }}-build-${{ hashFiles('package.json') }}
-      - name: Build
-        if: steps.cache-modules.outputs.cache-hit != 'true'
-        run: npm install
-  publish:
-    name: Publish
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' && ( github.ref == 'refs/heads/main' )
-    steps:
-      - uses: actions/checkout@v2
-      - name: Cache node_modules
-        id: cache-modules
-        uses: actions/cache@v1
-        with:
-          path: node_modules
-          key: 16.x-${{ runner.OS }}-build-${{ hashFiles('package.json') }}
-      - name: Build
-        if: steps.cache-modules.outputs.cache-hit != 'true'
-        run: npm install
-
+          registry-url: 'https://registry.npmjs.org'
       - name: Publish
-        uses: mikeal/merge-release@master
+        run: |
+          npm config set '//registry.npmjs.org/:_authToken' "${{secrets.NPM_AUTH_TOKEN}}"
+          npm install -D husky
+          npx husky install
+          npm publish --ignore-scripts
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}

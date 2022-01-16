@@ -150,3 +150,91 @@
 #right-arrow {
   cursor: pointer;
 }
+/* Markers */
+
+.greenstand-point-selected {
+  z-index: 9999 !important;
+}
+.greenstand-point-highlight,
+.greenstand-cluster-highlight {
+  z-index: 999 !important;
+}
+
+.greenstand-point-selected-box {
+  background: url(./images/pin_32px_highlight.png);
+  width: 29px;
+  height: 32px;
+}
+
+.greenstand-point-highlight-box {
+  background: url(./images/pin_29px_highlight.png);
+  width: 29px;
+  height: 32px;
+}
+
+.greenstand-cluster-highlight {
+  margin-left: 0px !important;
+  margin-top: 0px !important;
+}
+
+.greenstand-cluster-highlight-box {
+  background: url(./images/cluster_63px_highlight.png);
+  width: 63px;
+  height: 63px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform: translate(-50%, -50%);
+  font-family: Roboto, Arial, sans-serif;
+  font-size: 14px;
+}
+
+.greenstand-cluster-highlight-box.small {
+  background: url(./images/cluster_46px_highlight.png);
+  width: 46px;
+  height: 46px;
+  position: relative;
+  top: -5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: Roboto, Arial, sans-serif;
+  font-size: 14px;
+}
+
+/* Markers - Green(new) */
+.greenstand-point-selected-box.green {
+  background: url(./images/tree-selected-green.svg);
+  background-size: contain;
+  position: relative;
+  top: -4px;
+  width: 32px;
+  height: 35.76px;
+}
+
+.greenstand-point-highlight-box.green {
+  background: url(./images/tree-highlighted-green.svg);
+  background-size: contain;
+  position: relative;
+  top: -4px;
+  width: 32px;
+  height: 35.76px;
+}
+
+.greenstand-cluster-highlight-box.green {
+  background: url(./images/cluster-highlighted-green.svg) no-repeat;
+  background-size: contain;
+  width: 48px;
+  height: 63px;
+  position: relative;
+  top: 1px;
+}
+
+.greenstand-cluster-highlight-box.green.small {
+  background: url(./images/cluster-highlighted-green.svg) no-repeat;
+  background-size: contain;
+  width: 48px;
+  height: 63px;
+  position: relative;
+  top: 1px;
+}

@@ -2,6 +2,8 @@
 
 This is the core module for Greenstand web map application.
 
+[![NPM Version][npm-image]][npm-url]
+
 ## Dev Server
 
 ```sh
@@ -63,3 +65,6 @@ import module in different app
 ```js
 import { Map } from 'treetracker-web-map-core'
 ```
+
+[npm-image]: https://img.shields.io/npm/v/treetracker-web-map-core.svg
+[npm-url]: https://npmjs.org/package/treetracker-web-map-core

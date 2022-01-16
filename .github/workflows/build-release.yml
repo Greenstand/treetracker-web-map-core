@@ -1,13 +1,10 @@
-#on:
-#  push:
-#    branches:
-#      - main
 on:
-  workflow_dispatch:
-    inputs:
-      environment:
-        description: 'git-tag'
-        required: true
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 env:
   project-directory: ./

@@ -1,6 +1,7 @@
 /*
  * The main model for the treetracker model
  */
+import regeneratorRuntime from 'regenerator-runtime'
 import axios from 'axios'
 import expect from 'expect-runtime'
 import log from 'loglevel'
@@ -34,7 +35,7 @@ export default class Map {
         minZoom: 2,
         maxZoom: 20,
         initialCenter: [20, 0],
-        tileServerUrl: 'https://{s}.treetracker.org/tiles/',
+        tileServerUrl: 'https://{s}.treetracker.org/tiles/new/',
         tileServerSubdomains: ['dev-k8s'],
         apiServerUrl: 'https://dev-k8s.treetracker.org/webmap/',
         width: window.innerWidth,
@@ -391,7 +392,7 @@ export default class Map {
       },
       onSlowAlert: () => {
         log.warn('slow alert')
-        this.alert.show('Trees grow slower than this map loads ...')
+        this.alert.show('Trees grow slower than this map loads, be patient...')
       },
       onLoad: () => {
         log.warn('load finished')
@@ -595,7 +596,7 @@ export default class Map {
         icon: new this.L.DivIcon({
           className: 'greenstand-point-highlight',
           html: `
-                <div class="greenstand-point-highlight-box"  >
+                <div class="greenstand-point-highlight-box green"  >
                 <div></div>
                 </div>
               `,
@@ -607,7 +608,7 @@ export default class Map {
         icon: new this.L.DivIcon({
           className: 'greenstand-cluster-highlight',
           html: `
-                <div class="greenstand-cluster-highlight-box ${
+                <div class="greenstand-cluster-highlight-box green ${
                   data.count > 1000 ? '' : 'small'
                 }"  >
                 <div>${Map.formatClusterText(data.count)}</div>
@@ -670,7 +671,7 @@ export default class Map {
       icon: new window.L.DivIcon({
         className: 'greenstand-point-selected',
         html: `
-            <div class="greenstand-point-selected-box"  >
+            <div class="greenstand-point-selected-box green"  >
             <div></div>
             </div>
           `,
