@@ -1,3 +1,9 @@
+# [1.4.0](https://github.com/Greenstand/treetracker-web-map-core/compare/v1.3.1...v1.4.0) (2022-01-17)
+
+### Features
+
+- add option to dynamically switch the iconSuites and tileServerUrl ([ca93be8](https://github.com/Greenstand/treetracker-web-map-core/commit/ca93be86130f4cb45ffd7b8f5c69916c94915886))
+
 ## [1.3.1](https://github.com/Greenstand/treetracker-web-map-core/compare/v1.3.0...v1.3.1) (2022-01-13)
 
 ### Bug Fixes
