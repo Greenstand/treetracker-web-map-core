@@ -49,6 +49,16 @@
         map.flyTo(parseInt(lat), parseInt(lon), parseInt(zoom));
         return false;
     }
+    function dosubmitChangeIcon() {
+      async function reload() {
+        const icon = document.getElementById("icons").value;
+        map.iconSuite = icon;
+        await map.loadInitialView();
+        map.rerender();
+      }
+      reload();
+      return false;
+    }
 </script>
 <style>
     .panel {
@@ -76,6 +86,16 @@
             <input type="submit" name="flytoSubmit" value="Submit" />
         </form>
     </div>
+    <div class="panel">
+      <h5>Change Icon Suite</h5>
+      <form action="" onsubmit="return dosubmitChangeIcon();">
+        <select name="icons" id="icons">
+          <option value="orange">Orange</option>
+          <option value="green">Green</option>
+        </select>
+        <input type="submit" name="icons" value="Submit" />
+      </form>
+  </div>
 </body>
 <script type="text/javascript">
     var map;

@@ -183,8 +183,6 @@
   background: url(./images/cluster_46px_highlight.png);
   width: 46px;
   height: 46px;
-  position: relative;
-  top: -5px;
   display: flex;
   justify-content: center;
   align-items: center;
