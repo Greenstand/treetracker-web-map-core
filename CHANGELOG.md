@@ -1,3 +1,9 @@
+## [1.4.1](https://github.com/Greenstand/treetracker-web-map-core/compare/v1.4.0...v1.4.1) (2022-01-22)
+
+### Bug Fixes
+
+- add asset config for webpack to fix export issue of icons ([62deadb](https://github.com/Greenstand/treetracker-web-map-core/commit/62deadb325ab479dd4668d052d9809519dc12c28))
+
 # [1.4.0](https://github.com/Greenstand/treetracker-web-map-core/compare/v1.3.1...v1.4.0) (2022-01-17)
 
 ### Features
