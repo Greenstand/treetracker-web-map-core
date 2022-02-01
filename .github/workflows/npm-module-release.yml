@@ -10,6 +10,9 @@ jobs:
         with:
           node-version: '16.x'
           registry-url: 'https://registry.npmjs.org'
+      - name: Webpack Prod Bundle
+        run: npm run pre-publish
+        working-directory: ${{ env.project-directory }}
       - name: Publish
         run: |
           npm config set '//registry.npmjs.org/:_authToken' "${{secrets.NPM_AUTH_TOKEN}}"
