@@ -339,14 +339,14 @@ export default class Map {
   }
 
   async loadTileServer() {
-    const { iconSuiteUrlPath } = this.getIconSuiteParameters(this.iconSuite)
+    const { iconSuiteQueryString } = this.getIconSuiteParameters(this.iconSuite)
     // tile
     const filterParameters = this.getFilterParameters()
     const filterParametersString = filterParameters
-      ? `?${filterParameters}`
+      ? `&${filterParameters}`
       : ''
     this.layerTile = new this.L.tileLayer(
-      `${this.tileServerUrl}${iconSuiteUrlPath}{z}/{x}/{y}.png${filterParametersString}`,
+      `${this.tileServerUrl}{z}/{x}/{y}.png?icon=${iconSuiteQueryString}${filterParametersString}`,
       {
         minZoom: this.minZoom,
         maxZoom: this.maxZoom,
@@ -381,7 +381,7 @@ export default class Map {
     this.layerTile.addTo(this.map)
 
     this.layerUtfGrid = new this.L.utfGrid(
-      `${this.tileServerUrl}${iconSuiteUrlPath}{z}/{x}/{y}.grid.json${filterParametersString}`,
+      `${this.tileServerUrl}{z}/{x}/{y}.grid.json?icon=${iconSuiteQueryString}${filterParametersString}`,
       {
         minZoom: this.minZoom,
         maxZoom: this.maxZoom,
@@ -579,7 +579,7 @@ export default class Map {
                 <div></div>
                 </div>
               `,
-          iconSize: [32, 32],
+          iconSize: iconSuiteClass ? [64, 64] : [32, 32],
         }),
       })
     } else if (data.type === 'cluster') {
@@ -588,8 +588,8 @@ export default class Map {
           className: 'greenstand-cluster-highlight',
           html: `
                 <div class="greenstand-cluster-highlight-box ${iconSuiteClass} ${
-            data.count > 1000 ? '' : 'small'
-          }"  >
+            data.count > 1000 && !iconSuiteClass ? '' : 'small'
+          }">
                 <div>${Map.formatClusterText(data.count)}</div>
                 </div>
               `,
@@ -655,7 +655,7 @@ export default class Map {
             <div></div>
             </div>
           `,
-        iconSize: [32, 32],
+        iconSize: iconSuiteClass ? [64, 64] : [32, 32],
       }),
     })
     this.layerSelected.payload = data
@@ -766,11 +766,12 @@ export default class Map {
 
   getIconSuiteParameters(iconSuite) {
     switch (iconSuite) {
-      case 'green':
-        return { iconSuiteClass: 'green', iconSuiteUrlPath: 'new/' }
-      // add cases for future iconSuites here
+      case 'ptk-s':
+        return { iconSuiteClass: 'green-s', iconSuiteQueryString: 'ptk-s' }
+      case 'ptk-b':
+        return { iconSuiteClass: 'green-b', iconSuiteQueryString: 'ptk-b' }
       default:
-        return { iconSuiteClass: '', iconSuiteUrlPath: '' }
+        return { iconSuiteClass: '', iconSuiteQueryString: 'o' }
     }
   }
 
