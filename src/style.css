@@ -146,8 +146,8 @@
   align-items: center;
   width: fit-content;
 }
-#left-arrow,
-#right-arrow {
+#next-left-arrow,
+#next-right-arrow {
   cursor: pointer;
 }
 
