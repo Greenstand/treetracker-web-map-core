@@ -13,8 +13,9 @@ jobs:
       - name: Publish
         run: |
           npm config set '//registry.npmjs.org/:_authToken' "${{secrets.NPM_AUTH_TOKEN}}"
-          npm install -D husky
+          npm install -D husky webpack
           npx husky install
+          npx webpack --mode=production
           npm publish --ignore-scripts
         env:
           NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
