@@ -1,6 +1,6 @@
 {
   "name": "treetracker-web-map-core",
-  "version": "1.4.2",
+  "version": "1.5.0",
   "description": "This is the core module for Greenstand web map application.",
   "keywords": [
     "GIS",

@@ -1,3 +1,14 @@
+# [1.5.0](https://github.com/Greenstand/treetracker-web-map-core/compare/v1.4.2...v1.5.0) (2022-02-09)
+
+### Bug Fixes
+
+- add webpack install and pre-publish step back to npm-module-release script ([7b45798](https://github.com/Greenstand/treetracker-web-map-core/commit/7b457980b1365483d4e8f85efae5d9197dde7779))
+- move pre-publish step to build-release action ([58ae6ad](https://github.com/Greenstand/treetracker-web-map-core/commit/58ae6ad776b16399cfb56ac8352a5dd3d67c795d))
+
+### Features
+
+- added pre-publish webpack step to module release action ([71d7fdf](https://github.com/Greenstand/treetracker-web-map-core/commit/71d7fdf432d6adee563db5b724504b613726dbd0))
+
 ## [1.4.2](https://github.com/Greenstand/treetracker-web-map-core/compare/v1.4.1...v1.4.2) (2022-02-04)
 
 ### Bug Fixes
