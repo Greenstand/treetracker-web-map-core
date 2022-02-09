@@ -182,22 +182,6 @@ export default class Map {
       )
     }
 
-    // mountButtonPanelTarget.addEventListener('click', (e) => {
-    //   if (e.target.id === 'right-arrow') {
-    //     try {
-    //       this.goNextPoint()
-    //     } catch (e) {
-    //       log.warn('go next failed', e)
-    //     }
-    //   } else if (e.target.id === 'left-arrow') {
-    //     try {
-    //       this.goPrevPoint()
-    //     } catch (e) {
-    //       log.warn('go prev failed', e)
-    //     }
-    //   }
-    // })
-
     // load google map
     await this.loadGoogleSatellite()
 
