@@ -1,3 +1,9 @@
+# [1.6.0](https://github.com/Greenstand/treetracker-web-map-core/compare/v1.5.0...v1.6.0) (2022-02-09)
+
+### Features
+
+- the next/prev button ([eb5d38c](https://github.com/Greenstand/treetracker-web-map-core/commit/eb5d38c36043e1ed10d337657e9711314aa640d6))
+
 # [1.5.0](https://github.com/Greenstand/treetracker-web-map-core/compare/v1.4.2...v1.5.0) (2022-02-09)
 
 ### Bug Fixes
