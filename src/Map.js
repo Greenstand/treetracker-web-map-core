@@ -20,12 +20,20 @@ import EventEmitter from 'events'
 import Spin from './Spin'
 import Alert from './Alert'
 import TileLoadingMonitor from './TileLoadingMonitor'
+import ButtonPanel from './ButtonPanel'
 
 class MapError extends Error {}
 
 console.log('Greenstand web map core, version:')
 
 export default class Map {
+  // events
+  static REGISTERED_EVENTS = {
+    TREE_SELECTED: 'tree-selected',
+    TREE_UNSELECTED: 'tree-unselected',
+    MOVE_END: 'move-end',
+  }
+
   constructor(options) {
     // default
     const mapOptions = {
@@ -121,6 +129,7 @@ export default class Map {
   on(eventName, handler) {
     //TODO check event name enum
     if (handler) {
+      log.info('register event:', eventName)
       this.events.on(eventName, handler)
     }
   }
@@ -142,6 +151,7 @@ export default class Map {
       <div id="greenstand-leaflet" style="position: relative;width: 100%;height: 100%;"></div>
       <div id="greenstand-map-spin" style="z-index: 999; position: absolute; width: 100%; top: 0px; left: 0px" ></div>
       <div id="greenstand-map-alert" style="z-index: 999; position: absolute; width: 100%; top: 0px; left: 0px" ></div>
+      <div id="greenstand-map-buttonPanel" style="z-index: 999; position: absolute; top: 0px; left:50%; transform: translateX(-50%)" ></div>
     `
     domElement.appendChild(divContainer)
     const mountTarget = document.getElementById('greenstand-leaflet')
@@ -155,6 +165,38 @@ export default class Map {
     this.map = this.L.map(mountTarget, mapOptions)
     this.map.setView(this.initialCenter, this.minZoom)
     this.map.attributionControl.setPrefix('')
+
+    // button prev next
+    {
+      // next tree buttons
+      const mountButtonPanelTarget = document.getElementById(
+        'greenstand-map-buttonPanel',
+      )
+      this.buttonPanel = new ButtonPanel(
+        () => this.goNextPoint(),
+        () => this.goPrevPoint(),
+      )
+      this.buttonPanel.mount(mountButtonPanelTarget)
+      this.on(Map.REGISTERED_EVENTS.TREE_SELECTED, () =>
+        this.buttonPanel.show(),
+      )
+    }
+
+    // mountButtonPanelTarget.addEventListener('click', (e) => {
+    //   if (e.target.id === 'right-arrow') {
+    //     try {
+    //       this.goNextPoint()
+    //     } catch (e) {
+    //       log.warn('go next failed', e)
+    //     }
+    //   } else if (e.target.id === 'left-arrow') {
+    //     try {
+    //       this.goPrevPoint()
+    //     } catch (e) {
+    //       log.warn('go prev failed', e)
+    //     }
+    //   }
+    // })
 
     // load google map
     await this.loadGoogleSatellite()
@@ -191,7 +233,7 @@ export default class Map {
       // mount event
       this.map.on('moveend', (e) => {
         log.warn('move end', e)
-        this.events.emit('moveEnd')
+        this.events.emit(Map.REGISTERED_EVENTS.MOVE_END)
       })
 
       if (this.filters.treeid) {
@@ -642,7 +684,7 @@ export default class Map {
 
   selectMarker(data) {
     const { iconSuiteClass } = this.getIconSuiteParameters(this.iconSuite)
-    log.info('change tree mark selected')
+    log.info('change tree mark selected with data:', data)
     // before set the selected tree icon, remote if any
     this.unselectMarker()
 
@@ -660,9 +702,16 @@ export default class Map {
     })
     this.layerSelected.payload = data
     this.layerSelected.addTo(this.map)
+
+    this.events.emit(Map.REGISTERED_EVENTS.TREE_SELECTED, data)
   }
 
   unselectMarker() {
+    this.events.emit(
+      Map.REGISTERED_EVENTS.TREE_UNSELECTED,
+      this.layerSelected?.payload,
+    )
+
     if (this.map.hasLayer(this.layerSelected)) {
       this.map.removeLayer(this.layerSelected)
     } else {
