@@ -140,6 +140,17 @@
   border-color: #ffecb5;
 }
 
+.buttonPanel {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: fit-content;
+}
+#left-arrow,
+#right-arrow {
+  cursor: pointer;
+}
+
 /* Markers */
 
 .greenstand-point-selected {
