@@ -131,7 +131,7 @@ export default class Map {
     const mapOptions = {
       minZoom: this.minZoom,
       center: this.initialCenter,
-      zoomControl: this.zoomControl ? this.zoomControl : false,
+      zoomControl: this.zoomControl || false,
     }
 
     const divContainer = document.createElement('div')
