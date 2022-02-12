@@ -121,6 +121,7 @@
             onFindNearestAt: () => console.log("onFindNearstAt"),
             onError: () => console.log("onError"),
             filters: parameters,
+            zoomControl: true,
         });
         map.on("moveEnd", handleMoveEnd);
         map.mount(document.getElementById("map"));
