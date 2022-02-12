@@ -1,3 +1,9 @@
+# [1.7.0](https://github.com/Greenstand/treetracker-web-map-core/compare/v1.6.1...v1.7.0) (2022-02-12)
+
+### Features
+
+- hover effect added to buttons ([37b516c](https://github.com/Greenstand/treetracker-web-map-core/commit/37b516c5d7b69ae4b57208a735a90d188b249d65))
+
 ## [1.6.1](https://github.com/Greenstand/treetracker-web-map-core/compare/v1.6.0...v1.6.1) (2022-02-09)
 
 ### Bug Fixes
