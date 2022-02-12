@@ -151,8 +151,10 @@ export default class Map {
     this.spin.mount(mountSpinTarget)
     this.alert = new Alert()
     this.alert.mount(mountAlertTarget)
-
     this.map = this.L.map(mountTarget, mapOptions)
+    if (this.zoomControlPosition) {
+      this.map.zoomControl.setPosition(this.zoomControlPosition)
+    }
     this.map.setView(this.initialCenter, this.minZoom)
     this.map.attributionControl.setPrefix('')
 
