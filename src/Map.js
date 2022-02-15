@@ -177,9 +177,36 @@ export default class Map {
         () => this.goPrevPoint(),
       )
       this.buttonPanel.mount(mountButtonPanelTarget)
-      this.on(Map.REGISTERED_EVENTS.TREE_SELECTED, () =>
-        this.buttonPanel.show(),
-      )
+      this.on(Map.REGISTERED_EVENTS.TREE_SELECTED, () => {
+        const currentPoint = this.layerSelected.payload
+        const points = this.getPoints()
+        const index = points.reduce((a, c, i) => {
+          if (c.id === currentPoint.id) {
+            return i
+          }
+          return a
+        }, -1)
+        if (points.length <= 1) {
+          return null
+        }
+        this.buttonPanel.show()
+        if (index === 0) {
+          document.querySelector('#next-left-arrow > svg').style.display =
+            'none'
+          document.querySelector('#next-right-arrow > svg').style.display =
+            'block'
+        } else if (index === points.length - 1) {
+          document.querySelector('#next-left-arrow > svg').style.display =
+            'block'
+          document.querySelector('#next-right-arrow > svg').style.display =
+            'none'
+        } else {
+          document.querySelector('#next-left-arrow > svg').style.display =
+            'block'
+          document.querySelector('#next-right-arrow > svg').style.display =
+            'block'
+        }
+      })
     }
 
     // load google map
