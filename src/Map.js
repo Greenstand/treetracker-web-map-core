@@ -140,7 +140,7 @@ export default class Map {
     const mapOptions = {
       minZoom: this.minZoom,
       center: this.initialCenter,
-      zoomControl: false,
+      zoomControl: this.zoomControl || false,
     }
 
     const divContainer = document.createElement('div')
@@ -163,6 +163,9 @@ export default class Map {
     this.alert.mount(mountAlertTarget)
 
     this.map = this.L.map(mountTarget, mapOptions)
+    if (this.zoomControl && this.zoomControlPosition) {
+      this.map.zoomControl.setPosition(this.zoomControlPosition)
+    }
     this.map.setView(this.initialCenter, this.minZoom)
     this.map.attributionControl.setPrefix('')
 

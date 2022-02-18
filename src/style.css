@@ -268,3 +268,7 @@
   font-size: 12px;
   font-weight: 500;
 }
+
+.leaflet-control-zoom.leaflet-bar {
+  border: none;
+}
