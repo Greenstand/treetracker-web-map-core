@@ -153,7 +153,7 @@ export default class Map {
     this.alert.mount(mountAlertTarget)
 
     this.map = this.L.map(mountTarget, mapOptions)
-    if (this.zoomControlPosition) {
+    if (this.zoomControl && this.zoomControlPosition) {
       this.map.zoomControl.setPosition(this.zoomControlPosition)
     }
     this.map.setView(this.initialCenter, this.minZoom)
