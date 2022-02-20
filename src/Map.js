@@ -67,7 +67,9 @@ export default class Map {
 
   /** *************************** static *************************** */
   static formatClusterText(count) {
-    if (count > 1000) {
+    if (count > 1000000) {
+      return `${(count / 1000000).toFixed(1)}M`
+    } else if (count > 1000) {
       return `${Math.floor(count / 1000)}K`
     }
     return count
