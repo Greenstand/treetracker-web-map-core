@@ -334,6 +334,17 @@ export default class Map {
     })
   }
 
+  async addGeoJSon(source) {
+    let geo = source
+
+    if (typeof source === 'string') {
+      geo = (await axios.get(source)).data
+    }
+
+    const layer = window.L.geoJSON(geo).addTo(this.map)
+    return layer
+  }
+
   async gotoBounds(bounds) {
     const [southWestLng, southWestLat, northEastLng, northEastLat] =
       bounds.split(',')
