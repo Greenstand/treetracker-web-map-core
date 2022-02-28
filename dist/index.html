@@ -80,6 +80,11 @@
         padding: 10px;
         margin: 10px;
     }
+
+    textarea {
+        display: block;
+        width: 25rem;
+    }
 </style>
 
 <body>
@@ -114,7 +119,7 @@
     <div class="panel">
         <h5>Add custom GeoJSON</h5>
         <form action="" onsubmit="return dosubmitGeojson();">
-            <input id="geojson" name="geojson" type="input" placeholder="Paste a geojson object or link to one">
+            <textarea id="geojson" name="geojson" placeholder="Paste a geojson object or link to one"></textarea>
             <input type="submit" value="Submit" />
         </form>
     </div>
