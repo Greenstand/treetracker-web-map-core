@@ -59,6 +59,20 @@
       reload();
       return false;
     }
+
+    function dosubmitGeojson() {
+        (async () => {
+            const geo = document.getElementById('geojson').value;
+
+            try {
+                // attempt to parse as json obj otherwise pass as a URL
+                geo = JSON.parse(geo)
+            } finally {
+                await map.addGeoJson(geo);
+            }
+        })();
+        return false;
+    }
 </script>
 <style>
     .panel {
@@ -96,7 +110,14 @@
         </select>
         <input type="submit" name="icons" value="Submit" />
       </form>
-  </div>
+    </div>
+    <div class="panel">
+        <h5>Add custom GeoJSON</h5>
+        <form action="" onsubmit="return dosubmitGeojson();">
+            <input id="geojson" name="geojson" type="input" placeholder="Paste a geojson object or link to one">
+            <input type="submit" value="Submit" />
+        </form>
+    </div>
 </body>
 <script type="text/javascript">
     var map;
