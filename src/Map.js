@@ -334,7 +334,7 @@ export default class Map {
     })
   }
 
-  async addGeoJSon(source) {
+  async addGeoJson(source) {
     let geo = source
 
     if (typeof source === 'string') {
