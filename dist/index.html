@@ -62,7 +62,7 @@
 
     function dosubmitGeojson() {
         (async () => {
-            const geo = document.getElementById('geojson').value;
+            let geo = document.getElementById('geojson').value;
 
             try {
                 // attempt to parse as json obj otherwise pass as a URL
