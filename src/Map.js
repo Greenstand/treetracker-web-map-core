@@ -780,7 +780,7 @@ export default class Map {
 
     // jump to initial view
     if (view) {
-      if (this.moreEffect) {
+      if (this.moreEffect && this.filters.presentation !== 'simple') {
         this.map.flyTo(view.center, view.zoomLevel)
         log.warn('waiting initial view load...')
         await new Promise((res) => {
@@ -824,6 +824,9 @@ export default class Map {
     }
     if (this.filters.map_name) {
       filters.map_name = this.filters.map_name
+    }
+    if (this.filters.presentation) {
+      filters.presentation = this.filters.presentation
     }
     return filters
   }
