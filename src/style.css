@@ -279,21 +279,24 @@
 
 #arrow.south {
   bottom: 10px;
-  left: 50%;
+  left: 47%;
 }
 
 #arrow.north {
-  top: 20px;
+  top: 10px;
+  left: 47%;
+}
+#arrow.north.shift {
   left: 75%;
 }
 
 #arrow.east {
-  top: 50%;
+  top: 46%;
   right: 10px;
 }
 
 #arrow.west {
-  top: 50%;
+  top: 46%;
   left: 10px;
 }
 

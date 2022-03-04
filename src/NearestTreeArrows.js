@@ -31,7 +31,16 @@ export default class NearestTreeArrows {
   showArrow(direction) {
     this.arrow.className = ''
     this.arrow.style.display = 'block'
-    this.arrow.className = `${direction}`
+
+    // Check if the prev & next tree button panel exists, if it does shift the nearest NORTH arrow to the right
+    const buttonPanelExists =
+      document.getElementById('greenstand-map-buttonPanel').firstChild.style
+        .display !== 'none'
+    this.arrow.className = `${
+      buttonPanelExists && direction === 'north'
+        ? direction + ' shift'
+        : direction
+    }`
   }
 
   arrowClickHandler() {
