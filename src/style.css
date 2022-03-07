@@ -144,16 +144,24 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: fit-content;
+  width: 136px;
+  height: 93px;
 }
 #next-left-arrow,
 #next-right-arrow {
-  cursor: pointer;
+  flex: 50%;
+  height: 93px;
+}
+#next-left-arrow svg,
+#next-right-arrow svg {
+  align-items: center;
+  height: 93px;
 }
 #next-left-arrow:hover svg,
 #next-right-arrow:hover svg {
   filter: brightness(1.5);
   transition: 0.2s;
+  cursor: pointer;
 }
 
 /* Markers */
