@@ -154,7 +154,6 @@
 }
 #next-left-arrow svg,
 #next-right-arrow svg {
-  align-items: center;
   height: 93px;
 }
 #next-left-arrow:hover svg,
