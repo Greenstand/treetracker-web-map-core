@@ -21,6 +21,7 @@ import Spin from './Spin'
 import Alert from './Alert'
 import TileLoadingMonitor from './TileLoadingMonitor'
 import ButtonPanel from './ButtonPanel'
+import NearestTreeArrows from './NearestTreeArrows'
 
 class MapError extends Error {}
 
@@ -148,6 +149,7 @@ export default class Map {
     divContainer.style.height = '100%'
     divContainer.style.position = 'relative'
     divContainer.innerHTML = `
+      <div id="greenstand-nearest-tree-arrow" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%"></div>
       <div id="greenstand-leaflet" style="position: relative;width: 100%;height: 100%;"></div>
       <div id="greenstand-map-spin" style="z-index: 999; position: absolute; width: 100%; top: 0px; left: 0px" ></div>
       <div id="greenstand-map-alert" style="z-index: 999; position: absolute; width: 100%; top: 0px; left: 0px" ></div>
@@ -201,6 +203,15 @@ export default class Map {
       })
     }
 
+    // Nearest Tree Arrow
+    const mountNearestArrowTarget = document.getElementById(
+      'greenstand-nearest-tree-arrow',
+    )
+    this.nearestTreeArrow = new NearestTreeArrows(() =>
+      this.moveToNearestTree(),
+    )
+    this.nearestTreeArrow.mount(mountNearestArrowTarget)
+
     // load google map
     await this.loadGoogleSatellite()
 
@@ -236,6 +247,7 @@ export default class Map {
       // mount event
       this.map.on('moveend', (e) => {
         log.warn('move end', e)
+        this.checkArrow()
         this.events.emit(Map.REGISTERED_EVENTS.MOVE_END)
       })
 
@@ -488,7 +500,7 @@ export default class Map {
       const isLoading = this.layerUtfGrid.isLoading()
       log.warn('utf layer is loading:', isLoading)
       if (isLoading) {
-        log.error('can not handle the grid utf check when loading, cancel!')
+        log.warn('can not handle the grid utf check when loading, cancel!')
         return false
       }
       const begin = Date.now()
@@ -1121,12 +1133,26 @@ export default class Map {
       const nearest = await this.getNearest()
       if (nearest) {
         const placement = this.calculatePlacement(nearest)
-        if (this.onFindNearestAt) {
-          this.onFindNearestAt(placement)
-        }
+        this.handleNearestArrowDisplay(placement)
       } else {
         log.warn("Can't get the nearest:", nearest)
+        this.handleNearestArrowDisplay()
       }
+    }
+  }
+
+  handleNearestArrowDisplay(placement) {
+    !placement || placement === 'in'
+      ? this.nearestTreeArrow.hideArrow()
+      : this.nearestTreeArrow.showArrow(placement)
+  }
+
+  async moveToNearestTree() {
+    const nearest = await this.getNearest()
+    if (nearest) {
+      this.goto(nearest)
+    } else {
+      log.warn('can not find nearest:', nearest)
     }
   }
 

@@ -1,3 +1,10 @@
+# [1.8.0](https://github.com/Greenstand/treetracker-web-map-core/compare/v1.7.0...v1.8.0) (2022-03-07)
+
+### Features
+
+- add class to handle the display of nearest tree arrows ([87b92a2](https://github.com/Greenstand/treetracker-web-map-core/commit/87b92a206c65dce2e4b0557d7d7693193b3cc7c3))
+- add nearest tree arrows to core map ([85d9dbf](https://github.com/Greenstand/treetracker-web-map-core/commit/85d9dbf849539cdeee7c9656f58374b6363d4f3f))
+
 # [1.7.0](https://github.com/Greenstand/treetracker-web-map-core/compare/v1.6.1...v1.7.0) (2022-02-12)
 
 ### Features
