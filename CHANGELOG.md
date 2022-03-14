@@ -1,3 +1,12 @@
+# [1.9.0](https://github.com/Greenstand/treetracker-web-map-core/compare/v1.8.0...v1.9.0) (2022-03-14)
+
+### Features
+
+- added button hide and show feature based on tree points stored in cache ([c41683d](https://github.com/Greenstand/treetracker-web-map-core/commit/c41683d3e1d75d25a2a71c3e08e041cbdc5e0719))
+- merging conflict resolved ([3ef00be](https://github.com/Greenstand/treetracker-web-map-core/commit/3ef00bea688023952b2e06b9dcb5e53d9f2981a9))
+- new methods added to buttonPanel class to show and hide buttons ([a3d7190](https://github.com/Greenstand/treetracker-web-map-core/commit/a3d71903662e83ff946d2e9c93e3a42ac601d19c))
+- removed a css line as it had no effect ([be1c411](https://github.com/Greenstand/treetracker-web-map-core/commit/be1c411459f706154aeb9f8c6926cfb374c9581f))
+
 # [1.8.0](https://github.com/Greenstand/treetracker-web-map-core/compare/v1.7.0...v1.8.0) (2022-03-07)
 
 ### Features
