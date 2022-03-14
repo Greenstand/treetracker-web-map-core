@@ -179,9 +179,28 @@ export default class Map {
         () => this.goPrevPoint(),
       )
       this.buttonPanel.mount(mountButtonPanelTarget)
-      this.on(Map.REGISTERED_EVENTS.TREE_SELECTED, () =>
-        this.buttonPanel.show(),
-      )
+      this.on(Map.REGISTERED_EVENTS.TREE_SELECTED, () => {
+        const currentPoint = this.layerSelected.payload
+        const points = this.getPoints()
+        const index = points.reduce((a, c, i) => {
+          if (c.id === currentPoint.id) {
+            return i
+          }
+          return a
+        }, -1)
+        if (points.length <= 1) {
+          return null
+        }
+        this.buttonPanel.show()
+        if (index === 0) {
+          this.buttonPanel.hideLeftArrow()
+        } else if (index === points.length - 1) {
+          this.buttonPanel.hideRightArrow()
+        } else {
+          this.buttonPanel.showLeftArrow()
+          this.buttonPanel.showRightArrow()
+        }
+      })
     }
 
     // Nearest Tree Arrow
