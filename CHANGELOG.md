@@ -1,3 +1,16 @@
+# [1.10.0](https://github.com/Greenstand/treetracker-web-map-core/compare/v1.9.0...v1.10.0) (2022-03-18)
+
+### Bug Fixes
+
+- allow reassignment ([c29783d](https://github.com/Greenstand/treetracker-web-map-core/commit/c29783dc93afc4cfffbcd30585489044a0b29d0c))
+- textarea >>> ([ff47e3a](https://github.com/Greenstand/treetracker-web-map-core/commit/ff47e3a29d02996b5ba4cd6b538030fa006ef8bf))
+- typo in func name ([be86152](https://github.com/Greenstand/treetracker-web-map-core/commit/be86152f958b301b9421bceda3ef15c2ab9a014a))
+
+### Features
+
+- add function demo ([1218e4c](https://github.com/Greenstand/treetracker-web-map-core/commit/1218e4c829f5ba84da81c44c02497f288517a324))
+- expose addGeoJson function ([5c9067c](https://github.com/Greenstand/treetracker-web-map-core/commit/5c9067c6b7e0a039d10f82facf4181dac63a25e0))
+
 # [1.9.0](https://github.com/Greenstand/treetracker-web-map-core/compare/v1.8.0...v1.9.0) (2022-03-14)
 
 ### Features
