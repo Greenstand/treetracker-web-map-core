@@ -59,12 +59,31 @@
       reload();
       return false;
     }
+
+    function dosubmitGeojson() {
+        (async () => {
+            let geo = document.getElementById('geojson').value;
+
+            try {
+                // attempt to parse as json obj otherwise pass as a URL
+                geo = JSON.parse(geo)
+            } finally {
+                await map.addGeoJson(geo);
+            }
+        })();
+        return false;
+    }
 </script>
 <style>
     .panel {
         border: 1px solid #ccc;
         padding: 10px;
         margin: 10px;
+    }
+
+    textarea {
+        display: block;
+        width: 25rem;
     }
 </style>
 
@@ -96,7 +115,14 @@
         </select>
         <input type="submit" name="icons" value="Submit" />
       </form>
-  </div>
+    </div>
+    <div class="panel">
+        <h5>Add custom GeoJSON</h5>
+        <form action="" onsubmit="return dosubmitGeojson();">
+            <textarea id="geojson" name="geojson" placeholder="Paste a geojson object or link to one"></textarea>
+            <input type="submit" value="Submit" />
+        </form>
+    </div>
 </body>
 <script type="text/javascript">
     var map;
