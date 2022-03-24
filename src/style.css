@@ -141,25 +141,29 @@
 }
 
 .buttonPanel {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 136px;
-  height: 93px;
+  width: 140px;
+  height: 90px;
 }
 #next-left-arrow,
 #next-right-arrow {
-  flex: 50%;
-  height: 93px;
+  margin: 5px;
+  flex: 40%;
+  height: 90px;
+  width: 70px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 #next-left-arrow svg,
 #next-right-arrow svg {
-  height: 93px;
+  height: 70px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 15%;
 }
 #next-left-arrow:hover svg,
 #next-right-arrow:hover svg {
-  filter: brightness(1.5);
-  transition: 0.2s;
+  background: rgba(0, 0, 0, 0.5);
+  transition: 0.5s;
   cursor: pointer;
 }
 
