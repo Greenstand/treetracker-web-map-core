@@ -1,3 +1,10 @@
+# [1.11.0](https://github.com/Greenstand/treetracker-web-map-core/compare/v1.10.0...v1.11.0) (2022-03-28)
+
+### Features
+
+- button pannel test concluded new icons added for next and prev buttons ([10a025e](https://github.com/Greenstand/treetracker-web-map-core/commit/10a025e54958378d63dcb3a729c976e3d4c50259))
+- removed all commented code and some unused code ([ba1626c](https://github.com/Greenstand/treetracker-web-map-core/commit/ba1626c0c6404375b3c768ee507e9487c2abf7e3))
+
 # [1.10.0](https://github.com/Greenstand/treetracker-web-map-core/compare/v1.9.0...v1.10.0) (2022-03-18)
 
 ### Bug Fixes
