@@ -241,9 +241,13 @@
   width: 67px;
   height: 96px;
   position: relative;
-  top: 1px;
+  top: 6px;
   font-family: Lato, Arial, sans-serif;
   font-weight: 500;
+}
+.greenstand-cluster-highlight-box.green-b div {
+  position: relative;
+  top: -5px;
 }
 
 /* Markers - Green(small) */
@@ -270,13 +274,17 @@
 .greenstand-cluster-highlight-box.green-s {
   background: url(./images/cluster-highlighted-green.svg) no-repeat;
   background-size: contain;
-  top: 1px;
+  top: 5px;
   width: 56px;
   height: 77px;
   position: relative;
   font-family: Lato, Arial, sans-serif;
   font-size: 12px;
   font-weight: 500;
+}
+.greenstand-cluster-highlight-box.green-s div {
+  position: relative;
+  top: -5px;
 }
 
 /* Nearest Tree Arrows */
