@@ -1,3 +1,9 @@
+## [1.11.1](https://github.com/Greenstand/treetracker-web-map-core/compare/v1.11.0...v1.11.1) (2022-05-28)
+
+### Bug Fixes
+
+- adjust highlighted icon position ([f5f319e](https://github.com/Greenstand/treetracker-web-map-core/commit/f5f319e31f9959eae696dd80307ec35e26e2593f))
+
 # [1.11.0](https://github.com/Greenstand/treetracker-web-map-core/compare/v1.10.0...v1.11.0) (2022-03-28)
 
 ### Features
