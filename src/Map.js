@@ -51,6 +51,7 @@ export default class Map {
         debug: false,
         moreEffect: true,
         filters: {},
+        defaultZoomLevelForTreePoint: 15,
       },
       ...options,
     }
@@ -679,37 +680,36 @@ export default class Map {
 
   clickMarker(data) {
     this.unHighlightMarker()
-    if (data.type === 'point') {
+    if (
+      data.type === 'point' ||
+      (data.type === 'cluster' && data.count === 1)
+    ) {
+      if (data.type === 'cluster') {
+        const { lon, lat } = data
+        this.map.flyTo([lat, lon], this.defaultZoomLevelForTreePoint)
+      }
       this.selectMarker(data)
       if (this.onClickTree) {
         this.onClickTree(data)
       }
     } else if (data.type === 'cluster') {
-      const incZoomLevelBy = data.count === 1 ? 5 : 2
       if (data.zoom_to) {
         log.info('found zoom to:', data.zoom_to)
         const [lon, lat] = JSON.parse(data.zoom_to).coordinates
         // NOTE do cluster click
         if (this.moreEffect) {
-          this.map.flyTo([lat, lon], this.map.getZoom() + incZoomLevelBy)
+          this.map.flyTo([lat, lon], this.map.getZoom() + 2)
         } else {
-          this.map.setView([lat, lon], this.map.getZoom() + incZoomLevelBy, {
+          this.map.setView([lat, lon], this.map.getZoom() + 2, {
             animate: false,
           })
         }
       } else if (this.moreEffect) {
-        this.map.flyTo(
-          [data.lat, data.lon],
-          this.map.getZoom() + incZoomLevelBy,
-        )
+        this.map.flyTo([data.lat, data.lon], this.map.getZoom() + 2)
       } else {
-        this.map.setView(
-          [data.lat, data.lon],
-          this.map.getZoom() + incZoomLevelBy,
-          {
-            animate: false,
-          },
-        )
+        this.map.setView([data.lat, data.lon], this.map.getZoom() + 2, {
+          animate: false,
+        })
       }
     } else {
       throw new Error('do not support type:', data.type)
