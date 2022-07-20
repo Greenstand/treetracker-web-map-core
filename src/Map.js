@@ -51,6 +51,7 @@ export default class Map {
         debug: false,
         moreEffect: true,
         filters: {},
+        defaultZoomLevelForTreePoint: 15,
       },
       ...options,
     }
@@ -679,7 +680,14 @@ export default class Map {
 
   clickMarker(data) {
     this.unHighlightMarker()
-    if (data.type === 'point') {
+    if (
+      data.type === 'point' ||
+      (data.type === 'cluster' && data.count === 1)
+    ) {
+      if (data.type === 'cluster') {
+        const { lon, lat } = data
+        this.map.flyTo([lat, lon], this.defaultZoomLevelForTreePoint)
+      }
       this.selectMarker(data)
       if (this.onClickTree) {
         this.onClickTree(data)
