@@ -1,3 +1,10 @@
+# [1.12.0](https://github.com/Greenstand/treetracker-web-map-core/compare/v1.11.1...v1.12.0) (2022-07-20)
+
+### Features
+
+- added configurable zoomLevelForTreePoint ([0395346](https://github.com/Greenstand/treetracker-web-map-core/commit/03953462096bcd8448c12d13817b3dec53f1afb5))
+- setted zoom level to 5 if the cluster count is 1 ([9ca093b](https://github.com/Greenstand/treetracker-web-map-core/commit/9ca093b4cdcb2f44c1cddb2895e10d247811b44f))
+
 ## [1.11.1](https://github.com/Greenstand/treetracker-web-map-core/compare/v1.11.0...v1.11.1) (2022-05-28)
 
 ### Bug Fixes
