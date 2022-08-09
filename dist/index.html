@@ -40,6 +40,21 @@
         return false;
     }
 
+    function dosubmitTree() {
+        console.log("submitting...");
+        async function reload() {
+            //map.flyTo(0,0,5);
+            const treeid = document.getElementById("treeid").value;
+            map.setFilters({
+                treeid,
+            });
+            await map.loadInitialView();
+            map.rerender();
+        }
+        reload();
+        return false;
+    }
+
     function dosubmitFlyto() {
         console.log("dosubmit flyto...");
         const lat = document.getElementById("lat").value;
@@ -93,6 +108,10 @@
         <h5>Control the map</h5>
         <form action="" onsubmit="return dosubmit();">
             userid <input id="userid" name="userid" type="input" value="" placeholder="the planter/user id">
+            <input type="submit" name="controlSubmit" value="Submit" />
+        </form>
+        <form action="" onsubmit="return dosubmitTree();">
+            treeid <input id="treeid" name="treeid" type="input" value="" placeholder="the tree id">
             <input type="submit" name="controlSubmit" value="Submit" />
         </form>
     </div>
