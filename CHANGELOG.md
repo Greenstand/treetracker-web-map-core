@@ -1,3 +1,9 @@
+## [1.12.2](https://github.com/Greenstand/treetracker-web-map-core/compare/v1.12.1...v1.12.2) (2022-08-09)
+
+### Bug Fixes
+
+- unselect trees when rerender ([e35570b](https://github.com/Greenstand/treetracker-web-map-core/commit/e35570b5424c809b3c66f34bf353cf908f4d0899))
+
 ## [1.12.1](https://github.com/Greenstand/treetracker-web-map-core/compare/v1.12.0...v1.12.1) (2022-08-09)
 
 ### Bug Fixes
