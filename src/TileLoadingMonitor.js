@@ -54,6 +54,15 @@ class TileLoadingMonitor {
     // TODO handle error
     this.options.onLoad()
   }
+
+  destroy() {
+    clearTimeout(this.showLoadingTimer)
+    clearTimeout(this.slowTimer)
+    this.options.onDestroy()
+    this.tileLayer.off('loading', this._handleLoading)
+    this.tileLayer.off('load', this._handleLoad)
+    this.tileLayer.off('tileerror', this._handleTileError)
+  }
 }
 
 module.exports = TileLoadingMonitor

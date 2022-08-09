@@ -446,6 +446,11 @@ export default class Map {
         this.spin.hide()
         this.alert.hide()
       },
+      onDestroy: () => {
+        log.warn('destroy')
+        this.spin.hide()
+        this.alert.hide()
+      },
     })
     this.layerTile.addTo(this.map)
 
@@ -985,8 +990,22 @@ export default class Map {
   async rerender() {
     log.info('rerender')
     log.info('reload tile')
-    this.unloadTileServer()
-    this.loadTileServer()
+    await this.unloadTileServer()
+
+    // load tile
+    if (this.filters.treeid) {
+      log.info('treeid mode do not need tile server')
+      log.info('load tree by id')
+      await this.loadTree(this.filters.treeid)
+      this.tileLoadingMonitor && this.tileLoadingMonitor.destroy()
+    } else if (this.filters.tree_name) {
+      log.info('tree name mode do not need tile server')
+      log.info('load tree by name')
+      this.tileLoadingMonitor && this.tileLoadingMonitor.destroy()
+      await this.loadTree(undefined, this.filters.tree_name)
+    } else {
+      await this.loadTileServer()
+    }
   }
 
   /*
