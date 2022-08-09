@@ -1,3 +1,9 @@
+## [1.12.3](https://github.com/Greenstand/treetracker-web-map-core/compare/v1.12.2...v1.12.3) (2022-08-09)
+
+### Bug Fixes
+
+- visit undefined value ([f0f1f45](https://github.com/Greenstand/treetracker-web-map-core/commit/f0f1f45b73d27b0c7989cca25879aa82c124cd17))
+
 ## [1.12.2](https://github.com/Greenstand/treetracker-web-map-core/compare/v1.12.1...v1.12.2) (2022-08-09)
 
 ### Bug Fixes
