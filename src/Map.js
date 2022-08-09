@@ -990,6 +990,10 @@ export default class Map {
   async rerender() {
     log.info('rerender')
     log.info('reload tile')
+
+    // unslect the current selected point
+    this.unselectMarker()
+
     await this.unloadTileServer()
 
     // load tile
