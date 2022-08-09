@@ -965,6 +965,10 @@ export default class Map {
    * achieve this is that go through the utf grid and get all data.
    */
   getPoints() {
+    if (!this.layerUtfGrid) {
+      log.warn('can not find the utf grid')
+      return []
+    }
     // fetch all the point data in the cache
     const itemList = Object.values(this.layerUtfGrid._cache)
       .map((e) => e.data)
