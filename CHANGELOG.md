@@ -1,3 +1,9 @@
+## [1.12.1](https://github.com/Greenstand/treetracker-web-map-core/compare/v1.12.0...v1.12.1) (2022-08-09)
+
+### Bug Fixes
+
+- can load sinleg tree ([7a3c653](https://github.com/Greenstand/treetracker-web-map-core/commit/7a3c6532abe260ee844b989254b9642a0dac18ea))
+
 # [1.12.0](https://github.com/Greenstand/treetracker-web-map-core/compare/v1.11.1...v1.12.0) (2022-07-20)
 
 ### Features
