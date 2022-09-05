@@ -1,3 +1,9 @@
+# [1.13.0](https://github.com/Greenstand/treetracker-web-map-core/compare/v1.12.3...v1.13.0) (2022-09-05)
+
+### Features
+
+- select/unselect tree api ([ee2cde0](https://github.com/Greenstand/treetracker-web-map-core/commit/ee2cde0f45f9784a5b071b074df84e9417eebf6a))
+
 ## [1.12.3](https://github.com/Greenstand/treetracker-web-map-core/compare/v1.12.2...v1.12.3) (2022-08-09)
 
 ### Bug Fixes
