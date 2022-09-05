@@ -991,38 +991,6 @@ export default class Map {
     return points
   }
 
-  async rerender() {
-    log.info('rerender')
-    log.info('reload tile')
-
-    // unslect the current selected point
-    this.unselectMarker()
-
-    await this.unloadTileServer()
-
-    // load tile
-    if (this.filters.treeid) {
-      log.info('treeid mode do not need tile server')
-      log.info('load tree by id')
-      await this.loadTree(this.filters.treeid)
-      this.tileLoadingMonitor && this.tileLoadingMonitor.destroy()
-    } else if (this.filters.tree_name) {
-      log.info('tree name mode do not need tile server')
-      log.info('load tree by name')
-      this.tileLoadingMonitor && this.tileLoadingMonitor.destroy()
-      await this.loadTree(undefined, this.filters.tree_name)
-    } else {
-      await this.loadTileServer()
-    }
-  }
-
-  /*
-   * reset the config of map instance
-   */
-  setFilters(filters) {
-    this.filters = filters
-  }
-
   async loadFreetownLayer() {
     log.info('load freetown layer')
     this.L.TileLayer.FreeTown = this.L.TileLayer.extend({
@@ -1300,8 +1268,50 @@ export default class Map {
     this.map.panTo(location)
   }
 
+  // ----------- public method -----------------------------------
+  /*
+   * reset the config of map instance
+   */
+  setFilters(filters) {
+    this.filters = filters
+  }
+
   flyTo(lat, lon, zoomLevel) {
     log.info('fly to:', lat, lon, zoomLevel)
     this.map.flyTo([lat, lon], zoomLevel)
+  }
+
+  selectTree(tree) {
+    // TODO validate tree data
+    this.selectMarker(tree)
+  }
+
+  clearSelection() {
+    this.unselectMarker()
+  }
+
+  async rerender() {
+    log.info('rerender')
+    log.info('reload tile')
+
+    // unslect the current selected point
+    this.unselectMarker()
+
+    await this.unloadTileServer()
+
+    // load tile
+    if (this.filters.treeid) {
+      log.info('treeid mode do not need tile server')
+      log.info('load tree by id')
+      await this.loadTree(this.filters.treeid)
+      this.tileLoadingMonitor && this.tileLoadingMonitor.destroy()
+    } else if (this.filters.tree_name) {
+      log.info('tree name mode do not need tile server')
+      log.info('load tree by name')
+      this.tileLoadingMonitor && this.tileLoadingMonitor.destroy()
+      await this.loadTree(undefined, this.filters.tree_name)
+    } else {
+      await this.loadTileServer()
+    }
   }
 }
