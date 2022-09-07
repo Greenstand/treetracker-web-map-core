@@ -33,8 +33,8 @@
             map.setFilters({
                 userid,
             });
-            await map.loadInitialView();
-            map.rerender();
+            const view =  await map.getInitialView();
+            map.gotoView(view);
         }
         reload();
         return false;
@@ -48,8 +48,8 @@
             map.setFilters({
                 treeid,
             });
-            await map.loadInitialView();
-            map.rerender();
+            const view = await map.getInitialView();
+            map.gotoView(view);
         }
         reload();
         return false;

@@ -596,100 +596,6 @@ export default class Map {
     }
   }
 
-  async _loadInitialView() {
-    let view
-    const calculateInitialView = async () => {
-      const url = `${
-        this.apiServerUrl
-      }trees?clusterRadius=${Map._getClusterRadius(
-        10,
-      )}&zoom_level=10&${this._getFilterParameters()}`
-      log.info('calculate initial view with url:', url)
-      const response = await this.requester.request({
-        url,
-      })
-      const items = response.data.map((i) => {
-        if (i.type === 'cluster') {
-          const c = JSON.parse(i.centroid)
-          return {
-            lat: c.coordinates[1],
-            lng: c.coordinates[0],
-          }
-        }
-        if (i.type === 'point') {
-          return {
-            lat: i.lat,
-            lng: i.lon,
-          }
-        }
-        return null
-      })
-      if (items.length === 0) {
-        log.info('Can not find data')
-        throw new MapError('Can not find any data')
-      }
-      return getInitialBounds(items, this.width, this.height)
-    }
-    if (this.filters.userid || this.filters.wallet) {
-      log.warn('try to get initial bounds')
-      view = await calculateInitialView()
-    } else if (this.filters.treeid || this.filters.tree_name) {
-      const { treeid, tree_name } = this.filters
-      const url = `${this.apiServerUrl}tree?${
-        treeid ? `tree_id=${treeid}` : `tree_name=${tree_name}`
-      }`
-      log.info('url to load tree:', url)
-      const res = await this.requester.request({
-        url,
-      })
-      log.warn('res:', res)
-      if (!res) {
-        throw new MapError('Can not find any data')
-      }
-      const { lat, lon } = res
-      view = {
-        center: {
-          lat,
-          lon,
-        },
-        zoomLevel: 16,
-      }
-    } else if (this.filters.map_name) {
-      log.info('to init org map')
-      if (mapConfig[this.filters.map_name]) {
-        const { zoom, center } = mapConfig[this.filters.map_name]
-        log.info('there is setting for map init view:', zoom, center)
-        view = {
-          center: {
-            lat: center.lat,
-            lon: center.lng,
-          },
-          zoomLevel: zoom,
-        }
-      } else {
-        view = await calculateInitialView()
-      }
-    }
-
-    // jump to initial view
-    if (view) {
-      if (this.moreEffect) {
-        this.map.flyTo(view.center, view.zoomLevel)
-        log.warn('waiting initial view load...')
-        await new Promise((res) => {
-          const finished = () => {
-            log.warn('fire initial view finished')
-            this.map.off('moveend')
-            res()
-          }
-          this.map.on('moveend', finished)
-        })
-      } else {
-        this.map.setView(view.center, view.zoomLevel, { animate: false })
-      }
-    }
-  }
-
   _getIconSuiteParameters(iconSuite) {
     switch (iconSuite) {
       case 'ptk-s':
@@ -1196,6 +1102,83 @@ export default class Map {
     return this.map.getBounds().toBBoxString()
   }
 
+  async getInitialView() {
+    let view
+    const calculateInitialView = async () => {
+      const url = `${
+        this.apiServerUrl
+      }trees?clusterRadius=${Map._getClusterRadius(
+        10,
+      )}&zoom_level=10&${this._getFilterParameters()}`
+      log.info('calculate initial view with url:', url)
+      const response = await this.requester.request({
+        url,
+      })
+      const items = response.data.map((i) => {
+        if (i.type === 'cluster') {
+          const c = JSON.parse(i.centroid)
+          return {
+            lat: c.coordinates[1],
+            lng: c.coordinates[0],
+          }
+        }
+        if (i.type === 'point') {
+          return {
+            lat: i.lat,
+            lng: i.lon,
+          }
+        }
+        return null
+      })
+      if (items.length === 0) {
+        log.info('Can not find data')
+        throw new MapError('Can not find any data')
+      }
+      return getInitialBounds(items, this.width, this.height)
+    }
+    if (this.filters.userid || this.filters.wallet) {
+      log.warn('try to get initial bounds')
+      view = await calculateInitialView()
+    } else if (this.filters.treeid || this.filters.tree_name) {
+      const { treeid, tree_name } = this.filters
+      const url = `${this.apiServerUrl}tree?${
+        treeid ? `tree_id=${treeid}` : `tree_name=${tree_name}`
+      }`
+      log.info('url to load tree:', url)
+      const res = await this.requester.request({
+        url,
+      })
+      log.warn('res:', res)
+      if (!res) {
+        throw new MapError('Can not find any data')
+      }
+      const { lat, lon } = res
+      view = {
+        center: {
+          lat,
+          lon,
+        },
+        zoomLevel: 16,
+      }
+    } else if (this.filters.map_name) {
+      log.info('to init org map')
+      if (mapConfig[this.filters.map_name]) {
+        const { zoom, center } = mapConfig[this.filters.map_name]
+        log.info('there is setting for map init view:', zoom, center)
+        view = {
+          center: {
+            lat: center.lat,
+            lon: center.lng,
+          },
+          zoomLevel: zoom,
+        }
+      } else {
+        view = await calculateInitialView()
+      }
+    }
+    return view
+  }
+
   async gotoBounds(bounds) {
     const [southWestLng, southWestLat, northEastLng, northEastLat] =
       bounds.split(',')
@@ -1223,6 +1206,30 @@ export default class Map {
         { animate: false },
       )
       // no effect, return directly
+    }
+  }
+
+  async gotoView(view) {
+    expect(view).match({
+      center: expect.anything(),
+      zoomLevel: expect.any(Number),
+    })
+    // jump to initial view
+    if (view) {
+      if (this.moreEffect) {
+        this.map.flyTo(view.center, view.zoomLevel)
+        log.warn('waiting initial view load...')
+        await new Promise((res) => {
+          const finished = () => {
+            log.warn('fire initial view finished')
+            this.map.off('moveend')
+            res()
+          }
+          this.map.on('moveend', finished)
+        })
+      } else {
+        this.map.setView(view.center, view.zoomLevel, { animate: false })
+      }
     }
   }
 
@@ -1290,28 +1297,28 @@ export default class Map {
     this._unselectMarker()
   }
 
-  async rerender() {
-    log.info('rerender')
-    log.info('reload tile')
+  // async rerender() {
+  //   log.info('rerender')
+  //   log.info('reload tile')
 
-    // unslect the current selected point
-    this._unselectMarker()
+  //   // unslect the current selected point
+  //   this._unselectMarker()
 
-    await this._unloadTileServer()
+  //   await this._unloadTileServer()
 
-    // load tile
-    if (this.filters.treeid) {
-      log.info('treeid mode do not need tile server')
-      log.info('load tree by id')
-      await this._loadTree(this.filters.treeid)
-      this.tileLoadingMonitor && this.tileLoadingMonitor.destroy()
-    } else if (this.filters.tree_name) {
-      log.info('tree name mode do not need tile server')
-      log.info('load tree by name')
-      this.tileLoadingMonitor && this.tileLoadingMonitor.destroy()
-      await this._loadTree(undefined, this.filters.tree_name)
-    } else {
-      await this._loadTileServer()
-    }
-  }
+  //   // load tile
+  //   if (this.filters.treeid) {
+  //     log.info('treeid mode do not need tile server')
+  //     log.info('load tree by id')
+  //     await this._loadTree(this.filters.treeid)
+  //     this.tileLoadingMonitor && this.tileLoadingMonitor.destroy()
+  //   } else if (this.filters.tree_name) {
+  //     log.info('tree name mode do not need tile server')
+  //     log.info('load tree by name')
+  //     this.tileLoadingMonitor && this.tileLoadingMonitor.destroy()
+  //     await this._loadTree(undefined, this.filters.tree_name)
+  //   } else {
+  //     await this._loadTileServer()
+  //   }
+  // }
 }
