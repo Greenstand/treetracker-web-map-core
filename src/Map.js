@@ -60,22 +60,27 @@ export default class Map {
       this[key] = mapOptions[key]
     })
 
+    // memeber/properties/statuses
+
     // requester
     this.requester = new Requester()
 
     // events
     this.events = new EventEmitter()
+
+    // mount element
+    this._mountDomElement = null
   }
 
   /** *************************** static *************************** */
-  static formatClusterText(count) {
+  static _formatClusterText(count) {
     if (count > 1000) {
       return `${Math.floor(count / 1000)}K`
     }
     return count
   }
 
-  static getClusterRadius(zoom) {
+  static _getClusterRadius(zoom) {
     switch (zoom) {
       case 1:
         return 10
@@ -118,7 +123,7 @@ export default class Map {
     }
   }
 
-  static parseUtfData(utfData) {
+  static _parseUtfData(utfData) {
     const [lon, lat] = JSON.parse(utfData.latlon).coordinates
     return {
       ...utfData,
@@ -127,159 +132,7 @@ export default class Map {
     }
   }
 
-  /** *************************** methods ************************** */
-  on(eventName, handler) {
-    //TODO check event name enum
-    if (handler) {
-      log.info('register event:', eventName)
-      this.events.on(eventName, handler)
-    }
-  }
-
-  //TODO remove listner
-
-  async mount(domElement) {
-    const mapOptions = {
-      minZoom: this.minZoom,
-      center: this.initialCenter,
-      zoomControl: false,
-    }
-
-    const divContainer = document.createElement('div')
-    divContainer.style.width = '100%'
-    divContainer.style.height = '100%'
-    divContainer.style.position = 'relative'
-    divContainer.innerHTML = `
-      <div id="greenstand-nearest-tree-arrow" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%"></div>
-      <div id="greenstand-leaflet" style="position: relative;width: 100%;height: 100%;"></div>
-      <div id="greenstand-map-spin" style="z-index: 999; position: absolute; width: 100%; top: 0px; left: 0px" ></div>
-      <div id="greenstand-map-alert" style="z-index: 999; position: absolute; width: 100%; top: 0px; left: 0px" ></div>
-      <div id="greenstand-map-buttonPanel" style="z-index: 999; position: absolute; top: 0px; left:50%; transform: translateX(-50%)" ></div>
-    `
-    domElement.appendChild(divContainer)
-    const mountTarget = document.getElementById('greenstand-leaflet')
-    const mountSpinTarget = document.getElementById('greenstand-map-spin')
-    const mountAlertTarget = document.getElementById('greenstand-map-alert')
-    this.spin = new Spin()
-    this.spin.mount(mountSpinTarget)
-    this.alert = new Alert()
-    this.alert.mount(mountAlertTarget)
-
-    this.map = this.L.map(mountTarget, mapOptions)
-    this.map.setView(this.initialCenter, this.minZoom)
-    this.map.attributionControl.setPrefix('')
-
-    // button prev next
-    {
-      // next tree buttons
-      const mountButtonPanelTarget = document.getElementById(
-        'greenstand-map-buttonPanel',
-      )
-      this.buttonPanel = new ButtonPanel(
-        () => this.goNextPoint(),
-        () => this.goPrevPoint(),
-      )
-      this.buttonPanel.mount(mountButtonPanelTarget)
-      this.on(Map.REGISTERED_EVENTS.TREE_SELECTED, () => {
-        const currentPoint = this.layerSelected.payload
-        const points = this.getPoints()
-        const index = points.reduce((a, c, i) => {
-          if (c.id === currentPoint.id) {
-            return i
-          }
-          return a
-        }, -1)
-        if (points.length <= 1) {
-          return null
-        }
-        this.buttonPanel.show()
-        if (index === 0) {
-          this.buttonPanel.hideLeftArrow()
-        } else if (index === points.length - 1) {
-          this.buttonPanel.hideRightArrow()
-        } else {
-          this.buttonPanel.showLeftArrow()
-          this.buttonPanel.showRightArrow()
-        }
-      })
-    }
-
-    // Nearest Tree Arrow
-    const mountNearestArrowTarget = document.getElementById(
-      'greenstand-nearest-tree-arrow',
-    )
-    this.nearestTreeArrow = new NearestTreeArrows(() =>
-      this.moveToNearestTree(),
-    )
-    this.nearestTreeArrow.mount(mountNearestArrowTarget)
-
-    // load google map
-    await this.loadGoogleSatellite()
-
-    /*
-     * The logic is:
-     * If there is a filter, then try to zoom in and set the zoom is
-     * appropriate for the filter, then load the tile.
-     * But if there is a bounds ( maybe the browser was refreshed or jump
-     * to the map by a shared link), then jump the bounds directly,
-     * regardless of the initial view for filter.
-     */
-    try {
-      if (this.filters.bounds) {
-        await this.gotoBounds(this.filters.bounds)
-      } else {
-        await this.loadInitialView()
-      }
-
-      // fire load event
-      if (this.onLoad) {
-        this.onLoad()
-      }
-
-      // load tile
-      if (this.filters.treeid) {
-        log.info('treeid mode do not need tile server')
-      } else if (this.filters.tree_name) {
-        log.info('tree name mode do not need tile server')
-      } else {
-        await this.loadTileServer()
-      }
-
-      // mount event
-      this.map.on('moveend', (e) => {
-        log.warn('move end', e)
-        this.checkArrow()
-        this.events.emit(Map.REGISTERED_EVENTS.MOVE_END)
-      })
-
-      if (this.filters.treeid) {
-        log.info('load tree by id')
-        await this.loadTree(this.filters.treeid)
-      }
-
-      if (this.filters.tree_name) {
-        log.info('load tree by name')
-        await this.loadTree(undefined, this.filters.tree_name)
-      }
-
-      // load freetown special map
-      await this.loadFreetownLayer()
-
-      if (this.debug) {
-        await this.loadDebugLayer()
-      }
-    } catch (e) {
-      log.error('get error when load:', e)
-      if (e instanceof MapError) {
-        log.error('map error:', e)
-        if (this.onError) {
-          this.onError(e)
-        }
-      }
-    }
-  }
-
-  async loadGoogleSatellite() {
+  async _loadGoogleSatellite() {
     const GoogleLayer = window.L.TileLayer.extend({
       createTile(coords, done) {
         const tile = document.createElement('img')
@@ -366,7 +219,7 @@ export default class Map {
     })
   }
 
-  async addGeoJson(source) {
+  async _addGeoJson(source) {
     let geo = source
 
     if (typeof source === 'string') {
@@ -377,40 +230,12 @@ export default class Map {
     return layer
   }
 
-  async gotoBounds(bounds) {
-    const [southWestLng, southWestLat, northEastLng, northEastLat] =
-      bounds.split(',')
-    log.warn('go to bounds:', bounds)
-    if (this.moreEffect) {
-      this.map.flyToBounds([
-        [southWestLat, southWestLng],
-        [northEastLat, northEastLng],
-      ])
-      log.warn('waiting bound load...')
-      await new Promise((res) => {
-        const boundFinished = () => {
-          log.warn('fire bound finished')
-          this.map.off('moveend')
-          res()
-        }
-        this.map.on('moveend', boundFinished)
-      })
-    } else {
-      this.map.fitBounds(
-        [
-          [southWestLat, southWestLng],
-          [northEastLat, northEastLng],
-        ],
-        { animate: false },
-      )
-      // no effect, return directly
-    }
-  }
-
-  async loadTileServer() {
-    const { iconSuiteQueryString } = this.getIconSuiteParameters(this.iconSuite)
+  async _loadTileServer() {
+    const { iconSuiteQueryString } = this._getIconSuiteParameters(
+      this.iconSuite,
+    )
     // tile
-    const filterParameters = this.getFilterParameters()
+    const filterParameters = this._getFilterParameters()
     const filterParametersString = filterParameters
       ? `&${filterParameters}`
       : ''
@@ -469,23 +294,23 @@ export default class Map {
     this.layerUtfGrid.on('click', (e) => {
       log.warn('click:', e)
       if (e.data) {
-        this.clickMarker(Map.parseUtfData(e.data))
+        this._clickMarker(Map._parseUtfData(e.data))
       }
     })
 
     this.layerUtfGrid.on('mouseover', (e) => {
       log.debug('mouseover:', e)
-      this.highlightMarker(Map.parseUtfData(e.data))
+      this._highlightMarker(Map._parseUtfData(e.data))
     })
 
     this.layerUtfGrid.on('mouseout', (e) => {
       log.debug('e:', e)
-      this.unHighlightMarker()
+      this._unHighlightMarker()
     })
 
     this.layerUtfGrid.on('load', () => {
       log.info('all grid loaded!')
-      this.checkArrow()
+      this._checkArrow()
     })
 
     this.layerUtfGrid.on('tileunload', (e) => {
@@ -557,7 +382,7 @@ export default class Map {
     }
   }
 
-  async unloadTileServer() {
+  async _unloadTileServer() {
     if (this.map.hasLayer(this.layerTile)) {
       this.map.removeLayer(this.layerTile)
     } else {
@@ -570,7 +395,7 @@ export default class Map {
     }
   }
 
-  async loadDebugLayer() {
+  async _loadDebugLayer() {
     // debug
     this.L.GridLayer.GridDebug = this.L.GridLayer.extend({
       createTile(coords) {
@@ -617,7 +442,7 @@ export default class Map {
     })
   }
 
-  async loadTree(treeid, treeName) {
+  async _loadTree(treeid, treeName) {
     let res
     if (treeid) {
       res = await this.requester.request({
@@ -636,14 +461,14 @@ export default class Map {
       lat: parseFloat(lat),
       lon: parseFloat(lon),
     }
-    this.selectMarker(data)
+    this._selectMarker(data)
     if (this.onClickTree) {
       this.onClickTree(data)
     }
   }
 
-  highlightMarker(data) {
-    const { iconSuiteClass } = this.getIconSuiteParameters(this.iconSuite)
+  _highlightMarker(data) {
+    const { iconSuiteClass } = this._getIconSuiteParameters(this.iconSuite)
     if (data.type === 'point') {
       this.layerHighlight = new this.L.marker([data.lat, data.lon], {
         icon: new this.L.DivIcon({
@@ -664,7 +489,7 @@ export default class Map {
                 <div class="greenstand-cluster-highlight-box ${iconSuiteClass} ${
             data.count > 1000 && !iconSuiteClass ? '' : 'small'
           }">
-                <div>${Map.formatClusterText(data.count)}</div>
+                <div>${Map._formatClusterText(data.count)}</div>
                 </div>
               `,
         }),
@@ -675,7 +500,7 @@ export default class Map {
     this.layerHighlight.addTo(this.map)
   }
 
-  unHighlightMarker() {
+  _unHighlightMarker() {
     if (this.map.hasLayer(this.layerHighlight)) {
       this.map.removeLayer(this.layerHighlight)
     } else {
@@ -683,8 +508,8 @@ export default class Map {
     }
   }
 
-  clickMarker(data) {
-    this.unHighlightMarker()
+  _clickMarker(data) {
+    this._unHighlightMarker()
     if (
       data.type === 'point' ||
       (data.type === 'cluster' && data.count === 1)
@@ -693,7 +518,7 @@ export default class Map {
         const { lon, lat } = data
         this.map.flyTo([lat, lon], this.defaultZoomLevelForTreePoint)
       }
-      this.selectMarker(data)
+      this._selectMarker(data)
       if (this.onClickTree) {
         this.onClickTree(data)
       }
@@ -721,11 +546,11 @@ export default class Map {
     }
   }
 
-  selectMarker(data) {
-    const { iconSuiteClass } = this.getIconSuiteParameters(this.iconSuite)
+  _selectMarker(data) {
+    const { iconSuiteClass } = this._getIconSuiteParameters(this.iconSuite)
     log.info('change tree mark selected with data:', data)
     // before set the selected tree icon, remote if any
-    this.unselectMarker()
+    this._unselectMarker()
 
     // set the selected marker
     this.layerSelected = new this.L.marker([data.lat, data.lon], {
@@ -745,7 +570,7 @@ export default class Map {
     this.events.emit(Map.REGISTERED_EVENTS.TREE_SELECTED, data)
   }
 
-  unselectMarker() {
+  _unselectMarker() {
     this.events.emit(
       Map.REGISTERED_EVENTS.TREE_UNSELECTED,
       this.layerSelected?.payload,
@@ -758,14 +583,14 @@ export default class Map {
     }
   }
 
-  async loadInitialView() {
+  async _loadInitialView() {
     let view
     const calculateInitialView = async () => {
       const url = `${
         this.apiServerUrl
-      }trees?clusterRadius=${Map.getClusterRadius(
+      }trees?clusterRadius=${Map._getClusterRadius(
         10,
-      )}&zoom_level=10&${this.getFilterParameters()}`
+      )}&zoom_level=10&${this._getFilterParameters()}`
       log.info('calculate initial view with url:', url)
       const response = await this.requester.request({
         url,
@@ -852,7 +677,7 @@ export default class Map {
     }
   }
 
-  getIconSuiteParameters(iconSuite) {
+  _getIconSuiteParameters(iconSuite) {
     switch (iconSuite) {
       case 'ptk-s':
         return { iconSuiteClass: 'green-s', iconSuiteQueryString: 'ptk-s' }
@@ -863,7 +688,7 @@ export default class Map {
     }
   }
 
-  getFilters() {
+  _getFilters() {
     const filters = {}
     if (this.filters.userid) {
       filters.userid = this.filters.userid
@@ -883,8 +708,8 @@ export default class Map {
     return filters
   }
 
-  getFilterParameters() {
-    const filter = this.getFilters()
+  _getFilterParameters() {
+    const filter = this._getFilters()
     const queryUrl = Object.keys(filter).reduce(
       (a, c) => `${c}=${filter[c]}${(a && `&${a}`) || ''}`,
       '',
@@ -898,21 +723,13 @@ export default class Map {
   //    return Map.getClusterRadius(zoomLevel);
   //  }
 
-  getCurrentBounds() {
-    return this.map.getBounds().toBBoxString()
-  }
-
-  getLeafletMap() {
-    return this.map
-  }
-
-  goNextPoint() {
+  _goNextPoint() {
     log.info('go next tree')
     const currentPoint = this.layerSelected.payload
     expect(currentPoint).match({
       lat: expect.any(Number),
     })
-    const points = this.getPoints()
+    const points = this._getPoints()
     const index = points.reduce((a, c, i) => {
       if (c.id === currentPoint.id) {
         return i
@@ -925,7 +742,7 @@ export default class Map {
         return false
       }
       const nextPoint = points[index + 1]
-      this.clickMarker(nextPoint)
+      this._clickMarker(nextPoint)
     } else {
       log.error('can not find the point:', currentPoint, points)
       throw new Error('can not find the point')
@@ -933,13 +750,13 @@ export default class Map {
     return null
   }
 
-  goPrevPoint() {
+  _goPrevPoint() {
     log.info('go previous tree')
     const currentPoint = this.layerSelected.payload
     expect(currentPoint).match({
       lat: expect.any(Number),
     })
-    const points = this.getPoints()
+    const points = this._getPoints()
     const index = points.reduce((a, c, i) => {
       if (c.id === currentPoint.id) {
         return i
@@ -952,7 +769,7 @@ export default class Map {
         return false
       }
       const prevPoint = points[index - 1]
-      this.clickMarker(prevPoint)
+      this._clickMarker(prevPoint)
     } else {
       log.error('can not find the point:', currentPoint, points)
       throw new Error('can not find the point')
@@ -964,7 +781,7 @@ export default class Map {
    * To get all the points on the map, (tree markers), now, the way to
    * achieve this is that go through the utf grid and get all data.
    */
-  getPoints() {
+  _getPoints() {
     if (!this.layerUtfGrid) {
       log.warn('can not find the utf grid')
       return []
@@ -974,7 +791,7 @@ export default class Map {
       .map((e) => e.data)
       .filter((e) => Object.keys(e).length > 0)
       .reduce((a, c) => a.concat(Object.values(c)), [])
-      .map((data) => Map.parseUtfData(data))
+      .map((data) => Map._parseUtfData(data))
       .filter((data) => data.type === 'point')
     log.info('loaded data in utf cache:', itemList.length)
 
@@ -991,7 +808,7 @@ export default class Map {
     return points
   }
 
-  async loadFreetownLayer() {
+  async _loadFreetownLayer() {
     log.info('load freetown layer')
     this.L.TileLayer.FreeTown = this.L.TileLayer.extend({
       getTileUrl(coords) {
@@ -1138,39 +955,120 @@ export default class Map {
     })
   }
 
-  async checkArrow() {
+  _mountComponents() {
+    const divContainer = document.createElement('div')
+    divContainer.style.width = '100%'
+    divContainer.style.height = '100%'
+    divContainer.style.position = 'relative'
+    divContainer.innerHTML = `
+      <div id="greenstand-nearest-tree-arrow" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%"></div>
+      <div id="greenstand-leaflet" style="position: relative;width: 100%;height: 100%;"></div>
+      <div id="greenstand-map-spin" style="z-index: 999; position: absolute; width: 100%; top: 0px; left: 0px" ></div>
+      <div id="greenstand-map-alert" style="z-index: 999; position: absolute; width: 100%; top: 0px; left: 0px" ></div>
+      <div id="greenstand-map-buttonPanel" style="z-index: 999; position: absolute; top: 0px; left:50%; transform: translateX(-50%)" ></div>
+    `
+    this._mountDomElement.appendChild(divContainer)
+    const mountTarget = document.getElementById('greenstand-leaflet')
+    const mountSpinTarget = document.getElementById('greenstand-map-spin')
+    const mountAlertTarget = document.getElementById('greenstand-map-alert')
+    this.spin = new Spin()
+    this.spin.mount(mountSpinTarget)
+    this.alert = new Alert()
+    this.alert.mount(mountAlertTarget)
+
+    const mapOptions = {
+      minZoom: this.minZoom,
+      center: this.initialCenter,
+      zoomControl: false,
+    }
+    this.map = this.L.map(mountTarget, mapOptions)
+    this.map.setView(this.initialCenter, this.minZoom)
+    this.map.attributionControl.setPrefix('')
+    // mount event
+    this.map.on('moveend', (e) => {
+      log.warn('move end', e)
+      this._checkArrow()
+      this.events.emit(Map.REGISTERED_EVENTS.MOVE_END)
+    })
+
+    // button prev next
+    {
+      // next tree buttons
+      const mountButtonPanelTarget = document.getElementById(
+        'greenstand-map-buttonPanel',
+      )
+      this.buttonPanel = new ButtonPanel(
+        () => this._goNextPoint(),
+        () => this._goPrevPoint(),
+      )
+      this.buttonPanel.mount(mountButtonPanelTarget)
+      this.on(Map.REGISTERED_EVENTS.TREE_SELECTED, () => {
+        const currentPoint = this.layerSelected.payload
+        const points = this._getPoints()
+        const index = points.reduce((a, c, i) => {
+          if (c.id === currentPoint.id) {
+            return i
+          }
+          return a
+        }, -1)
+        if (points.length <= 1) {
+          return null
+        }
+        this.buttonPanel.show()
+        if (index === 0) {
+          this.buttonPanel.hideLeftArrow()
+        } else if (index === points.length - 1) {
+          this.buttonPanel.hideRightArrow()
+        } else {
+          this.buttonPanel.showLeftArrow()
+          this.buttonPanel.showRightArrow()
+        }
+      })
+    }
+
+    // Nearest Tree Arrow
+    const mountNearestArrowTarget = document.getElementById(
+      'greenstand-nearest-tree-arrow',
+    )
+    this.nearestTreeArrow = new NearestTreeArrows(() =>
+      this._moveToNearestTree(),
+    )
+    this.nearestTreeArrow.mount(mountNearestArrowTarget)
+  }
+
+  async _checkArrow() {
     log.info('check arrow...')
     if (this.layerUtfGrid.hasMarkerInCurrentView()) {
       log.info('found marker')
     } else {
       log.info('no marker')
-      const nearest = await this.getNearest()
+      const nearest = await this._getNearest()
       if (nearest) {
-        const placement = this.calculatePlacement(nearest)
-        this.handleNearestArrowDisplay(placement)
+        const placement = this._calculatePlacement(nearest)
+        this._handleNearestArrowDisplay(placement)
       } else {
         log.warn("Can't get the nearest:", nearest)
-        this.handleNearestArrowDisplay()
+        this._handleNearestArrowDisplay()
       }
     }
   }
 
-  handleNearestArrowDisplay(placement) {
+  _handleNearestArrowDisplay(placement) {
     !placement || placement === 'in'
       ? this.nearestTreeArrow.hideArrow()
       : this.nearestTreeArrow.showArrow(placement)
   }
 
-  async moveToNearestTree() {
-    const nearest = await this.getNearest()
+  async _moveToNearestTree() {
+    const nearest = await this._getNearest()
     if (nearest) {
-      this.goto(nearest)
+      this._goto(nearest)
     } else {
       log.warn('can not find nearest:', nearest)
     }
   }
 
-  async getNearest() {
+  async _getNearest() {
     const center = this.map.getCenter()
     log.log('current center:', center)
     const zoom_level = this.map.getZoom()
@@ -1197,7 +1095,7 @@ export default class Map {
    * return:
    *  west | east | north | south | in (the point is in the map view)
    */
-  calculatePlacement(location) {
+  _calculatePlacement(location) {
     const center = this.map.getCenter()
     log.info('calculate location', location, ' to center:', center)
     // find it
@@ -1263,7 +1161,7 @@ export default class Map {
     return result
   }
 
-  goto(location) {
+  _goto(location) {
     log.info('goto:', location)
     this.map.panTo(location)
   }
@@ -1281,13 +1179,119 @@ export default class Map {
     this.map.flyTo([lat, lon], zoomLevel)
   }
 
+  getCurrentBounds() {
+    return this.map.getBounds().toBBoxString()
+  }
+
+  async gotoBounds(bounds) {
+    const [southWestLng, southWestLat, northEastLng, northEastLat] =
+      bounds.split(',')
+    log.warn('go to bounds:', bounds)
+    if (this.moreEffect) {
+      this.map.flyToBounds([
+        [southWestLat, southWestLng],
+        [northEastLat, northEastLng],
+      ])
+      log.warn('waiting bound load...')
+      await new Promise((res) => {
+        const boundFinished = () => {
+          log.warn('fire bound finished')
+          this.map.off('moveend')
+          res()
+        }
+        this.map.on('moveend', boundFinished)
+      })
+    } else {
+      this.map.fitBounds(
+        [
+          [southWestLat, southWestLng],
+          [northEastLat, northEastLng],
+        ],
+        { animate: false },
+      )
+      // no effect, return directly
+    }
+  }
+
+  async mount(domElement) {
+    this._mountDomElement = domElement
+
+    this._mountComponents()
+
+    // load google map
+    await this._loadGoogleSatellite()
+
+    /*
+     * The logic is:
+     * If there is a filter, then try to zoom in and set the zoom is
+     * appropriate for the filter, then load the tile.
+     * But if there is a bounds ( maybe the browser was refreshed or jump
+     * to the map by a shared link), then jump the bounds directly,
+     * regardless of the initial view for filter.
+     */
+    try {
+      if (this.filters.bounds) {
+        await this.gotoBounds(this.filters.bounds)
+      } else {
+        await this._loadInitialView()
+      }
+
+      // fire load event
+      if (this.onLoad) {
+        this.onLoad()
+      }
+
+      // load tile
+      if (this.filters.treeid) {
+        log.info('treeid mode do not need tile server')
+      } else if (this.filters.tree_name) {
+        log.info('tree name mode do not need tile server')
+      } else {
+        await this._loadTileServer()
+      }
+
+      if (this.filters.treeid) {
+        log.info('load tree by id')
+        await this._loadTree(this.filters.treeid)
+      }
+
+      if (this.filters.tree_name) {
+        log.info('load tree by name')
+        await this._loadTree(undefined, this.filters.tree_name)
+      }
+
+      // load freetown special map
+      await this._loadFreetownLayer()
+
+      if (this.debug) {
+        await this._loadDebugLayer()
+      }
+    } catch (e) {
+      log.error('get error when load:', e)
+      if (e instanceof MapError) {
+        log.error('map error:', e)
+        if (this.onError) {
+          this.onError(e)
+        }
+      }
+    }
+  }
+
+  on(eventName, handler) {
+    //TODO check event name enum
+    if (handler) {
+      log.info('register event:', eventName)
+      this.events.on(eventName, handler)
+    }
+  }
+
   selectTree(tree) {
     // TODO validate tree data
-    this.selectMarker(tree)
+    this._selectMarker(tree)
   }
 
   clearSelection() {
-    this.unselectMarker()
+    this._unselectMarker()
   }
 
   async rerender() {
@@ -1295,23 +1299,23 @@ export default class Map {
     log.info('reload tile')
 
     // unslect the current selected point
-    this.unselectMarker()
+    this._unselectMarker()
 
-    await this.unloadTileServer()
+    await this._unloadTileServer()
 
     // load tile
     if (this.filters.treeid) {
       log.info('treeid mode do not need tile server')
       log.info('load tree by id')
-      await this.loadTree(this.filters.treeid)
+      await this._loadTree(this.filters.treeid)
       this.tileLoadingMonitor && this.tileLoadingMonitor.destroy()
     } else if (this.filters.tree_name) {
       log.info('tree name mode do not need tile server')
       log.info('load tree by name')
       this.tileLoadingMonitor && this.tileLoadingMonitor.destroy()
-      await this.loadTree(undefined, this.filters.tree_name)
+      await this._loadTree(undefined, this.filters.tree_name)
     } else {
-      await this.loadTileServer()
+      await this._loadTileServer()
     }
   }
 }
