@@ -231,154 +231,167 @@ export default class Map {
   }
 
   async _loadTileServer() {
-    const { iconSuiteQueryString } = this._getIconSuiteParameters(
-      this.iconSuite,
-    )
-    // tile
-    const filterParameters = this._getFilterParameters()
-    const filterParametersString = filterParameters
-      ? `&${filterParameters}`
-      : ''
-    this.layerTile = new this.L.tileLayer(
-      `${this.tileServerUrl}{z}/{x}/{y}.png?icon=${iconSuiteQueryString}${filterParametersString}`,
-      {
-        minZoom: this.minZoom,
-        maxZoom: this.maxZoom,
-        // close to avoid too many requests
-        updateWhenZooming: false,
-        // updateWhenIdle: true,
-        zIndex: 99999,
-        subdomains: this.tileServerSubdomains,
-        //errorTileUrl: 'http://localhost:5000/nodata.png',
-        errorTileUrl:
-          'data:image/png;base64,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',
-      },
-    )
-    // spin monitor
-    this.tileLoadingMonitor = new TileLoadingMonitor(this.layerTile, {
-      showLoadingThreshold: 4000,
-      slowThreshold: 8000,
-      onShowLoading: () => {
-        log.warn('show loading')
-        this.spin.show()
-      },
-      onSlowAlert: () => {
-        log.warn('slow alert')
-        this.alert.show('Trees grow slower than this map loads, be patient...')
-      },
-      onLoad: () => {
-        log.warn('load finished')
-        this.spin.hide()
-        this.alert.hide()
-      },
-      onDestroy: () => {
-        log.warn('destroy')
-        this.spin.hide()
-        this.alert.hide()
-      },
-    })
-    this.layerTile.addTo(this.map)
+    // load tile
+    if (this.filters.treeid) {
+      log.info('treeid mode do not need tile server')
+      log.info('load tree by id')
+      await this._loadTree(this.filters.treeid)
+    } else if (this.filters.tree_name) {
+      log.info('tree name mode do not need tile server')
+      log.info('load tree by name')
+      await this._loadTree(undefined, this.filters.tree_name)
+    } else {
+      const { iconSuiteQueryString } = this._getIconSuiteParameters(
+        this.iconSuite,
+      )
+      // tile
+      const filterParameters = this._getFilterParameters()
+      const filterParametersString = filterParameters
+        ? `&${filterParameters}`
+        : ''
+      this.layerTile = new this.L.tileLayer(
+        `${this.tileServerUrl}{z}/{x}/{y}.png?icon=${iconSuiteQueryString}${filterParametersString}`,
+        {
+          minZoom: this.minZoom,
+          maxZoom: this.maxZoom,
+          // close to avoid too many requests
+          updateWhenZooming: false,
+          // updateWhenIdle: true,
+          zIndex: 99999,
+          subdomains: this.tileServerSubdomains,
+          //errorTileUrl: 'http://localhost:5000/nodata.png',
+          errorTileUrl:
+            'data:image/png;base64,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',
+        },
+      )
+      // spin monitor
+      this.tileLoadingMonitor = new TileLoadingMonitor(this.layerTile, {
+        showLoadingThreshold: 4000,
+        slowThreshold: 8000,
+        onShowLoading: () => {
+          log.warn('show loading')
+          this.spin.show()
+        },
+        onSlowAlert: () => {
+          log.warn('slow alert')
+          this.alert.show(
+            'Trees grow slower than this map loads, be patient...',
+          )
+        },
+        onLoad: () => {
+          log.warn('load finished')
+          this.spin.hide()
+          this.alert.hide()
+        },
+        onDestroy: () => {
+          log.warn('destroy')
+          this.spin.hide()
+          this.alert.hide()
+        },
+      })
+      this.layerTile.addTo(this.map)
 
-    this.layerUtfGrid = new this.L.utfGrid(
-      `${this.tileServerUrl}{z}/{x}/{y}.grid.json?icon=${iconSuiteQueryString}${filterParametersString}`,
-      {
-        minZoom: this.minZoom,
-        maxZoom: this.maxZoom,
-        // close to avoid too many requests
-        updateWhenZooming: false,
-        // updateWhenIdle: false,
-        zIndex: 9,
-        subdomains: this.tileServerSubdomains,
-      },
-    )
-    this.layerUtfGrid.on('click', (e) => {
-      log.warn('click:', e)
-      if (e.data) {
-        this._clickMarker(Map._parseUtfData(e.data))
-      }
-    })
+      this.layerUtfGrid = new this.L.utfGrid(
+        `${this.tileServerUrl}{z}/{x}/{y}.grid.json?icon=${iconSuiteQueryString}${filterParametersString}`,
+        {
+          minZoom: this.minZoom,
+          maxZoom: this.maxZoom,
+          // close to avoid too many requests
+          updateWhenZooming: false,
+          // updateWhenIdle: false,
+          zIndex: 9,
+          subdomains: this.tileServerSubdomains,
+        },
+      )
+      this.layerUtfGrid.on('click', (e) => {
+        log.warn('click:', e)
+        if (e.data) {
+          this._clickMarker(Map._parseUtfData(e.data))
+        }
+      })
 
-    this.layerUtfGrid.on('mouseover', (e) => {
-      log.debug('mouseover:', e)
-      this._highlightMarker(Map._parseUtfData(e.data))
-    })
+      this.layerUtfGrid.on('mouseover', (e) => {
+        log.debug('mouseover:', e)
+        this._highlightMarker(Map._parseUtfData(e.data))
+      })
 
-    this.layerUtfGrid.on('mouseout', (e) => {
-      log.debug('e:', e)
-      this._unHighlightMarker()
-    })
+      this.layerUtfGrid.on('mouseout', (e) => {
+        log.debug('e:', e)
+        this._unHighlightMarker()
+      })
 
-    this.layerUtfGrid.on('load', () => {
-      log.info('all grid loaded!')
-      this._checkArrow()
-    })
+      this.layerUtfGrid.on('load', () => {
+        log.info('all grid loaded!')
+        this._checkArrow()
+      })
 
-    this.layerUtfGrid.on('tileunload', (e) => {
-      log.warn('tile unload:', e)
-      e.tile.cancelRequest()
-    })
+      this.layerUtfGrid.on('tileunload', (e) => {
+        log.warn('tile unload:', e)
+        e.tile.cancelRequest()
+      })
 
-    this.layerUtfGrid.on('tileloadstart', () => {
-      // log.warn("tile tileloadstart:", e);
-    })
+      this.layerUtfGrid.on('tileloadstart', () => {
+        // log.warn("tile tileloadstart:", e);
+      })
 
-    this.layerUtfGrid.on('tileload', () => {
-      log.warn('tile load!')
-    })
+      this.layerUtfGrid.on('tileload', () => {
+        log.warn('tile load!')
+      })
 
-    this.layerUtfGrid.on('tileerror', () => {
-      log.error('tile error!')
-    })
+      this.layerUtfGrid.on('tileerror', () => {
+        log.error('tile error!')
+      })
 
-    this.layerUtfGrid.on('loading', () => {
-      log.warn('tile load begin...')
-    })
+      this.layerUtfGrid.on('loading', () => {
+        log.warn('tile load begin...')
+      })
 
-    this.layerUtfGrid.addTo(this.map)
+      this.layerUtfGrid.addTo(this.map)
 
-    // bind the finding marker function
-    this.layerUtfGrid.hasMarkerInCurrentView = () => {
-      // waiting layer is ready
-      const isLoading = this.layerUtfGrid.isLoading()
-      log.warn('utf layer is loading:', isLoading)
-      if (isLoading) {
-        log.warn('can not handle the grid utf check when loading, cancel!')
-        return false
-      }
-      const begin = Date.now()
-      let found = false
-      let count = 0
-      let countNoChar = 0
-      const { x, y } = this.map.getSize()
-      // eslint-disable-next-line no-restricted-syntax
-      me: for (let y1 = 0; y1 < y; y1 += 10) {
-        for (let x1 = 0; x1 < x; x1 += 10) {
-          count += 1
-          const tileChar = this.layerUtfGrid._objectForEvent({
-            latlng: this.map.containerPointToLatLng([x1, y1]),
-          })._tileCharCode
-          if (!tileChar) {
-            countNoChar += 1
-            // log.warn("can not fond char on!:", x1, y1);
-            continue
-          }
-          const m = tileChar.match(/\d+:\d+:\d+:(\d+)/)
-          if (!m) throw new Error(`Wrong char: ${tileChar}`)
-          if (m[1] !== '32') {
-            log.log('find:', tileChar, 'at:', x1, y1)
-            found = true
-            break me
+      // bind the finding marker function
+      this.layerUtfGrid.hasMarkerInCurrentView = () => {
+        // waiting layer is ready
+        const isLoading = this.layerUtfGrid.isLoading()
+        log.warn('utf layer is loading:', isLoading)
+        if (isLoading) {
+          log.warn('can not handle the grid utf check when loading, cancel!')
+          return false
+        }
+        const begin = Date.now()
+        let found = false
+        let count = 0
+        let countNoChar = 0
+        const { x, y } = this.map.getSize()
+        // eslint-disable-next-line no-restricted-syntax
+        me: for (let y1 = 0; y1 < y; y1 += 10) {
+          for (let x1 = 0; x1 < x; x1 += 10) {
+            count += 1
+            const tileChar = this.layerUtfGrid._objectForEvent({
+              latlng: this.map.containerPointToLatLng([x1, y1]),
+            })._tileCharCode
+            if (!tileChar) {
+              countNoChar += 1
+              // log.warn("can not fond char on!:", x1, y1);
+              continue
+            }
+            const m = tileChar.match(/\d+:\d+:\d+:(\d+)/)
+            if (!m) throw new Error(`Wrong char: ${tileChar}`)
+            if (m[1] !== '32') {
+              log.log('find:', tileChar, 'at:', x1, y1)
+              found = true
+              break me
+            }
           }
         }
+        log.warn(
+          'Take time:%d, count:%d,%d,found:%s',
+          Date.now() - begin,
+          count,
+          countNoChar,
+          found,
+        )
+        return found
       }
-      log.warn(
-        'Take time:%d, count:%d,%d,found:%s',
-        Date.now() - begin,
-        count,
-        countNoChar,
-        found,
-      )
-      return found
     }
   }
 
@@ -1214,51 +1227,34 @@ export default class Map {
   }
 
   async mount(domElement) {
-    this._mountDomElement = domElement
-
-    this._mountComponents()
-
-    // load google map
-    await this._loadGoogleSatellite()
-
-    /*
-     * The logic is:
-     * If there is a filter, then try to zoom in and set the zoom is
-     * appropriate for the filter, then load the tile.
-     * But if there is a bounds ( maybe the browser was refreshed or jump
-     * to the map by a shared link), then jump the bounds directly,
-     * regardless of the initial view for filter.
-     */
     try {
-      if (this.filters.bounds) {
-        await this.gotoBounds(this.filters.bounds)
-      } else {
-        await this._loadInitialView()
-      }
+      this._mountDomElement = domElement
+
+      this._mountComponents()
+
+      // load google map
+      await this._loadGoogleSatellite()
+
+      // /*
+      //  * The logic is:
+      //  * If there is a filter, then try to zoom in and set the zoom is
+      //  * appropriate for the filter, then load the tile.
+      //  * But if there is a bounds ( maybe the browser was refreshed or jump
+      //  * to the map by a shared link), then jump the bounds directly,
+      //  * regardless of the initial view for filter.
+      //  */
+      // if (this.filters.bounds) {
+      //   await this.gotoBounds(this.filters.bounds)
+      // } else {
+      //   await this._loadInitialView()
+      // }
 
       // fire load event
       if (this.onLoad) {
         this.onLoad()
       }
 
-      // load tile
-      if (this.filters.treeid) {
-        log.info('treeid mode do not need tile server')
-      } else if (this.filters.tree_name) {
-        log.info('tree name mode do not need tile server')
-      } else {
-        await this._loadTileServer()
-      }
-
-      if (this.filters.treeid) {
-        log.info('load tree by id')
-        await this._loadTree(this.filters.treeid)
-      }
-
-      if (this.filters.tree_name) {
-        log.info('load tree by name')
-        await this._loadTree(undefined, this.filters.tree_name)
-      }
+      await this._loadTileServer()
 
       // load freetown special map
       await this._loadFreetownLayer()
