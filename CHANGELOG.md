@@ -1,3 +1,9 @@
+## [2.1.1](https://github.com/Greenstand/treetracker-web-map-core/compare/v2.1.0...v2.1.1) (2022-09-08)
+
+### Bug Fixes
+
+- shouldn't trigger click when load single tree ([9a3c6b5](https://github.com/Greenstand/treetracker-web-map-core/commit/9a3c6b5c2a7b61f533679aa8b031830d230025f6))
+
 # [2.1.0](https://github.com/Greenstand/treetracker-web-map-core/compare/v2.0.0...v2.1.0) (2022-09-08)
 
 ### Features
