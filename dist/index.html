@@ -33,11 +33,14 @@
             console.log("fileter json:", filterjson);
             filter = JSON.parse(filterjson)
             await map.setFilters(filter);
-            const view =  await map.getInitialView();
-            map.gotoView(view);
         }
         reload();
         return false;
+    }
+
+    async function gotoInitialView(){
+            const view =  await map.getInitialView();
+            map.gotoView(view);
     }
 
     function dosubmitTree() {
@@ -93,13 +96,10 @@
     function dosubmitSelectTree() {
         (async () => {
             let tree = document.getElementById('treejson').value;
-
-            try {
-                // attempt to parse as json obj otherwise pass as a URL
-                tree = JSON.parse(tree)
-            } finally {
-                await map.selectTree(tree);
-            }
+            // attempt to parse as json obj otherwise pass as a URL
+            tree = JSON.parse(tree)
+            const treeForMap = {...tree, lat: parseFloat(tree.lat.toString()), lon: parseFloat(tree.lon.toString())};
+            await map.selectTree(treeForMap);
         })();
         return false;
     }
@@ -124,11 +124,15 @@
 <body>
     <h3>Welcome to Greenstand web map!</h3>
     <div class="panel">
-        <h5>Control the map (set filter, jump the intial view)</h5>
+        <h5>setFilter</h5>
         <form action="" onsubmit="return dosubmit();">
             <textarea id="filterjson" name="filterjson" placeholder='{"userid": 940}'></textarea>
             <input type="submit" value="Submit" />
         </form>
+    </div>
+    <div class="panel">
+        <h5>goto intial view</h5>
+        <button onclick="gotoInitialView();">goto initial view</button>
     </div>
     <div class="panel">
         <h5>Fly to</h5>
