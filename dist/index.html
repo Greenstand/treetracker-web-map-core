@@ -40,24 +40,9 @@
 
     async function gotoInitialView(){
             const view =  await map.getInitialView();
-            map.gotoView(view);
+            map.gotoView(view.center.lat, view.center.lon, view.zoomLevel);
     }
 
-    function dosubmitTree() {
-        console.log("submitting...");
-        async function reload() {
-            //map.flyTo(0,0,5);
-            const treeid = document.getElementById("treeid").value;
-            await map.setFilters({
-                treeid,
-            });
-            const view = await map.getInitialView();
-            console.warn("view:", view);
-            map.gotoView(view);
-        }
-        reload();
-        return false;
-    }
 
     function dosubmitFlyto() {
         console.log("dosubmit flyto...");
@@ -65,7 +50,7 @@
         const lon = document.getElementById("lon").value;
         const zoom = document.getElementById("zoom").value;
         console.log("filto:", lat, lon, zoom);
-        map.flyTo(parseFloat(lat), parseFloat(lon), parseInt(zoom));
+        map.gotoView(parseFloat(lat), parseFloat(lon), parseInt(zoom));
         return false;
     }
     function dosubmitChangeIcon() {
@@ -135,7 +120,7 @@
         <button onclick="gotoInitialView();">goto initial view</button>
     </div>
     <div class="panel">
-        <h5>Fly to</h5>
+        <h5>goto to location</h5>
         <form action="" onsubmit="return dosubmitFlyto();">
             lat <input id="lat" name="lat" type="input" value="" placeholder="latitude">
             lon <input id="lon" name="lon" type="input" value="" placeholder="longitude">

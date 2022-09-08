@@ -1085,11 +1085,12 @@ export default class Map {
     this.map.panTo(location)
   }
 
-  // ----------- public method -----------------------------------
-  flyTo(lat, lon, zoomLevel) {
+  _flyTo(lat, lon, zoomLevel) {
     log.info('fly to:', lat, lon, zoomLevel)
-    this.map.flyTo([lat, lon], zoomLevel)
+    this.map.gotoView(lat, lon, zoomLevel)
   }
+
+  // ----------- public method -----------------------------------
 
   getCurrentBounds() {
     return this.map.getBounds().toBBoxString()
@@ -1171,7 +1172,13 @@ export default class Map {
       }
     }
     log.warn('get initial view:', view)
-    return view
+    return {
+      center: {
+        lat: view.center.lat,
+        lon: view.center.lng || view.center.lon,
+      },
+      zoomLevel: view.zoomLevel,
+    }
   }
 
   async gotoBounds(bounds) {
@@ -1204,26 +1211,33 @@ export default class Map {
     }
   }
 
-  async gotoView(view) {
-    expect(view).match({
-      center: expect.anything(),
-      zoomLevel: expect.any(Number),
-    })
-    // jump to initial view
-    if (view) {
-      if (this.moreEffect) {
-        this.map.flyTo(view.center, view.zoomLevel)
-        log.warn('waiting initial view load...')
-        await new Promise((res) => {
-          const finished = () => {
-            log.warn('fire initial view finished')
-            this.map.off('moveend')
-            res()
-          }
-          this.map.on('moveend', finished)
-        })
+  async gotoView(lat, lon, zoomLevel) {
+    expect(lat).a('number')
+    expect(lon).a('number')
+    if (zoomLevel) {
+      expect(zoomLevel).a('number')
+    }
+    if (this.moreEffect) {
+      if (zoomLevel) {
+        this.map.flyTo([lat, lon], zoomLevel)
       } else {
-        this.map.setView(view.center, view.zoomLevel, { animate: false })
+        this.map.panTo([lat, lon])
+      }
+      log.warn('waiting initial view load...')
+      await new Promise((res) => {
+        const finished = () => {
+          log.warn('fire initial view finished')
+          this.map.off('moveend')
+          res()
+        }
+        this.map.on('moveend', finished)
+      })
+    } else {
+      if (zoomLevel) {
+        this.map.setView([lat, lon], zoomLevel, { animate: false })
+      } else {
+        const originalZoomLevel = this.map.getZoom()
+        this.map.setView([lat, lon], zoomLevel, { animate: false })
       }
     }
   }
@@ -1293,6 +1307,7 @@ export default class Map {
    */
   async setFilters(filters) {
     this.filters = filters
+    await this._unselectMarker()
     await this._unloadTileServer()
     await this._loadTileServer()
   }
