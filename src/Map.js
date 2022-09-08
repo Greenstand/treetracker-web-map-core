@@ -1309,10 +1309,14 @@ export default class Map {
    * reset the config of map instance
    */
   async setFilters(filters) {
-    this.filters = filters
-    await this._unselectMarker()
-    await this._unloadTileServer()
-    await this._loadTileServer()
+    if (_.isEqual(filters, this.filters)) {
+      log.warn('filters is not changed, do nothing')
+    } else {
+      this.filters = filters
+      await this._unselectMarker()
+      await this._unloadTileServer()
+      await this._loadTileServer()
+    }
   }
 
   clearSelection() {
