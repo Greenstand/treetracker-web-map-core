@@ -903,7 +903,9 @@ export default class Map {
     // mount event
     this.map.on('moveend', (e) => {
       log.warn('move end', e)
-      this._checkArrow()
+      if (this._isNeededToCheckArrow()) {
+        this._checkArrow()
+      }
       this.events.emit(Map.REGISTERED_EVENTS.MOVE_END)
     })
 
@@ -1082,6 +1084,15 @@ export default class Map {
     this.map.panTo(location)
   }
 
+  _isNeededToCheckArrow() {
+    if (this.filters.treeid || this.filters.tree_name) {
+      log.info('treeid mode do not need to check arrow')
+      return false
+    } else {
+      return true
+    }
+  }
+
   _flyTo(lat, lon, zoomLevel) {
     log.info('fly to:', lat, lon, zoomLevel)
     this.map.gotoView(lat, lon, zoomLevel)
@@ -1142,7 +1153,7 @@ export default class Map {
       log.warn('res:', res)
       if (!res) {
         log.error("Can't find tree by url:", url)
-        throw new MapError('Can not find any data')
+        throw new MapError('Can not find any data!')
       }
       const { lat, lon } = res
       view = {
