@@ -29,10 +29,10 @@
         console.log("submitting...");
         async function reload() {
             //map.flyTo(0,0,5);
-            const userid = document.getElementById("userid").value;
-            map.setFilters({
-                userid,
-            });
+            const filterjson = document.getElementById("filterjson").value;
+            console.log("fileter json:", filterjson);
+            filter = JSON.parse(filterjson)
+            await map.setFilters(filter);
             const view =  await map.getInitialView();
             map.gotoView(view);
         }
@@ -45,10 +45,11 @@
         async function reload() {
             //map.flyTo(0,0,5);
             const treeid = document.getElementById("treeid").value;
-            map.setFilters({
+            await map.setFilters({
                 treeid,
             });
             const view = await map.getInitialView();
+            console.warn("view:", view);
             map.gotoView(view);
         }
         reload();
@@ -125,12 +126,8 @@
     <div class="panel">
         <h5>Control the map (set filter, jump the intial view)</h5>
         <form action="" onsubmit="return dosubmit();">
-            userid <input id="userid" name="userid" type="input" value="" placeholder="the planter/user id">
-            <input type="submit" name="controlSubmit" value="Submit" />
-        </form>
-        <form action="" onsubmit="return dosubmitTree();">
-            treeid <input id="treeid" name="treeid" type="input" value="" placeholder="the tree id">
-            <input type="submit" name="controlSubmit" value="Submit" />
+            <textarea id="filterjson" name="filterjson" placeholder='{"userid": 940}'></textarea>
+            <input type="submit" value="Submit" />
         </form>
     </div>
     <div class="panel">

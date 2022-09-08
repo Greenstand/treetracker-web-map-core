@@ -1086,13 +1086,6 @@ export default class Map {
   }
 
   // ----------- public method -----------------------------------
-  /*
-   * reset the config of map instance
-   */
-  setFilters(filters) {
-    this.filters = filters
-  }
-
   flyTo(lat, lon, zoomLevel) {
     log.info('fly to:', lat, lon, zoomLevel)
     this.map.flyTo([lat, lon], zoomLevel)
@@ -1131,7 +1124,7 @@ export default class Map {
         return null
       })
       if (items.length === 0) {
-        log.info('Can not find data')
+        log.info('Can not find data by ', url)
         throw new MapError('Can not find any data')
       }
       return getInitialBounds(items, this.width, this.height)
@@ -1150,6 +1143,7 @@ export default class Map {
       })
       log.warn('res:', res)
       if (!res) {
+        log.error("Can't find tree by url:", url)
         throw new MapError('Can not find any data')
       }
       const { lat, lon } = res
@@ -1176,6 +1170,7 @@ export default class Map {
         view = await calculateInitialView()
       }
     }
+    log.warn('get initial view:', view)
     return view
   }
 
@@ -1291,6 +1286,15 @@ export default class Map {
   selectTree(tree) {
     // TODO validate tree data
     this._selectMarker(tree)
+  }
+
+  /*
+   * reset the config of map instance
+   */
+  async setFilters(filters) {
+    this.filters = filters
+    await this._unloadTileServer()
+    await this._loadTileServer()
   }
 
   clearSelection() {
