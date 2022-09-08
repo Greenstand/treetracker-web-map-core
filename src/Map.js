@@ -50,7 +50,7 @@ export default class Map {
         height: window.innerHeight,
         debug: false,
         moreEffect: true,
-        filters: {},
+        filters: null,
         defaultZoomLevelForTreePoint: 15,
       },
       ...options,
@@ -1189,6 +1189,13 @@ export default class Map {
     }
   }
 
+  getCurrentView() {
+    return {
+      center: this.map.getCenter(),
+      zoomLevel: this.map.getZoom(),
+    }
+  }
+
   async gotoBounds(bounds) {
     const [southWestLng, southWestLat, northEastLng, northEastLat] =
       bounds.split(',')
@@ -1309,6 +1316,7 @@ export default class Map {
    * reset the config of map instance
    */
   async setFilters(filters) {
+    log.warn('new, old filter:', filters, this.filters)
     if (_.isEqual(filters, this.filters)) {
       log.warn('filters is not changed, do nothing')
     } else {
