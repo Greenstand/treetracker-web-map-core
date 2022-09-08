@@ -1,3 +1,9 @@
+# [2.1.0](https://github.com/Greenstand/treetracker-web-map-core/compare/v2.0.0...v2.1.0) (2022-09-08)
+
+### Features
+
+- do not render map by default when mounting ([2837aff](https://github.com/Greenstand/treetracker-web-map-core/commit/2837aff0fbfebd382ecd764037413b86d43f419f))
+
 # [2.0.0](https://github.com/Greenstand/treetracker-web-map-core/compare/v1.13.0...v2.0.0) (2022-09-08)
 
 ### Features
