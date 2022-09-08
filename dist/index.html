@@ -29,31 +29,20 @@
         console.log("submitting...");
         async function reload() {
             //map.flyTo(0,0,5);
-            const userid = document.getElementById("userid").value;
-            map.setFilters({
-                userid,
-            });
-            await map.loadInitialView();
-            map.rerender();
+            const filterjson = document.getElementById("filterjson").value;
+            console.log("fileter json:", filterjson);
+            filter = JSON.parse(filterjson)
+            await map.setFilters(filter);
         }
         reload();
         return false;
     }
 
-    function dosubmitTree() {
-        console.log("submitting...");
-        async function reload() {
-            //map.flyTo(0,0,5);
-            const treeid = document.getElementById("treeid").value;
-            map.setFilters({
-                treeid,
-            });
-            await map.loadInitialView();
-            map.rerender();
-        }
-        reload();
-        return false;
+    async function gotoInitialView(){
+            const view =  await map.getInitialView();
+            map.gotoView(view.center.lat, view.center.lon, view.zoomLevel);
     }
+
 
     function dosubmitFlyto() {
         console.log("dosubmit flyto...");
@@ -61,7 +50,7 @@
         const lon = document.getElementById("lon").value;
         const zoom = document.getElementById("zoom").value;
         console.log("filto:", lat, lon, zoom);
-        map.flyTo(parseFloat(lat), parseFloat(lon), parseInt(zoom));
+        map.gotoView(parseFloat(lat), parseFloat(lon), parseInt(zoom));
         return false;
     }
     function dosubmitChangeIcon() {
@@ -92,13 +81,10 @@
     function dosubmitSelectTree() {
         (async () => {
             let tree = document.getElementById('treejson').value;
-
-            try {
-                // attempt to parse as json obj otherwise pass as a URL
-                tree = JSON.parse(tree)
-            } finally {
-                await map.selectTree(tree);
-            }
+            // attempt to parse as json obj otherwise pass as a URL
+            tree = JSON.parse(tree)
+            const treeForMap = {...tree, lat: parseFloat(tree.lat.toString()), lon: parseFloat(tree.lon.toString())};
+            await map.selectTree(treeForMap);
         })();
         return false;
     }
@@ -123,18 +109,18 @@
 <body>
     <h3>Welcome to Greenstand web map!</h3>
     <div class="panel">
-        <h5>Control the map (set filter, jump the intial view)</h5>
+        <h5>setFilter</h5>
         <form action="" onsubmit="return dosubmit();">
-            userid <input id="userid" name="userid" type="input" value="" placeholder="the planter/user id">
-            <input type="submit" name="controlSubmit" value="Submit" />
-        </form>
-        <form action="" onsubmit="return dosubmitTree();">
-            treeid <input id="treeid" name="treeid" type="input" value="" placeholder="the tree id">
-            <input type="submit" name="controlSubmit" value="Submit" />
+            <textarea id="filterjson" name="filterjson" placeholder='{"userid": 940}'></textarea>
+            <input type="submit" value="Submit" />
         </form>
     </div>
     <div class="panel">
-        <h5>Fly to</h5>
+        <h5>goto intial view</h5>
+        <button onclick="gotoInitialView();">goto initial view</button>
+    </div>
+    <div class="panel">
+        <h5>goto to location</h5>
         <form action="" onsubmit="return dosubmitFlyto();">
             lat <input id="lat" name="lat" type="input" value="" placeholder="latitude">
             lon <input id="lon" name="lon" type="input" value="" placeholder="longitude">
@@ -191,9 +177,9 @@
             onClickTree: () => console.log("onClickTree"),
             onFindNearestAt: () => console.log("onFindNearstAt"),
             onError: () => console.log("onError"),
-            filters: parameters,
         });
         map.on("moveEnd", handleMoveEnd);
+        map.setFilters(parameters);
         map.mount(document.getElementById("map"));
     };
 
