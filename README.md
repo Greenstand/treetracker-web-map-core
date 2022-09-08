@@ -99,6 +99,8 @@ map.setFilters({
 })
 ```
 
+this function will trigger rerendering of the map.
+
 - manipulate the map:
 
   - gotoView(lat, lon, zoomLevel)
