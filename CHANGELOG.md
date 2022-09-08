@@ -1,3 +1,17 @@
+# [2.0.0](https://github.com/Greenstand/treetracker-web-map-core/compare/v1.13.0...v2.0.0) (2022-09-08)
+
+### Features
+
+- change to private methods for map.js ([0ea189b](https://github.com/Greenstand/treetracker-web-map-core/commit/0ea189bdfd409c7ea918f0707c6cb8db0ec35169))
+- new api ([26201d1](https://github.com/Greenstand/treetracker-web-map-core/commit/26201d17914e19a793bd74d63c3f09ca67520f13))
+- refactor gotoView ([de0b8fa](https://github.com/Greenstand/treetracker-web-map-core/commit/de0b8fafbf04ee5362ac56b055e61a0bbc10675d))
+- setFilter will refresh the layers ([eda3295](https://github.com/Greenstand/treetracker-web-map-core/commit/eda329532105aa40bdf89563f01b1eedd5917084))
+- split to get view and goto view fns ([155556e](https://github.com/Greenstand/treetracker-web-map-core/commit/155556eb50278d3fd36dadc75463dfacf3499237))
+
+### BREAKING CHANGES
+
+- new api
+
 # [1.13.0](https://github.com/Greenstand/treetracker-web-map-core/compare/v1.12.3...v1.13.0) (2022-09-05)
 
 ### Features
