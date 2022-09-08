@@ -475,9 +475,6 @@ export default class Map {
       lon: parseFloat(lon),
     }
     this._selectMarker(data)
-    if (this.onClickTree) {
-      this.onClickTree(data)
-    }
   }
 
   _highlightMarker(data) {
