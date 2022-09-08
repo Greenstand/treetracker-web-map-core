@@ -50,7 +50,7 @@ export default class Map {
         height: window.innerHeight,
         debug: false,
         moreEffect: true,
-        filters: {},
+        filters: null,
         defaultZoomLevelForTreePoint: 15,
       },
       ...options,
@@ -60,22 +60,27 @@ export default class Map {
       this[key] = mapOptions[key]
     })
 
+    // memeber/properties/statuses
+
     // requester
     this.requester = new Requester()
 
     // events
     this.events = new EventEmitter()
+
+    // mount element
+    this._mountDomElement = null
   }
 
   /** *************************** static *************************** */
-  static formatClusterText(count) {
+  static _formatClusterText(count) {
     if (count > 1000) {
       return `${Math.floor(count / 1000)}K`
     }
     return count
   }
 
-  static getClusterRadius(zoom) {
+  static _getClusterRadius(zoom) {
     switch (zoom) {
       case 1:
         return 10
@@ -118,7 +123,7 @@ export default class Map {
     }
   }
 
-  static parseUtfData(utfData) {
+  static _parseUtfData(utfData) {
     const [lon, lat] = JSON.parse(utfData.latlon).coordinates
     return {
       ...utfData,
@@ -127,159 +132,7 @@ export default class Map {
     }
   }
 
-  /** *************************** methods ************************** */
-  on(eventName, handler) {
-    //TODO check event name enum
-    if (handler) {
-      log.info('register event:', eventName)
-      this.events.on(eventName, handler)
-    }
-  }
-
-  //TODO remove listner
-
-  async mount(domElement) {
-    const mapOptions = {
-      minZoom: this.minZoom,
-      center: this.initialCenter,
-      zoomControl: false,
-    }
-
-    const divContainer = document.createElement('div')
-    divContainer.style.width = '100%'
-    divContainer.style.height = '100%'
-    divContainer.style.position = 'relative'
-    divContainer.innerHTML = `
-      <div id="greenstand-nearest-tree-arrow" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%"></div>
-      <div id="greenstand-leaflet" style="position: relative;width: 100%;height: 100%;"></div>
-      <div id="greenstand-map-spin" style="z-index: 999; position: absolute; width: 100%; top: 0px; left: 0px" ></div>
-      <div id="greenstand-map-alert" style="z-index: 999; position: absolute; width: 100%; top: 0px; left: 0px" ></div>
-      <div id="greenstand-map-buttonPanel" style="z-index: 999; position: absolute; top: 24px; left:50%; transform: translateX(-50%)" ></div>
-    `
-    domElement.appendChild(divContainer)
-    const mountTarget = document.getElementById('greenstand-leaflet')
-    const mountSpinTarget = document.getElementById('greenstand-map-spin')
-    const mountAlertTarget = document.getElementById('greenstand-map-alert')
-    this.spin = new Spin()
-    this.spin.mount(mountSpinTarget)
-    this.alert = new Alert()
-    this.alert.mount(mountAlertTarget)
-
-    this.map = this.L.map(mountTarget, mapOptions)
-    this.map.setView(this.initialCenter, this.minZoom)
-    this.map.attributionControl.setPrefix('')
-
-    // button prev next
-    {
-      // next tree buttons
-      const mountButtonPanelTarget = document.getElementById(
-        'greenstand-map-buttonPanel',
-      )
-      this.buttonPanel = new ButtonPanel(
-        () => this.goNextPoint(),
-        () => this.goPrevPoint(),
-      )
-      this.buttonPanel.mount(mountButtonPanelTarget)
-      this.on(Map.REGISTERED_EVENTS.TREE_SELECTED, () => {
-        const currentPoint = this.layerSelected.payload
-        const points = this.getPoints()
-        const index = points.reduce((a, c, i) => {
-          if (c.id === currentPoint.id) {
-            return i
-          }
-          return a
-        }, -1)
-        if (points.length <= 1) {
-          return null
-        }
-        this.buttonPanel.show()
-        if (index === 0) {
-          this.buttonPanel.hideLeftArrow()
-        } else if (index === points.length - 1) {
-          this.buttonPanel.hideRightArrow()
-        } else {
-          this.buttonPanel.showLeftArrow()
-          this.buttonPanel.showRightArrow()
-        }
-      })
-    }
-
-    // Nearest Tree Arrow
-    const mountNearestArrowTarget = document.getElementById(
-      'greenstand-nearest-tree-arrow',
-    )
-    this.nearestTreeArrow = new NearestTreeArrows(() =>
-      this.moveToNearestTree(),
-    )
-    this.nearestTreeArrow.mount(mountNearestArrowTarget)
-
-    // load google map
-    await this.loadGoogleSatellite()
-
-    /*
-     * The logic is:
-     * If there is a filter, then try to zoom in and set the zoom is
-     * appropriate for the filter, then load the tile.
-     * But if there is a bounds ( maybe the browser was refreshed or jump
-     * to the map by a shared link), then jump the bounds directly,
-     * regardless of the initial view for filter.
-     */
-    try {
-      if (this.filters.bounds) {
-        await this.gotoBounds(this.filters.bounds)
-      } else {
-        await this.loadInitialView()
-      }
-
-      // fire load event
-      if (this.onLoad) {
-        this.onLoad()
-      }
-
-      // load tile
-      if (this.filters.treeid) {
-        log.info('treeid mode do not need tile server')
-      } else if (this.filters.tree_name) {
-        log.info('tree name mode do not need tile server')
-      } else {
-        await this.loadTileServer()
-      }
-
-      // mount event
-      this.map.on('moveend', (e) => {
-        log.warn('move end', e)
-        this.checkArrow()
-        this.events.emit(Map.REGISTERED_EVENTS.MOVE_END)
-      })
-
-      if (this.filters.treeid) {
-        log.info('load tree by id')
-        await this.loadTree(this.filters.treeid)
-      }
-
-      if (this.filters.tree_name) {
-        log.info('load tree by name')
-        await this.loadTree(undefined, this.filters.tree_name)
-      }
-
-      // load freetown special map
-      await this.loadFreetownLayer()
-
-      if (this.debug) {
-        await this.loadDebugLayer()
-      }
-    } catch (e) {
-      log.error('get error when load:', e)
-      if (e instanceof MapError) {
-        log.error('map error:', e)
-        if (this.onError) {
-          this.onError(e)
-        }
-      }
-    }
-  }
-
-  async loadGoogleSatellite() {
+  async _loadGoogleSatellite() {
     const GoogleLayer = window.L.TileLayer.extend({
       createTile(coords, done) {
         const tile = document.createElement('img')
@@ -366,7 +219,7 @@ export default class Map {
     })
   }
 
-  async addGeoJson(source) {
+  async _addGeoJson(source) {
     let geo = source
 
     if (typeof source === 'string') {
@@ -377,187 +230,172 @@ export default class Map {
     return layer
   }
 
-  async gotoBounds(bounds) {
-    const [southWestLng, southWestLat, northEastLng, northEastLat] =
-      bounds.split(',')
-    log.warn('go to bounds:', bounds)
-    if (this.moreEffect) {
-      this.map.flyToBounds([
-        [southWestLat, southWestLng],
-        [northEastLat, northEastLng],
-      ])
-      log.warn('waiting bound load...')
-      await new Promise((res) => {
-        const boundFinished = () => {
-          log.warn('fire bound finished')
-          this.map.off('moveend')
-          res()
-        }
-        this.map.on('moveend', boundFinished)
-      })
+  async _loadTileServer() {
+    // load tile
+    if (this.filters.treeid) {
+      log.info('treeid mode do not need tile server')
+      log.info('load tree by id')
+      await this._loadTree(this.filters.treeid)
+    } else if (this.filters.tree_name) {
+      log.info('tree name mode do not need tile server')
+      log.info('load tree by name')
+      await this._loadTree(undefined, this.filters.tree_name)
     } else {
-      this.map.fitBounds(
-        [
-          [southWestLat, southWestLng],
-          [northEastLat, northEastLng],
-        ],
-        { animate: false },
+      const { iconSuiteQueryString } = this._getIconSuiteParameters(
+        this.iconSuite,
       )
-      // no effect, return directly
-    }
-  }
+      // tile
+      const filterParameters = this._getFilterParameters()
+      const filterParametersString = filterParameters
+        ? `&${filterParameters}`
+        : ''
+      this.layerTile = new this.L.tileLayer(
+        `${this.tileServerUrl}{z}/{x}/{y}.png?icon=${iconSuiteQueryString}${filterParametersString}`,
+        {
+          minZoom: this.minZoom,
+          maxZoom: this.maxZoom,
+          // close to avoid too many requests
+          updateWhenZooming: false,
+          // updateWhenIdle: true,
+          zIndex: 99999,
+          subdomains: this.tileServerSubdomains,
+          //errorTileUrl: 'http://localhost:5000/nodata.png',
+          errorTileUrl:
+            'data:image/png;base64,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',
+        },
+      )
+      // spin monitor
+      this.tileLoadingMonitor = new TileLoadingMonitor(this.layerTile, {
+        showLoadingThreshold: 4000,
+        slowThreshold: 8000,
+        onShowLoading: () => {
+          log.warn('show loading')
+          this.spin.show()
+        },
+        onSlowAlert: () => {
+          log.warn('slow alert')
+          this.alert.show(
+            'Trees grow slower than this map loads, be patient...',
+          )
+        },
+        onLoad: () => {
+          log.warn('load finished')
+          this.spin.hide()
+          this.alert.hide()
+        },
+        onDestroy: () => {
+          log.warn('destroy')
+          this.spin.hide()
+          this.alert.hide()
+        },
+      })
+      this.layerTile.addTo(this.map)
 
-  async loadTileServer() {
-    const { iconSuiteQueryString } = this.getIconSuiteParameters(this.iconSuite)
-    // tile
-    const filterParameters = this.getFilterParameters()
-    const filterParametersString = filterParameters
-      ? `&${filterParameters}`
-      : ''
-    this.layerTile = new this.L.tileLayer(
-      `${this.tileServerUrl}{z}/{x}/{y}.png?icon=${iconSuiteQueryString}${filterParametersString}`,
-      {
-        minZoom: this.minZoom,
-        maxZoom: this.maxZoom,
-        // close to avoid too many requests
-        updateWhenZooming: false,
-        // updateWhenIdle: true,
-        zIndex: 99999,
-        subdomains: this.tileServerSubdomains,
-        //errorTileUrl: 'http://localhost:5000/nodata.png',
-        errorTileUrl:
-          'data:image/png;base64,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',
-      },
-    )
-    // spin monitor
-    this.tileLoadingMonitor = new TileLoadingMonitor(this.layerTile, {
-      showLoadingThreshold: 4000,
-      slowThreshold: 8000,
-      onShowLoading: () => {
-        log.warn('show loading')
-        this.spin.show()
-      },
-      onSlowAlert: () => {
-        log.warn('slow alert')
-        this.alert.show('Trees grow slower than this map loads, be patient...')
-      },
-      onLoad: () => {
-        log.warn('load finished')
-        this.spin.hide()
-        this.alert.hide()
-      },
-      onDestroy: () => {
-        log.warn('destroy')
-        this.spin.hide()
-        this.alert.hide()
-      },
-    })
-    this.layerTile.addTo(this.map)
+      this.layerUtfGrid = new this.L.utfGrid(
+        `${this.tileServerUrl}{z}/{x}/{y}.grid.json?icon=${iconSuiteQueryString}${filterParametersString}`,
+        {
+          minZoom: this.minZoom,
+          maxZoom: this.maxZoom,
+          // close to avoid too many requests
+          updateWhenZooming: false,
+          // updateWhenIdle: false,
+          zIndex: 9,
+          subdomains: this.tileServerSubdomains,
+        },
+      )
+      this.layerUtfGrid.on('click', (e) => {
+        log.warn('click:', e)
+        if (e.data) {
+          this._clickMarker(Map._parseUtfData(e.data))
+        }
+      })
 
-    this.layerUtfGrid = new this.L.utfGrid(
-      `${this.tileServerUrl}{z}/{x}/{y}.grid.json?icon=${iconSuiteQueryString}${filterParametersString}`,
-      {
-        minZoom: this.minZoom,
-        maxZoom: this.maxZoom,
-        // close to avoid too many requests
-        updateWhenZooming: false,
-        // updateWhenIdle: false,
-        zIndex: 9,
-        subdomains: this.tileServerSubdomains,
-      },
-    )
-    this.layerUtfGrid.on('click', (e) => {
-      log.warn('click:', e)
-      if (e.data) {
-        this.clickMarker(Map.parseUtfData(e.data))
-      }
-    })
+      this.layerUtfGrid.on('mouseover', (e) => {
+        log.debug('mouseover:', e)
+        this._highlightMarker(Map._parseUtfData(e.data))
+      })
 
-    this.layerUtfGrid.on('mouseover', (e) => {
-      log.debug('mouseover:', e)
-      this.highlightMarker(Map.parseUtfData(e.data))
-    })
+      this.layerUtfGrid.on('mouseout', (e) => {
+        log.debug('e:', e)
+        this._unHighlightMarker()
+      })
 
-    this.layerUtfGrid.on('mouseout', (e) => {
-      log.debug('e:', e)
-      this.unHighlightMarker()
-    })
+      this.layerUtfGrid.on('load', () => {
+        log.info('all grid loaded!')
+        this._checkArrow()
+      })
 
-    this.layerUtfGrid.on('load', () => {
-      log.info('all grid loaded!')
-      this.checkArrow()
-    })
+      this.layerUtfGrid.on('tileunload', (e) => {
+        log.warn('tile unload:', e)
+        e.tile.cancelRequest()
+      })
 
-    this.layerUtfGrid.on('tileunload', (e) => {
-      log.warn('tile unload:', e)
-      e.tile.cancelRequest()
-    })
+      this.layerUtfGrid.on('tileloadstart', () => {
+        // log.warn("tile tileloadstart:", e);
+      })
 
-    this.layerUtfGrid.on('tileloadstart', () => {
-      // log.warn("tile tileloadstart:", e);
-    })
+      this.layerUtfGrid.on('tileload', () => {
+        log.warn('tile load!')
+      })
 
-    this.layerUtfGrid.on('tileload', () => {
-      log.warn('tile load!')
-    })
+      this.layerUtfGrid.on('tileerror', () => {
+        log.error('tile error!')
+      })
 
-    this.layerUtfGrid.on('tileerror', () => {
-      log.error('tile error!')
-    })
+      this.layerUtfGrid.on('loading', () => {
+        log.warn('tile load begin...')
+      })
 
-    this.layerUtfGrid.on('loading', () => {
-      log.warn('tile load begin...')
-    })
+      this.layerUtfGrid.addTo(this.map)
 
-    this.layerUtfGrid.addTo(this.map)
-
-    // bind the finding marker function
-    this.layerUtfGrid.hasMarkerInCurrentView = () => {
-      // waiting layer is ready
-      const isLoading = this.layerUtfGrid.isLoading()
-      log.warn('utf layer is loading:', isLoading)
-      if (isLoading) {
-        log.warn('can not handle the grid utf check when loading, cancel!')
-        return false
-      }
-      const begin = Date.now()
-      let found = false
-      let count = 0
-      let countNoChar = 0
-      const { x, y } = this.map.getSize()
-      // eslint-disable-next-line no-restricted-syntax
-      me: for (let y1 = 0; y1 < y; y1 += 10) {
-        for (let x1 = 0; x1 < x; x1 += 10) {
-          count += 1
-          const tileChar = this.layerUtfGrid._objectForEvent({
-            latlng: this.map.containerPointToLatLng([x1, y1]),
-          })._tileCharCode
-          if (!tileChar) {
-            countNoChar += 1
-            // log.warn("can not fond char on!:", x1, y1);
-            continue
-          }
-          const m = tileChar.match(/\d+:\d+:\d+:(\d+)/)
-          if (!m) throw new Error(`Wrong char: ${tileChar}`)
-          if (m[1] !== '32') {
-            log.log('find:', tileChar, 'at:', x1, y1)
-            found = true
-            break me
+      // bind the finding marker function
+      this.layerUtfGrid.hasMarkerInCurrentView = () => {
+        // waiting layer is ready
+        const isLoading = this.layerUtfGrid.isLoading()
+        log.warn('utf layer is loading:', isLoading)
+        if (isLoading) {
+          log.warn('can not handle the grid utf check when loading, cancel!')
+          return false
+        }
+        const begin = Date.now()
+        let found = false
+        let count = 0
+        let countNoChar = 0
+        const { x, y } = this.map.getSize()
+        // eslint-disable-next-line no-restricted-syntax
+        me: for (let y1 = 0; y1 < y; y1 += 10) {
+          for (let x1 = 0; x1 < x; x1 += 10) {
+            count += 1
+            const tileChar = this.layerUtfGrid._objectForEvent({
+              latlng: this.map.containerPointToLatLng([x1, y1]),
+            })._tileCharCode
+            if (!tileChar) {
+              countNoChar += 1
+              // log.warn("can not fond char on!:", x1, y1);
+              continue
+            }
+            const m = tileChar.match(/\d+:\d+:\d+:(\d+)/)
+            if (!m) throw new Error(`Wrong char: ${tileChar}`)
+            if (m[1] !== '32') {
+              log.log('find:', tileChar, 'at:', x1, y1)
+              found = true
+              break me
+            }
           }
         }
+        log.warn(
+          'Take time:%d, count:%d,%d,found:%s',
+          Date.now() - begin,
+          count,
+          countNoChar,
+          found,
+        )
+        return found
       }
-      log.warn(
-        'Take time:%d, count:%d,%d,found:%s',
-        Date.now() - begin,
-        count,
-        countNoChar,
-        found,
-      )
-      return found
     }
   }
 
-  async unloadTileServer() {
+  async _unloadTileServer() {
     if (this.map.hasLayer(this.layerTile)) {
       this.map.removeLayer(this.layerTile)
     } else {
@@ -570,7 +408,7 @@ export default class Map {
     }
   }
 
-  async loadDebugLayer() {
+  async _loadDebugLayer() {
     // debug
     this.L.GridLayer.GridDebug = this.L.GridLayer.extend({
       createTile(coords) {
@@ -617,7 +455,7 @@ export default class Map {
     })
   }
 
-  async loadTree(treeid, treeName) {
+  async _loadTree(treeid, treeName) {
     let res
     if (treeid) {
       res = await this.requester.request({
@@ -636,14 +474,11 @@ export default class Map {
       lat: parseFloat(lat),
       lon: parseFloat(lon),
     }
-    this.selectMarker(data)
-    if (this.onClickTree) {
-      this.onClickTree(data)
-    }
+    this._selectMarker(data)
   }
 
-  highlightMarker(data) {
-    const { iconSuiteClass } = this.getIconSuiteParameters(this.iconSuite)
+  _highlightMarker(data) {
+    const { iconSuiteClass } = this._getIconSuiteParameters(this.iconSuite)
     if (data.type === 'point') {
       this.layerHighlight = new this.L.marker([data.lat, data.lon], {
         icon: new this.L.DivIcon({
@@ -664,7 +499,7 @@ export default class Map {
                 <div class="greenstand-cluster-highlight-box ${iconSuiteClass} ${
             data.count > 1000 && !iconSuiteClass ? '' : 'small'
           }">
-                <div>${Map.formatClusterText(data.count)}</div>
+                <div>${Map._formatClusterText(data.count)}</div>
                 </div>
               `,
         }),
@@ -675,7 +510,7 @@ export default class Map {
     this.layerHighlight.addTo(this.map)
   }
 
-  unHighlightMarker() {
+  _unHighlightMarker() {
     if (this.map.hasLayer(this.layerHighlight)) {
       this.map.removeLayer(this.layerHighlight)
     } else {
@@ -683,8 +518,8 @@ export default class Map {
     }
   }
 
-  clickMarker(data) {
-    this.unHighlightMarker()
+  _clickMarker(data) {
+    this._unHighlightMarker()
     if (
       data.type === 'point' ||
       (data.type === 'cluster' && data.count === 1)
@@ -693,7 +528,7 @@ export default class Map {
         const { lon, lat } = data
         this.map.flyTo([lat, lon], this.defaultZoomLevelForTreePoint)
       }
-      this.selectMarker(data)
+      this._selectMarker(data)
       if (this.onClickTree) {
         this.onClickTree(data)
       }
@@ -721,11 +556,11 @@ export default class Map {
     }
   }
 
-  selectMarker(data) {
-    const { iconSuiteClass } = this.getIconSuiteParameters(this.iconSuite)
+  _selectMarker(data) {
+    const { iconSuiteClass } = this._getIconSuiteParameters(this.iconSuite)
     log.info('change tree mark selected with data:', data)
     // before set the selected tree icon, remote if any
-    this.unselectMarker()
+    this._unselectMarker()
 
     // set the selected marker
     this.layerSelected = new this.L.marker([data.lat, data.lon], {
@@ -745,7 +580,7 @@ export default class Map {
     this.events.emit(Map.REGISTERED_EVENTS.TREE_SELECTED, data)
   }
 
-  unselectMarker() {
+  _unselectMarker() {
     this.events.emit(
       Map.REGISTERED_EVENTS.TREE_UNSELECTED,
       this.layerSelected?.payload,
@@ -758,101 +593,7 @@ export default class Map {
     }
   }
 
-  async loadInitialView() {
-    let view
-    const calculateInitialView = async () => {
-      const url = `${
-        this.apiServerUrl
-      }trees?clusterRadius=${Map.getClusterRadius(
-        10,
-      )}&zoom_level=10&${this.getFilterParameters()}`
-      log.info('calculate initial view with url:', url)
-      const response = await this.requester.request({
-        url,
-      })
-      const items = response.data.map((i) => {
-        if (i.type === 'cluster') {
-          const c = JSON.parse(i.centroid)
-          return {
-            lat: c.coordinates[1],
-            lng: c.coordinates[0],
-          }
-        }
-        if (i.type === 'point') {
-          return {
-            lat: i.lat,
-            lng: i.lon,
-          }
-        }
-        return null
-      })
-      if (items.length === 0) {
-        log.info('Can not find data')
-        throw new MapError('Can not find any data')
-      }
-      return getInitialBounds(items, this.width, this.height)
-    }
-    if (this.filters.userid || this.filters.wallet) {
-      log.warn('try to get initial bounds')
-      view = await calculateInitialView()
-    } else if (this.filters.treeid || this.filters.tree_name) {
-      const { treeid, tree_name } = this.filters
-      const url = `${this.apiServerUrl}tree?${
-        treeid ? `tree_id=${treeid}` : `tree_name=${tree_name}`
-      }`
-      log.info('url to load tree:', url)
-      const res = await this.requester.request({
-        url,
-      })
-      log.warn('res:', res)
-      if (!res) {
-        throw new MapError('Can not find any data')
-      }
-      const { lat, lon } = res
-      view = {
-        center: {
-          lat,
-          lon,
-        },
-        zoomLevel: 16,
-      }
-    } else if (this.filters.map_name) {
-      log.info('to init org map')
-      if (mapConfig[this.filters.map_name]) {
-        const { zoom, center } = mapConfig[this.filters.map_name]
-        log.info('there is setting for map init view:', zoom, center)
-        view = {
-          center: {
-            lat: center.lat,
-            lon: center.lng,
-          },
-          zoomLevel: zoom,
-        }
-      } else {
-        view = await calculateInitialView()
-      }
-    }
-
-    // jump to initial view
-    if (view) {
-      if (this.moreEffect) {
-        this.map.flyTo(view.center, view.zoomLevel)
-        log.warn('waiting initial view load...')
-        await new Promise((res) => {
-          const finished = () => {
-            log.warn('fire initial view finished')
-            this.map.off('moveend')
-            res()
-          }
-          this.map.on('moveend', finished)
-        })
-      } else {
-        this.map.setView(view.center, view.zoomLevel, { animate: false })
-      }
-    }
-  }
-
-  getIconSuiteParameters(iconSuite) {
+  _getIconSuiteParameters(iconSuite) {
     switch (iconSuite) {
       case 'ptk-s':
         return { iconSuiteClass: 'green-s', iconSuiteQueryString: 'ptk-s' }
@@ -863,7 +604,7 @@ export default class Map {
     }
   }
 
-  getFilters() {
+  _getFilters() {
     const filters = {}
     if (this.filters.userid) {
       filters.userid = this.filters.userid
@@ -883,8 +624,8 @@ export default class Map {
     return filters
   }
 
-  getFilterParameters() {
-    const filter = this.getFilters()
+  _getFilterParameters() {
+    const filter = this._getFilters()
     const queryUrl = Object.keys(filter).reduce(
       (a, c) => `${c}=${filter[c]}${(a && `&${a}`) || ''}`,
       '',
@@ -898,21 +639,13 @@ export default class Map {
   //    return Map.getClusterRadius(zoomLevel);
   //  }
 
-  getCurrentBounds() {
-    return this.map.getBounds().toBBoxString()
-  }
-
-  getLeafletMap() {
-    return this.map
-  }
-
-  goNextPoint() {
+  _goNextPoint() {
     log.info('go next tree')
     const currentPoint = this.layerSelected.payload
     expect(currentPoint).match({
       lat: expect.any(Number),
     })
-    const points = this.getPoints()
+    const points = this._getPoints()
     const index = points.reduce((a, c, i) => {
       if (c.id === currentPoint.id) {
         return i
@@ -925,7 +658,7 @@ export default class Map {
         return false
       }
       const nextPoint = points[index + 1]
-      this.clickMarker(nextPoint)
+      this._clickMarker(nextPoint)
     } else {
       log.error('can not find the point:', currentPoint, points)
       throw new Error('can not find the point')
@@ -933,13 +666,13 @@ export default class Map {
     return null
   }
 
-  goPrevPoint() {
+  _goPrevPoint() {
     log.info('go previous tree')
     const currentPoint = this.layerSelected.payload
     expect(currentPoint).match({
       lat: expect.any(Number),
     })
-    const points = this.getPoints()
+    const points = this._getPoints()
     const index = points.reduce((a, c, i) => {
       if (c.id === currentPoint.id) {
         return i
@@ -952,7 +685,7 @@ export default class Map {
         return false
       }
       const prevPoint = points[index - 1]
-      this.clickMarker(prevPoint)
+      this._clickMarker(prevPoint)
     } else {
       log.error('can not find the point:', currentPoint, points)
       throw new Error('can not find the point')
@@ -964,7 +697,7 @@ export default class Map {
    * To get all the points on the map, (tree markers), now, the way to
    * achieve this is that go through the utf grid and get all data.
    */
-  getPoints() {
+  _getPoints() {
     if (!this.layerUtfGrid) {
       log.warn('can not find the utf grid')
       return []
@@ -974,7 +707,7 @@ export default class Map {
       .map((e) => e.data)
       .filter((e) => Object.keys(e).length > 0)
       .reduce((a, c) => a.concat(Object.values(c)), [])
-      .map((data) => Map.parseUtfData(data))
+      .map((data) => Map._parseUtfData(data))
       .filter((data) => data.type === 'point')
     log.info('loaded data in utf cache:', itemList.length)
 
@@ -991,7 +724,7 @@ export default class Map {
     return points
   }
 
-  async loadFreetownLayer() {
+  async _loadFreetownLayer() {
     log.info('load freetown layer')
     this.L.TileLayer.FreeTown = this.L.TileLayer.extend({
       getTileUrl(coords) {
@@ -1138,39 +871,122 @@ export default class Map {
     })
   }
 
-  async checkArrow() {
+  _mountComponents() {
+    const divContainer = document.createElement('div')
+    divContainer.style.width = '100%'
+    divContainer.style.height = '100%'
+    divContainer.style.position = 'relative'
+    divContainer.innerHTML = `
+      <div id="greenstand-nearest-tree-arrow" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%"></div>
+      <div id="greenstand-leaflet" style="position: relative;width: 100%;height: 100%;"></div>
+      <div id="greenstand-map-spin" style="z-index: 999; position: absolute; width: 100%; top: 0px; left: 0px" ></div>
+      <div id="greenstand-map-alert" style="z-index: 999; position: absolute; width: 100%; top: 0px; left: 0px" ></div>
+      <div id="greenstand-map-buttonPanel" style="z-index: 999; position: absolute; top: 24px; left:50%; transform: translateX(-50%)" ></div>
+    `
+    this._mountDomElement.appendChild(divContainer)
+    const mountTarget = document.getElementById('greenstand-leaflet')
+    const mountSpinTarget = document.getElementById('greenstand-map-spin')
+    const mountAlertTarget = document.getElementById('greenstand-map-alert')
+    this.spin = new Spin()
+    this.spin.mount(mountSpinTarget)
+    this.alert = new Alert()
+    this.alert.mount(mountAlertTarget)
+
+    const mapOptions = {
+      minZoom: this.minZoom,
+      center: this.initialCenter,
+      zoomControl: false,
+    }
+    this.map = this.L.map(mountTarget, mapOptions)
+    this.map.setView(this.initialCenter, this.minZoom)
+    this.map.attributionControl.setPrefix('')
+    // mount event
+    this.map.on('moveend', (e) => {
+      log.warn('move end', e)
+      if (this._isNeededToCheckArrow()) {
+        this._checkArrow()
+      }
+      this.events.emit(Map.REGISTERED_EVENTS.MOVE_END)
+    })
+
+    // button prev next
+    {
+      // next tree buttons
+      const mountButtonPanelTarget = document.getElementById(
+        'greenstand-map-buttonPanel',
+      )
+      this.buttonPanel = new ButtonPanel(
+        () => this._goNextPoint(),
+        () => this._goPrevPoint(),
+      )
+      this.buttonPanel.mount(mountButtonPanelTarget)
+      this.on(Map.REGISTERED_EVENTS.TREE_SELECTED, () => {
+        const currentPoint = this.layerSelected.payload
+        const points = this._getPoints()
+        const index = points.reduce((a, c, i) => {
+          if (c.id === currentPoint.id) {
+            return i
+          }
+          return a
+        }, -1)
+        if (points.length <= 1) {
+          return null
+        }
+        this.buttonPanel.show()
+        if (index === 0) {
+          this.buttonPanel.hideLeftArrow()
+        } else if (index === points.length - 1) {
+          this.buttonPanel.hideRightArrow()
+        } else {
+          this.buttonPanel.showLeftArrow()
+          this.buttonPanel.showRightArrow()
+        }
+      })
+    }
+
+    // Nearest Tree Arrow
+    const mountNearestArrowTarget = document.getElementById(
+      'greenstand-nearest-tree-arrow',
+    )
+    this.nearestTreeArrow = new NearestTreeArrows(() =>
+      this._moveToNearestTree(),
+    )
+    this.nearestTreeArrow.mount(mountNearestArrowTarget)
+  }
+
+  async _checkArrow() {
     log.info('check arrow...')
     if (this.layerUtfGrid.hasMarkerInCurrentView()) {
       log.info('found marker')
     } else {
       log.info('no marker')
-      const nearest = await this.getNearest()
+      const nearest = await this._getNearest()
       if (nearest) {
-        const placement = this.calculatePlacement(nearest)
-        this.handleNearestArrowDisplay(placement)
+        const placement = this._calculatePlacement(nearest)
+        this._handleNearestArrowDisplay(placement)
       } else {
         log.warn("Can't get the nearest:", nearest)
-        this.handleNearestArrowDisplay()
+        this._handleNearestArrowDisplay()
       }
     }
   }
 
-  handleNearestArrowDisplay(placement) {
+  _handleNearestArrowDisplay(placement) {
     !placement || placement === 'in'
       ? this.nearestTreeArrow.hideArrow()
       : this.nearestTreeArrow.showArrow(placement)
   }
 
-  async moveToNearestTree() {
-    const nearest = await this.getNearest()
+  async _moveToNearestTree() {
+    const nearest = await this._getNearest()
     if (nearest) {
-      this.goto(nearest)
+      this._goto(nearest)
     } else {
       log.warn('can not find nearest:', nearest)
     }
   }
 
-  async getNearest() {
+  async _getNearest() {
     const center = this.map.getCenter()
     log.log('current center:', center)
     const zoom_level = this.map.getZoom()
@@ -1197,7 +1013,7 @@ export default class Map {
    * return:
    *  west | east | north | south | in (the point is in the map view)
    */
-  calculatePlacement(location) {
+  _calculatePlacement(location) {
     const center = this.map.getCenter()
     log.info('calculate location', location, ' to center:', center)
     // find it
@@ -1263,55 +1079,280 @@ export default class Map {
     return result
   }
 
-  goto(location) {
+  _goto(location) {
     log.info('goto:', location)
     this.map.panTo(location)
   }
 
-  // ----------- public method -----------------------------------
-  /*
-   * reset the config of map instance
-   */
-  setFilters(filters) {
-    this.filters = filters
+  _isNeededToCheckArrow() {
+    if (this.filters.treeid || this.filters.tree_name) {
+      log.info('treeid mode do not need to check arrow')
+      return false
+    } else {
+      return true
+    }
   }
 
-  flyTo(lat, lon, zoomLevel) {
+  _flyTo(lat, lon, zoomLevel) {
     log.info('fly to:', lat, lon, zoomLevel)
-    this.map.flyTo([lat, lon], zoomLevel)
+    this.map.gotoView(lat, lon, zoomLevel)
+  }
+
+  // ----------- public method -----------------------------------
+
+  getCurrentBounds() {
+    return this.map.getBounds().toBBoxString()
+  }
+
+  async getInitialView() {
+    let view
+    const calculateInitialView = async () => {
+      const url = `${
+        this.apiServerUrl
+      }trees?clusterRadius=${Map._getClusterRadius(
+        10,
+      )}&zoom_level=10&${this._getFilterParameters()}`
+      log.info('calculate initial view with url:', url)
+      const response = await this.requester.request({
+        url,
+      })
+      const items = response.data.map((i) => {
+        if (i.type === 'cluster') {
+          const c = JSON.parse(i.centroid)
+          return {
+            lat: c.coordinates[1],
+            lng: c.coordinates[0],
+          }
+        }
+        if (i.type === 'point') {
+          return {
+            lat: i.lat,
+            lng: i.lon,
+          }
+        }
+        return null
+      })
+      if (items.length === 0) {
+        log.info('Can not find data by ', url)
+        throw new MapError('Can not find any data')
+      }
+      return getInitialBounds(items, this.width, this.height)
+    }
+    if (this.filters.userid || this.filters.wallet) {
+      log.warn('try to get initial bounds')
+      view = await calculateInitialView()
+    } else if (this.filters.treeid || this.filters.tree_name) {
+      const { treeid, tree_name } = this.filters
+      const url = `${this.apiServerUrl}tree?${
+        treeid ? `tree_id=${treeid}` : `tree_name=${tree_name}`
+      }`
+      log.info('url to load tree:', url)
+      const res = await this.requester.request({
+        url,
+      })
+      log.warn('res:', res)
+      if (!res) {
+        log.error("Can't find tree by url:", url)
+        throw new MapError('Can not find any data!')
+      }
+      const { lat, lon } = res
+      view = {
+        center: {
+          lat,
+          lon,
+        },
+        zoomLevel: 16,
+      }
+    } else if (this.filters.map_name) {
+      log.info('to init org map')
+      if (mapConfig[this.filters.map_name]) {
+        const { zoom, center } = mapConfig[this.filters.map_name]
+        log.info('there is setting for map init view:', zoom, center)
+        view = {
+          center: {
+            lat: center.lat,
+            lon: center.lng,
+          },
+          zoomLevel: zoom,
+        }
+      } else {
+        view = await calculateInitialView()
+      }
+    }
+    log.warn('get initial view:', view)
+    return {
+      center: {
+        lat: view.center.lat,
+        lon: view.center.lng || view.center.lon,
+      },
+      zoomLevel: view.zoomLevel,
+    }
+  }
+
+  getCurrentView() {
+    return {
+      center: this.map.getCenter(),
+      zoomLevel: this.map.getZoom(),
+    }
+  }
+
+  async gotoBounds(bounds) {
+    const [southWestLng, southWestLat, northEastLng, northEastLat] =
+      bounds.split(',')
+    log.warn('go to bounds:', bounds)
+    if (this.moreEffect) {
+      this.map.flyToBounds([
+        [southWestLat, southWestLng],
+        [northEastLat, northEastLng],
+      ])
+      log.warn('waiting bound load...')
+      await new Promise((res) => {
+        const boundFinished = () => {
+          log.warn('fire bound finished')
+          this.map.off('moveend')
+          res()
+        }
+        this.map.on('moveend', boundFinished)
+      })
+    } else {
+      this.map.fitBounds(
+        [
+          [southWestLat, southWestLng],
+          [northEastLat, northEastLng],
+        ],
+        { animate: false },
+      )
+      // no effect, return directly
+    }
+  }
+
+  async gotoView(lat, lon, zoomLevel) {
+    expect(lat).a('number')
+    expect(lon).a('number')
+    if (zoomLevel) {
+      expect(zoomLevel).a('number')
+    }
+    if (this.moreEffect) {
+      if (zoomLevel) {
+        this.map.flyTo([lat, lon], zoomLevel)
+      } else {
+        this.map.panTo([lat, lon])
+      }
+      log.warn('waiting initial view load...')
+      await new Promise((res) => {
+        const finished = () => {
+          log.warn('fire initial view finished')
+          this.map.off('moveend')
+          res()
+        }
+        this.map.on('moveend', finished)
+      })
+    } else {
+      if (zoomLevel) {
+        this.map.setView([lat, lon], zoomLevel, { animate: false })
+      } else {
+        const originalZoomLevel = this.map.getZoom()
+        this.map.setView([lat, lon], zoomLevel, { animate: false })
+      }
+    }
+  }
+
+  async mount(domElement) {
+    try {
+      this._mountDomElement = domElement
+
+      this._mountComponents()
+
+      // load google map
+      await this._loadGoogleSatellite()
+
+      // /*
+      //  * The logic is:
+      //  * If there is a filter, then try to zoom in and set the zoom is
+      //  * appropriate for the filter, then load the tile.
+      //  * But if there is a bounds ( maybe the browser was refreshed or jump
+      //  * to the map by a shared link), then jump the bounds directly,
+      //  * regardless of the initial view for filter.
+      //  */
+      // if (this.filters.bounds) {
+      //   await this.gotoBounds(this.filters.bounds)
+      // } else {
+      //   await this._loadInitialView()
+      // }
+
+      // fire load event
+      if (this.onLoad) {
+        this.onLoad()
+      }
+
+      if (this.debug) {
+        await this._loadDebugLayer()
+      }
+    } catch (e) {
+      log.error('get error when load:', e)
+      if (e instanceof MapError) {
+        log.error('map error:', e)
+        if (this.onError) {
+          this.onError(e)
+        }
+      }
+    }
+  }
+
+  on(eventName, handler) {
+    //TODO check event name enum
+    if (handler) {
+      log.info('register event:', eventName)
+      this.events.on(eventName, handler)
+    }
   }
 
   selectTree(tree) {
     // TODO validate tree data
-    this.selectMarker(tree)
+    this._selectMarker(tree)
+  }
+
+  /*
+   * reset the config of map instance
+   */
+  async setFilters(filters) {
+    log.warn('new, old filter:', filters, this.filters)
+    if (_.isEqual(filters, this.filters)) {
+      log.warn('filters is not changed, do nothing')
+    } else {
+      this.filters = filters
+      await this._unselectMarker()
+      await this._unloadTileServer()
+      await this._loadTileServer()
+    }
   }
 
   clearSelection() {
-    this.unselectMarker()
+    this._unselectMarker()
   }
 
-  async rerender() {
-    log.info('rerender')
-    log.info('reload tile')
+  // async rerender() {
+  //   log.info('rerender')
+  //   log.info('reload tile')
 
-    // unslect the current selected point
-    this.unselectMarker()
+  //   // unslect the current selected point
+  //   this._unselectMarker()
 
-    await this.unloadTileServer()
+  //   await this._unloadTileServer()
 
-    // load tile
-    if (this.filters.treeid) {
-      log.info('treeid mode do not need tile server')
-      log.info('load tree by id')
-      await this.loadTree(this.filters.treeid)
-      this.tileLoadingMonitor && this.tileLoadingMonitor.destroy()
-    } else if (this.filters.tree_name) {
-      log.info('tree name mode do not need tile server')
-      log.info('load tree by name')
-      this.tileLoadingMonitor && this.tileLoadingMonitor.destroy()
-      await this.loadTree(undefined, this.filters.tree_name)
-    } else {
-      await this.loadTileServer()
-    }
-  }
+  //   // load tile
+  //   if (this.filters.treeid) {
+  //     log.info('treeid mode do not need tile server')
+  //     log.info('load tree by id')
+  //     await this._loadTree(this.filters.treeid)
+  //     this.tileLoadingMonitor && this.tileLoadingMonitor.destroy()
+  //   } else if (this.filters.tree_name) {
+  //     log.info('tree name mode do not need tile server')
+  //     log.info('load tree by name')
+  //     this.tileLoadingMonitor && this.tileLoadingMonitor.destroy()
+  //     await this._loadTree(undefined, this.filters.tree_name)
+  //   } else {
+  //     await this._loadTileServer()
+  //   }
+  // }
 }
