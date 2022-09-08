@@ -1270,11 +1270,6 @@ export default class Map {
         this.onLoad()
       }
 
-      await this._loadTileServer()
-
-      // load freetown special map
-      await this._loadFreetownLayer()
-
       if (this.debug) {
         await this._loadDebugLayer()
       }
