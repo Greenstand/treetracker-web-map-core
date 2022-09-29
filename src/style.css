@@ -143,10 +143,16 @@
 .buttonPanel {
   width: 144px;
   display: flex;
-  justify-content: space-between;
+  justify-content: space-evenly;
 }
-#next-left-arrow,
-#next-right-arrow {
+.next-button-container {
+  height: 60px;
+  width: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.next-button {
   height: 60px;
   width: 45px;
   border-radius: 16px;
@@ -155,8 +161,7 @@
   justify-content: center;
   align-items: center;
 }
-#next-left-arrow:hover,
-#next-right-arrow:hover {
+.next-button:hover {
   background: rgba(0, 0, 0, 0.6);
   transition: 0.3s;
   cursor: pointer;

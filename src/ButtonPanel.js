@@ -20,19 +20,19 @@ export default class ButtonPanel {
   }
 
   showLeftArrow() {
-    this.leftArrow.querySelector('svg').style.display = 'block'
+    this.leftArrow.getElementsByTagName('div')[0].style.display = 'flex'
   }
 
   showRightArrow() {
-    this.rightArrow.querySelector('svg').style.display = 'block'
+    this.rightArrow.getElementsByTagName('div')[0].style.display = 'flex'
   }
 
   hideLeftArrow() {
-    this.leftArrow.querySelector('svg').style.display = 'none'
+    this.leftArrow.getElementsByTagName('div')[0].style.display = 'none'
   }
 
   hideRightArrow() {
-    this.rightArrow.querySelector('svg').style.display = 'none'
+    this.rightArrow.getElementsByTagName('div')[0].style.display = 'none'
   }
 
   show() {
@@ -44,17 +44,25 @@ export default class ButtonPanel {
   mount(element) {
     // create a div and mount to the element
     this.buttonPanel = document.createElement('div')
-    this.leftArrow = document.createElement('span')
-    this.rightArrow = document.createElement('span')
+    this.leftArrow = document.createElement('div')
+    this.rightArrow = document.createElement('div')
 
-    this.leftArrow.innerHTML = `<img src="${leftArrowComponent}" height="60px" width="60px" />`
-    this.rightArrow.innerHTML = `<img src="${rightArrowComponent}" height="60px" width="60px" />`
-
-    this.leftArrow.className = 'next-button-arrow'
-    this.rightArrow.className = 'next-button-arrow'
+    this.leftArrow.className = 'next-button-container'
+    this.rightArrow.className = 'next-button-container'
 
     this.leftArrow.setAttribute('id', 'next-left-arrow')
     this.rightArrow.setAttribute('id', 'next-right-arrow')
+
+    const buttonLeft = document.createElement('div')
+    const buttonRight = document.createElement('div')
+    buttonLeft.className = 'next-button'
+    buttonRight.className = 'next-button'
+
+    buttonLeft.innerHTML = `<img src="${leftArrowComponent}" height="60px" />`
+    buttonRight.innerHTML = `<img src="${rightArrowComponent}" height="60px" />`
+
+    this.leftArrow.appendChild(buttonLeft)
+    this.rightArrow.appendChild(buttonRight)
 
     this.buttonPanel.appendChild(this.leftArrow)
     this.buttonPanel.appendChild(this.rightArrow)
@@ -69,7 +77,7 @@ export default class ButtonPanel {
   }
 
   clickHandler(e) {
-    const clicked = e.target.closest('.next-button-arrow').id
+    const clicked = e.target.closest('.next-button-container').id
 
     if (clicked === 'next-right-arrow') {
       console.log('next')
