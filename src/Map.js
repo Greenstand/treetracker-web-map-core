@@ -70,6 +70,8 @@ export default class Map {
 
     // mount element
     this._mountDomElement = null
+
+    log.warn('map core version:', require('../package.json').version)
   }
 
   /** *************************** static *************************** */
@@ -1242,10 +1244,10 @@ export default class Map {
       await new Promise((res) => {
         const finished = () => {
           log.warn('fire initial view finished')
-          this.map.off('moveend')
+          // this.map.off('moveend')
           res()
         }
-        this.map.on('moveend', finished)
+        this.map.once('moveend', finished)
       })
     } else {
       if (zoomLevel) {
