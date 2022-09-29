@@ -1323,6 +1323,8 @@ export default class Map {
       log.warn('filters is not changed, do nothing')
     } else {
       this.filters = filters
+      this.buttonPanel.hideLeftArrow()
+      this.buttonPanel.hideRightArrow()
       await this._unselectMarker()
       await this._unloadTileServer()
       await this._loadTileServer()
