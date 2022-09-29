@@ -5,6 +5,9 @@ import leftArrowComponent from './images/left-arrow.svg'
 import rightArrowComponent from './images/right-arrow.svg'
 
 export default class ButtonPanel {
+  leftButtonId = 'next-left-arrow'
+  rightButtonId = 'next-right-arrow'
+
   constructor(onNext, onPrev) {
     this.onNext = onNext
     this.onPrev = onPrev
@@ -50,8 +53,8 @@ export default class ButtonPanel {
     this.leftArrow.className = 'next-button-container'
     this.rightArrow.className = 'next-button-container'
 
-    this.leftArrow.setAttribute('id', 'next-left-arrow')
-    this.rightArrow.setAttribute('id', 'next-right-arrow')
+    this.leftArrow.setAttribute('id', this.leftButtonId)
+    this.rightArrow.setAttribute('id', this.rightButtonId)
 
     const buttonLeft = document.createElement('div')
     const buttonRight = document.createElement('div')
@@ -77,12 +80,12 @@ export default class ButtonPanel {
   }
 
   clickHandler(e) {
-    const clicked = e.target.closest('.next-button-container').id
+    const targetId = e.target.closest('.next-button-container').id
 
-    if (clicked === 'next-right-arrow') {
+    if (targetId === this.rightButtonId) {
       console.log('next')
       this.onNext()
-    } else if (clicked === 'next-left-arrow') {
+    } else if (targetId === this.leftButtonId) {
       console.log('prev')
       this.onPrev()
     }
