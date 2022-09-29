@@ -881,7 +881,7 @@ export default class Map {
       <div id="greenstand-leaflet" style="position: relative;width: 100%;height: 100%;"></div>
       <div id="greenstand-map-spin" style="z-index: 999; position: absolute; width: 100%; top: 0px; left: 0px" ></div>
       <div id="greenstand-map-alert" style="z-index: 999; position: absolute; width: 100%; top: 0px; left: 0px" ></div>
-      <div id="greenstand-map-buttonPanel" style="z-index: 999; position: absolute; top: 24px; left:50%; transform: translateX(-50%)" ></div>
+      <div id="greenstand-map-buttonPanel" style="z-index: 999; position: absolute; top: 0px; left:50%; transform: translateX(-50%)" ></div>
     `
     this._mountDomElement.appendChild(divContainer)
     const mountTarget = document.getElementById('greenstand-leaflet')

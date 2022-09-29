@@ -141,18 +141,21 @@
 }
 
 .buttonPanel {
-  width: 144px;
-  display: flex;
-  justify-content: space-between;
+  width: 140px;
+  height: 90px;
 }
 #next-left-arrow,
 #next-right-arrow {
+  margin: 5px;
+  flex: 40%;
+  height: 90px;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 #next-left-arrow svg,
 #next-right-arrow svg {
+  height: 70px;
   background: rgba(0, 0, 0, 0.4);
   border-radius: 15%;
 }
