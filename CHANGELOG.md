@@ -1,3 +1,9 @@
+## [2.3.1](https://github.com/Greenstand/treetracker-web-map-core/compare/v2.3.0...v2.3.1) (2022-09-29)
+
+### Bug Fixes
+
+- buttons not working ([10a7b15](https://github.com/Greenstand/treetracker-web-map-core/commit/10a7b15552603214b33d34e09c347c37c7197fc6))
+
 # [2.3.0](https://github.com/Greenstand/treetracker-web-map-core/compare/v2.2.1...v2.3.0) (2022-09-09)
 
 ### Features
