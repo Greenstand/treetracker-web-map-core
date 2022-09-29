@@ -147,19 +147,18 @@
 }
 #next-left-arrow,
 #next-right-arrow {
+  height: 60px;
+  width: 45px;
+  border-radius: 16px;
+  background-color: rgba(34, 38, 41, 0.6);
   display: flex;
   justify-content: center;
   align-items: center;
 }
-#next-left-arrow svg,
-#next-right-arrow svg {
-  background: rgba(0, 0, 0, 0.4);
-  border-radius: 15%;
-}
-#next-left-arrow:hover svg,
-#next-right-arrow:hover svg {
+#next-left-arrow:hover,
+#next-right-arrow:hover {
   background: rgba(0, 0, 0, 0.6);
-  transition: 0.5s;
+  transition: 0.3s;
   cursor: pointer;
 }
 
