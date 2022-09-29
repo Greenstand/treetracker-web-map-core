@@ -1209,10 +1209,10 @@ export default class Map {
       await new Promise((res) => {
         const boundFinished = () => {
           log.warn('fire bound finished')
-          this.map.off('moveend')
+          // this.map.off('moveend')
           res()
         }
-        this.map.on('moveend', boundFinished)
+        this.map.once('moveend', boundFinished)
       })
     } else {
       this.map.fitBounds(
