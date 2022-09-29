@@ -112,3 +112,15 @@ _check `dist/index.html` for a demo_
 
 [npm-image]: https://img.shields.io/npm/v/treetracker-web-map-core.svg
 [npm-url]: https://npmjs.org/package/treetracker-web-map-core
+
+
+# how to debug the core on the client side
+
+The senerio: sometime we need to find a easy way to debug the core in the client side, for example, the web map client repo, it's installing the core by npm, so it's hard to change code in core on the client side, we can install the core by `folder` locally, and get the change on the client side immediately, to do so:
+
+1. Download the web map core repository, `git clonet [path to repo]`
+1. Change to code you want in core
+1. Change the version number in `package.json` (this is neccessary, if don't do it, it's posssible the client will ignore/skip the installment)
+1. Generate the bundle: `npm run pre-publish` (this is nessessary, the npm will fetch the bundle file rather than the src files)
+1. Install the core in web map client: `npm install --save [relative path to the core folder]`
+1. Restart the web map client
