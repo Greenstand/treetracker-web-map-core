@@ -222,18 +222,20 @@
   background: url(./images/tree-selected-green.svg) no-repeat;
   background-size: contain;
   position: relative;
-  top: -4px;
-  width: 66px;
-  height: 87px;
+  top: 10px;
+  left: 17px;
+  width: 30px;
+  height: 46px;
 }
 
 .greenstand-point-highlight-box.green-b {
   background: url(./images/tree-highlighted-green.svg) no-repeat;
   background-size: contain;
   position: relative;
-  top: -4px;
-  width: 66px;
-  height: 87px;
+  top: 10px;
+  left: 17px;
+  width: 30px;
+  height: 46px;
 }
 
 .greenstand-cluster-highlight-box.green-b {
