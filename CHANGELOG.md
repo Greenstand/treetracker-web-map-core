@@ -1,3 +1,14 @@
+# [2.4.0](https://github.com/Greenstand/treetracker-web-map-core/compare/v2.3.1...v2.4.0) (2022-09-30)
+
+### Bug Fixes
+
+- lost move-end event ([947eff5](https://github.com/Greenstand/treetracker-web-map-core/commit/947eff5988b3ed10a62716fce5b22bd192d4e4e8))
+- next button unnessessaryly stay on the map ([96917eb](https://github.com/Greenstand/treetracker-web-map-core/commit/96917ebee0af6c45033b46243fa485a12d4157f1))
+
+### Features
+
+- print version, fix losing event ([2f6e0b0](https://github.com/Greenstand/treetracker-web-map-core/commit/2f6e0b0b43426a38e69086ad5a99590da5e12562))
+
 ## [2.3.1](https://github.com/Greenstand/treetracker-web-map-core/compare/v2.3.0...v2.3.1) (2022-09-29)
 
 ### Bug Fixes
