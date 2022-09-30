@@ -92,6 +92,14 @@
     function unselect(){
         map.clearSelection();
     }
+
+    function dosubmitBounds(){
+        (async () => {
+            const bounds = document.getElementById('bounds').value;
+            await map.gotoBounds(bounds);
+        })();
+        return false;
+    }
 </script>
 <style>
     .panel {
@@ -126,6 +134,13 @@
             lon <input id="lon" name="lon" type="input" value="" placeholder="longitude">
             zoomlevel <input id="zoom" name="zoom" type="input" value="" placeholder="zoom level">
             <input type="submit" name="flytoSubmit" value="Submit" />
+        </form>
+    </div>
+    <div class="panel">
+        <h5>goto to bounds</h5>
+        <form action="" onsubmit="return dosubmitBounds();">
+            bounds <input id="bounds" name="bounds" type="input" value="" placeholder="-179.64843750000003,-66.37275500247456,101.6015625,76.26869465080624">
+            <input type="submit" name="boundsSubmit" value="Submit" />
         </form>
     </div>
     <div class="panel">
@@ -178,7 +193,7 @@
             onFindNearestAt: () => console.log("onFindNearstAt"),
             onError: () => console.log("onError"),
         });
-        map.on("moveEnd", handleMoveEnd);
+        map.on(greenstand.Map.REGISTERED_EVENTS.MOVE_END, handleMoveEnd);
         map.mount(document.getElementById("map"));
         map.setFilters(parameters);
     };
