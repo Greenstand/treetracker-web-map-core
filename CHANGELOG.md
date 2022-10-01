@@ -1,3 +1,14 @@
+# [2.5.0](https://github.com/Greenstand/treetracker-web-map-core/compare/v2.4.0...v2.5.0) (2022-10-01)
+
+### Bug Fixes
+
+- demo for icons ([bbb3304](https://github.com/Greenstand/treetracker-web-map-core/commit/bbb3304f9889d1596b21e64d2cee796028213b59))
+
+### Features
+
+- new icon for tree ([6367199](https://github.com/Greenstand/treetracker-web-map-core/commit/63671998e253c0852ab297d77662f0b2ab8abb28))
+- new icon for tree (small) ([6df0434](https://github.com/Greenstand/treetracker-web-map-core/commit/6df0434a2288fef31e97077b612ca472f02ea31a))
+
 # [2.4.0](https://github.com/Greenstand/treetracker-web-map-core/compare/v2.3.1...v2.4.0) (2022-09-30)
 
 ### Bug Fixes
