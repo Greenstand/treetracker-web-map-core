@@ -284,6 +284,7 @@ export default class Map {
           log.warn('load finished')
           this.spin.hide()
           this.alert.hide()
+          this._checkArrow()
         },
         onDestroy: () => {
           log.warn('destroy')
@@ -324,7 +325,6 @@ export default class Map {
 
       this.layerUtfGrid.on('load', () => {
         log.info('all grid loaded!')
-        this._checkArrow()
       })
 
       this.layerUtfGrid.on('tileunload', (e) => {
@@ -352,13 +352,6 @@ export default class Map {
 
       // bind the finding marker function
       this.layerUtfGrid.hasMarkerInCurrentView = () => {
-        // waiting layer is ready
-        const isLoading = this.layerUtfGrid.isLoading()
-        log.warn('utf layer is loading:', isLoading)
-        if (isLoading) {
-          log.warn('can not handle the grid utf check when loading, cancel!')
-          return false
-        }
         const begin = Date.now()
         let found = false
         let count = 0
@@ -960,6 +953,7 @@ export default class Map {
     log.info('check arrow...')
     if (this.layerUtfGrid.hasMarkerInCurrentView()) {
       log.info('found marker')
+      this.nearestTreeArrow.hideArrow()
     } else {
       log.info('no marker')
       const nearest = await this._getNearest()
