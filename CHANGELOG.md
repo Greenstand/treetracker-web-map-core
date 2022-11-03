@@ -1,3 +1,9 @@
+## [2.5.1](https://github.com/Greenstand/treetracker-web-map-core/compare/v2.5.0...v2.5.1) (2022-11-03)
+
+### Bug Fixes
+
+- the nearest arrow keep showing 70 treetracker-we-map-client ([0bb88b6](https://github.com/Greenstand/treetracker-web-map-core/commit/0bb88b6fd936a4e9a767ed9d02cbe11abedcc8a6))
+
 # [2.5.0](https://github.com/Greenstand/treetracker-web-map-core/compare/v2.4.0...v2.5.0) (2022-10-01)
 
 ### Bug Fixes
