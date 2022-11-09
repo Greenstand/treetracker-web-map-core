@@ -6,7 +6,7 @@ module.exports = {
   '*': 'prettier --ignore-unknown --write',
 
   // lint typescript files and run related unit tests
-  '*.js': 'eslint --fix',
+  '*.tsx?': 'eslint --fix',
 
   // lint entire project if eslint settings or ignore file changed
   // do not pass filename arguments

@@ -1,7 +1,7 @@
 /*
  * A model for monitoring the loading of tiles.
  */
-const log = require('loglevel')
+import log from 'loglevel'
 
 class TileLoadingMonitor {
   constructor(tileLayer, options) {
@@ -65,4 +65,4 @@ class TileLoadingMonitor {
   }
 }
 
-module.exports = TileLoadingMonitor
+export default TileLoadingMonitor

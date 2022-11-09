@@ -2,8 +2,6 @@
 import './style.css'
 
 export default class Spin {
-  constructor() {}
-
   mount(element) {
     // create a div and mount to the element
     this.spin = document.createElement('div')

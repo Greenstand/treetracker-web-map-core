@@ -2,8 +2,6 @@
 import './style.css'
 
 export default class Alert {
-  constructor() {}
-
   mount(element) {
     // create a div and mount to the element
     this.alert = document.createElement('div')

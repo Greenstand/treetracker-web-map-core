@@ -12,10 +12,7 @@
 // This function is called when a project is opened or re-opened (e.g. due to
 // the project's config changing)
 
-/**
- * @type {Cypress.PluginConfig}
- */
-// eslint-disable-next-line no-unused-vars
-module.exports = (on, config) => {
-  require('cypress-watch-and-reload/plugins')(config)
+export default async function (_: any, config: Cypress.PluginConfig) {
+  const cypressWaRPlugins = await import('cypress-watch-and-reload/plugins')
+  cypressWaRPlugins(config)
 }

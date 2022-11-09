@@ -68,8 +68,6 @@ describe('MapTools', () => {
 })
 
 describe('getInitialBounds', () => {
-  beforeAll(() => {})
-
   it('getInitialBounds(0,0)', () => {
     const result = mapTools.getInitialBounds([{ lat: 0, lng: 0 }], 500, 500)
     expect(result).toMatchObject({

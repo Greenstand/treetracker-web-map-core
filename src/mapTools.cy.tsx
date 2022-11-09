@@ -113,6 +113,7 @@ describe('mapTools', () => {
           })
         }
       }, [])
+
       return (
         <div
           id="map-canvas"

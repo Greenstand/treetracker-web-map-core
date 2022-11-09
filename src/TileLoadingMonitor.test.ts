@@ -1,8 +1,7 @@
-const TileLoadingMonitor = require('./TileLoadingMonitor')
+import TileLoadingMonitor from './TileLoadingMonitor'
 // import node.js event emitter
-const EventEmitter = require('events')
-
-const log = require('loglevel')
+import EventEmitter from 'events'
+import log from 'loglevel'
 
 // jest use fake timers
 jest.useFakeTimers('modern')

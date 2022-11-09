@@ -15,6 +15,8 @@ import mapConfig from './mapConfig'
 import { getInitialBounds } from './mapTools'
 import Requester from './Requester'
 
+import pack from '../package.json'
+
 import EventEmitter from 'events'
 
 import Spin from './Spin'
@@ -71,7 +73,7 @@ export default class Map {
     // mount element
     this._mountDomElement = null
 
-    log.warn('map core version:', require('../package.json').version)
+    log.warn('map core version:', pack.version)
   }
 
   /** *************************** static *************************** */
