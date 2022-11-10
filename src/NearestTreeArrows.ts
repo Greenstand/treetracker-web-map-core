@@ -1,11 +1,15 @@
 import './style.css'
+import { DirectionType } from './types'
 
 export default class NearestTreeArrows {
-  constructor(moveToNearest) {
+  arrow: HTMLDivElement
+  moveToNearest: () => void
+
+  constructor(moveToNearest: () => void) {
     this.moveToNearest = moveToNearest
   }
 
-  mount(element) {
+  mount(element: HTMLElement) {
     this.arrow = document.createElement('div')
     this.arrow.innerHTML = `
     <div class="round">
@@ -28,14 +32,14 @@ export default class NearestTreeArrows {
     this.arrow.style.display = 'none'
   }
 
-  showArrow(direction) {
+  showArrow(direction: DirectionType) {
     this.arrow.className = ''
     this.arrow.style.display = 'block'
 
     // Check if the prev & next tree button panel exists, if it does shift the nearest NORTH arrow to the right
-    const buttonPanelExists =
-      document.getElementById('greenstand-map-buttonPanel').firstChild.style
-        .display !== 'none'
+    const buttonPanel = document.getElementById('greenstand-map-buttonPanel')
+      .firstChild as HTMLElement
+    const buttonPanelExists = buttonPanel.style.display !== 'none'
     this.arrow.className = `${
       buttonPanelExists && direction === 'north'
         ? direction + ' shift'
