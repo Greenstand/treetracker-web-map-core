@@ -1,5 +1,5 @@
-import Map from './Map.js'
-import Alert from './Alert.js'
-import Spin from './Spin.js'
+import Map from './Map'
+import Alert from './Alert'
+import Spin from './Spin'
 
 export { Map, Spin, Alert }
