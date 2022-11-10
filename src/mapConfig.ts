@@ -1,4 +1,6 @@
-const mapConfig = {
+import { MapConfig } from './interfaces'
+
+const mapConfig: MapConfig = {
   freetown: {
     zoom: 8,
     center: { lat: 8.665148, lng: -11.788725 },
