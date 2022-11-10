@@ -2,7 +2,9 @@
 import './style.css'
 
 export default class Alert {
-  mount(element) {
+  alert: HTMLDivElement
+
+  mount(element: HTMLElement) {
     // create a div and mount to the element
     this.alert = document.createElement('div')
     this.alert.innerHTML = `
@@ -24,7 +26,7 @@ export default class Alert {
     element.appendChild(this.alert)
   }
 
-  show(message) {
+  show(message: string) {
     document.getElementsByClassName(
       'greenstand-alert-message-box',
     )[0].innerHTML = message
