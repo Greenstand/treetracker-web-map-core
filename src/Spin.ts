@@ -2,7 +2,9 @@
 import './style.css'
 
 export default class Spin {
-  mount(element) {
+  spin: HTMLDivElement
+
+  mount(element: HTMLElement) {
     // create a div and mount to the element
     this.spin = document.createElement('div')
     this.spin.innerHTML = `

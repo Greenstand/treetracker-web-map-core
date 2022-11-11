@@ -1,17 +1,19 @@
 /*
  * The model to manage requests
  */
-import axios from 'axios'
+import axios, { AxiosRequestConfig } from 'axios'
 import log from 'loglevel'
 
 const { CancelToken } = axios
 
 export default class Requester {
+  source: ReturnType<typeof CancelToken.source> | undefined
+
   constructor() {
     this.source = undefined
   }
 
-  async request(options) {
+  async request(options: AxiosRequestConfig) {
     log.info('request:', options)
     // before request, cancel previous one
     if (this.source) {
