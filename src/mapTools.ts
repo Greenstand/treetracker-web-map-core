@@ -5,8 +5,13 @@ import 'leaflet'
 
 import expect from 'expect-runtime'
 import log from 'loglevel'
+import { CoordinatesType, DirectionType } from './types'
 
-function go(direction, location, degree) {
+function go(
+  direction: DirectionType,
+  location: CoordinatesType,
+  degree: number,
+) {
   expect(direction).oneOf(['east', 'west', 'north', 'south'])
   expect(location).property('lat').number()
   expect(location).property('lng').number()
@@ -38,7 +43,7 @@ function go(direction, location, degree) {
   return result
 }
 
-function getAngleLng(east, west) {
+function getAngleLng(east: number, west: number) {
   let angle = east - west
   if (angle < 0) {
     angle += 360
@@ -46,7 +51,7 @@ function getAngleLng(east, west) {
   return angle
 }
 
-function getAngleLat(north, south) {
+function getAngleLat(north: number, south: number) {
   let angle = north - south
   log.log('angle:', angle)
   angle = Math.abs(angle)
@@ -66,16 +71,20 @@ function getAngleLat(north, south) {
  *
  *
  */
-function getInitialBounds(rawLocations, width, height) {
+function getInitialBounds(
+  rawLocations: CoordinatesType[],
+  width: number,
+  height: number,
+) {
   expect(rawLocations).lengthOf.above(0)
   // convert
-  const locations = rawLocations.map((location) => ({
+  const locations = rawLocations.map((location: CoordinatesType) => ({
     ...location,
-    lat: parseFloat(location.lat),
-    lng: parseFloat(location.lng),
+    lat: location.lat,
+    lng: location.lng,
   }))
 
-  locations.forEach((location) => {
+  locations.forEach((location: CoordinatesType) => {
     expect(location).property('lat').number()
     expect(location).property('lng').number()
   })
@@ -154,7 +163,11 @@ function getInitialBounds(rawLocations, width, height) {
 //   );
 // }
 
-function getLatLngCoordinateByPixel(top, left, map) {
+function getLatLngCoordinateByPixel(
+  top: number,
+  left: number,
+  map: google.maps.Map,
+) {
   expect(top).number()
   expect(left).number()
   expect(map).defined()
@@ -173,7 +186,11 @@ function getLatLngCoordinateByPixel(top, left, map) {
   return resultLatLng
 }
 
-function getPixelCoordinateByLatLng(lat, lng, map) {
+function getPixelCoordinateByLatLng(
+  lat: number,
+  lng: number,
+  map: google.maps.Map,
+) {
   expect(lat).number()
   expect(lng).number()
   expect(map).defined()

@@ -10,7 +10,6 @@
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "typeRoots": ["./node_modules/@types"],
-    "types": ["node", "cypress"],
     "jsx": "react-jsx"
   },
   "include": ["src", "cypress"],
