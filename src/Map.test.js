@@ -40,7 +40,7 @@ describe('Map', () => {
     expect(view).toMatchObject({
       center: {
         lat: 18.788082619896404,
-        lng: -61.031384143776386,
+        lon: -61.031384143776386,
       },
       zoomLevel: 3,
     })

@@ -73,7 +73,7 @@ describe('mapTools', () => {
               new window.google.maps.Marker({
                 position: {
                   lat: chicago.lat(),
-                  lng: bounds.getSouthWest().lng(),
+                  lon: bounds.getSouthWest().lng(),
                 },
                 map,
               })
