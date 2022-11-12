@@ -6,7 +6,6 @@ export type CoordinatesType = {
 }
 
 export type ButtonPanelMethods = {
-  _isHidden: () => void
   hide: () => void
   showLeftArrow: () => void
   showRightArrow: () => void

@@ -13,22 +13,20 @@ export default class ButtonPanel implements ButtonPanelMethods {
   buttonPanel: HTMLDivElement
   leftArrow: HTMLDivElement
   rightArrow: HTMLDivElement
-  constructor(
-    public onNext: () => void,
-    public onPrev: () => void,
-    public isHidden: boolean = false,
-  ) {
+  private _isHidden: Boolean
+
+  constructor(public onNext: () => void, public onPrev: () => void) {
     this.onNext = onNext
     this.onPrev = onPrev
   }
 
-  _isHidden() {
-    return this.isHidden
+  isHidden() {
+    return this._isHidden
   }
 
   hide() {
     this.buttonPanel.style.display = 'none'
-    this.isHidden === false ? (this.isHidden = !this._isHidden()) : null
+    this._isHidden = true
   }
 
   showLeftArrow() {
@@ -50,7 +48,7 @@ export default class ButtonPanel implements ButtonPanelMethods {
   show() {
     log.debug('ButtonPanel.show()')
     this.buttonPanel.style.display = 'flex'
-    this.isHidden === true ? (this.isHidden = !this._isHidden()) : null
+    this._isHidden = false
   }
 
   mount(element: Element): void {
