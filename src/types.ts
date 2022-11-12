@@ -13,5 +13,5 @@ export type ButtonPanelMethods = {
   hideRightArrow: () => void
   show: () => void
   mount: (e: Element) => void
-  clickHandler: (e: Event) => void
+  clickHandler: (e: MouseEvent) => void
 }

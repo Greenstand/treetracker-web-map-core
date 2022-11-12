@@ -13,7 +13,7 @@ export default class ButtonPanel implements ButtonPanelMethods {
   buttonPanel: HTMLDivElement
   leftArrow: HTMLDivElement
   rightArrow: HTMLDivElement
-  private _isHidden: Boolean
+  private _isHidden: boolean
 
   constructor(public onNext: () => void, public onPrev: () => void) {
     this.onNext = onNext
@@ -86,7 +86,7 @@ export default class ButtonPanel implements ButtonPanelMethods {
     this.buttonPanel.style.display = 'none'
   }
 
-  clickHandler(e: Event) {
+  clickHandler(e: MouseEvent) {
     const targetId = (e.target as HTMLDivElement).closest(
       'next-button-container',
     ).id
