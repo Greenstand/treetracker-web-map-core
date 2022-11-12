@@ -3,37 +3,37 @@ import * as mapTools from './mapTools'
 describe('MapTools', () => {
   describe("go('east/west...')", () => {
     it('{0,0} go east 1deg => {1,0}', () => {
-      expect(mapTools.go('east', { lat: 0, lng: 0 }, 1)).toMatchObject({
+      expect(mapTools.go('east', { lat: 0, lon: 0 }, 1)).toMatchObject({
         lat: 0,
-        lng: 1,
+        lon: 1,
       })
     })
 
     it('{180,0} go east 1deg => {179,0}', () => {
-      expect(mapTools.go('east', { lat: 0, lng: 180 }, 1)).toMatchObject({
+      expect(mapTools.go('east', { lat: 0, lon: 180 }, 1)).toMatchObject({
         lat: 0,
-        lng: -179,
+        lon: -179,
       })
     })
 
     it('{-180,0} go west 1deg => {179,0}', () => {
-      expect(mapTools.go('west', { lat: 0, lng: -180 }, 1)).toMatchObject({
+      expect(mapTools.go('west', { lat: 0, lon: -180 }, 1)).toMatchObject({
         lat: 0,
-        lng: 179,
+        lon: 179,
       })
     })
 
     it('{0,90} go north 1deg => {89,0}', () => {
-      expect(mapTools.go('north', { lat: 90, lng: 0 }, 1)).toMatchObject({
+      expect(mapTools.go('north', { lat: 90, lon: 0 }, 1)).toMatchObject({
         lat: 89,
-        lng: 0,
+        lon: 0,
       })
     })
 
     it('{0,-90} go south 1deg => {89,0}', () => {
-      expect(mapTools.go('south', { lat: -90, lng: 0 }, 1)).toMatchObject({
+      expect(mapTools.go('south', { lat: -90, lon: 0 }, 1)).toMatchObject({
         lat: -89,
-        lng: 0,
+        lon: 0,
       })
     })
   })
@@ -71,11 +71,11 @@ describe('getInitialBounds', () => {
   beforeAll(() => {})
 
   it('getInitialBounds(0,0)', () => {
-    const result = mapTools.getInitialBounds([{ lat: 0, lng: 0 }], 500, 500)
+    const result = mapTools.getInitialBounds([{ lat: 0, lon: 0 }], 500, 500)
     expect(result).toMatchObject({
       center: {
         lat: 0,
-        lng: 0,
+        lon: 0,
       },
       zoomLevel: expect.anything(),
     })
