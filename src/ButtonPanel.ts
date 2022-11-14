@@ -51,7 +51,7 @@ export default class ButtonPanel implements ButtonPanelMethods {
     this._isHidden = false
   }
 
-  mount(element: Element): void {
+  mount(element: Element) {
     // create a div and mount to the element
     this.buttonPanel = document.createElement('div')
     this.leftArrow = document.createElement('div')
