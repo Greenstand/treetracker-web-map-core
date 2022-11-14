@@ -1,21 +1,14 @@
 /* The ButtonPanel component */
 import './style.css'
 import log from 'loglevel'
-//@ts-expect-error No need for declaration files for images yet
 import leftArrowComponent from './images/left-arrow.svg'
-//@ts-expect-error No need for declaration files for images yet
 import rightArrowComponent from './images/right-arrow.svg'
-import { ButtonPanelMethods } from './types'
 
-export default class ButtonPanel implements ButtonPanelMethods {
+export default class ButtonPanel {
   leftButtonId = 'next-left-arrow'
   rightButtonId = 'next-right-arrow'
-  buttonPanel: HTMLDivElement
-  leftArrow: HTMLDivElement
-  rightArrow: HTMLDivElement
-  private _isHidden: boolean
 
-  constructor(public onNext: () => void, public onPrev: () => void) {
+  constructor(onNext, onPrev) {
     this.onNext = onNext
     this.onPrev = onPrev
   }
@@ -51,7 +44,7 @@ export default class ButtonPanel implements ButtonPanelMethods {
     this._isHidden = false
   }
 
-  mount(element: Element) {
+  mount(element) {
     // create a div and mount to the element
     this.buttonPanel = document.createElement('div')
     this.leftArrow = document.createElement('div')
@@ -86,10 +79,8 @@ export default class ButtonPanel implements ButtonPanelMethods {
     this.buttonPanel.style.display = 'none'
   }
 
-  clickHandler(e: MouseEvent) {
-    const targetId = (e.target as HTMLDivElement).closest(
-      'next-button-container',
-    ).id
+  clickHandler(e) {
+    const targetId = e.target.closest('.next-button-container').id
 
     if (targetId === this.rightButtonId) {
       console.log('next')
