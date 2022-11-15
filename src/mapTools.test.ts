@@ -1,4 +1,5 @@
 import * as mapTools from './mapTools'
+import { expect } from '@jest/globals'
 
 describe('MapTools', () => {
   describe("go('east/west...')", () => {
