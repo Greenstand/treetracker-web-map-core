@@ -30,6 +30,9 @@ class MapError extends Error {}
 console.log('Greenstand web map core, version:')
 
 export default class Map {
+  loadInitialView() {
+    throw new Error('Method not implemented.')
+  }
   // events
   static REGISTERED_EVENTS = {
     TREE_SELECTED: 'tree-selected',

@@ -15,3 +15,14 @@ export type ButtonPanelMethods = {
   mount: (e: Element) => void
   clickHandler: (e: MouseEvent) => void
 }
+
+export type view = {
+  [k: string]: {
+    center: {
+      lat: number
+      lng: number
+    }
+    zoomLevel: number
+    animate?: boolean
+  }
+}

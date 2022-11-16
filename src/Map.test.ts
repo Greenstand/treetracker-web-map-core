@@ -1,22 +1,28 @@
 // import response from '../../cypress/fixtures/tile/zoom_level=10&userid=1.json'
 import Map from './Map'
 import Requester from './Requester'
-
+import { expect } from '@jest/globals'
+import type { view } from './types'
+jest.mock('./Requester')
+let requester = Requester as jest.Mock
 const response = {}
 
-jest.mock('./Requester')
+// jest.mock('./Requester')
+// Use tsconfig.json type prop to add the jest package as a type
 
 describe('Map', () => {
   beforeEach(() => {
-    Requester.mockClear()
+    requester.mockClear()
   })
 
+  // ES2015 added to lib prop within tsconfig.json to allow async/await
   it('loadInitialView', async () => {
     const request = jest.fn(() => response)
-    Requester.mockImplementation(() => ({
+    // RMD => add all missing members
+    requester.mockImplementation(() => ({
       request,
     }))
-    const view = {}
+    const view: view = {}
     const map = new Map({
       userid: '1',
       width: 1440,
