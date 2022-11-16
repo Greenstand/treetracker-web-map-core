@@ -1,3 +1,5 @@
+import TileLoadingMonitor from './TileLoadingMonitor'
+
 export type DirectionType = 'north' | 'south' | 'east' | 'west'
 
 export type CoordinatesType = {
@@ -15,6 +17,8 @@ export type ButtonPanelMethods = {
   mount: (e: Element) => void
   clickHandler: (e: MouseEvent) => void
 }
+
+export type TileLoadingMonitorType = InstanceType<typeof TileLoadingMonitor>
 
 export type TileLoadingMonitorOptions = {
   showLoadingThreshold: number
