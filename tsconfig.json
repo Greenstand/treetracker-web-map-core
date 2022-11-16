@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "types": ["jest"],
     "outDir": "./dist/",
     "noImplicitAny": true,
     "lib": ["es5", "dom"],
