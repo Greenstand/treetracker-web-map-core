@@ -4,21 +4,11 @@ import React from 'react'
 import * as mapTools from './mapTools'
 import { mountWithTheme as mount } from './test-utils'
 
-const google = {
-  maps: {
-    geometry: {
-      spherical: {
-        computeDistanceBetween: () => 0,
-      },
-    },
-    LatLng: () => 0,
-  },
-}
-
 const TILE_SIZE = 256
 // The mapping between latitude, longitude and pixels is defined by the web
 // mercator projection.
-function project(latLng = google.maps.LatLng) {
+function project(latLng: google.maps.LatLng) {
+  if (!latLng) throw new Error('latLng not defined')
   let siny = Math.sin((latLng.lat() * Math.PI) / 180)
 
   // Truncating to 0.9999 effectively limits latitude to 89.189. This is
@@ -131,7 +121,7 @@ describe('mapTools', () => {
 
 describe('Test getPixelCoordinateByLatLng', () => {
   it.only('', () => {
-    let map
+    let map: google.maps.Map
     function Test() {
       React.useEffect(() => {
         console.log('load map...')

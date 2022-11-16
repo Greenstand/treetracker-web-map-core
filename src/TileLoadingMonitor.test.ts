@@ -1,20 +1,27 @@
+import { TileLoadingMonitorType } from './types'
 import TileLoadingMonitor from './TileLoadingMonitor'
 // import node.js event emitter
-import EventEmitter from 'events'
+import { EventEmitter } from 'events'
 import log from 'loglevel'
+import { expect } from '@jest/globals'
 
 // jest use fake timers
-jest.useFakeTimers('modern')
+jest.useFakeTimers()
 
 describe('TileLoadingMonitor', () => {
-  let emitter, tileLayer, showLoading, slowAlert, load, monitor
+  let emitter: EventEmitter,
+    tileLayer: any,
+    showLoading: () => void,
+    slowAlert: () => void,
+    load: () => void,
+    monitor: TileLoadingMonitorType
 
   beforeEach(() => {
     // create event emitter
     emitter = new EventEmitter()
 
     tileLayer = {
-      on: (e, h) => {
+      on: (e: string, h: () => void) => {
         log.warn('on:', e, h)
         emitter.on(e, h)
       },
@@ -40,7 +47,7 @@ describe('TileLoadingMonitor', () => {
 
   it('a normal sequence of loading', async () => {
     // run tile
-    //emitter.emit("loading");
+    // emitter.emit("loading");
     monitor._handleLoading()
 
     // timer will fire after 1000ms

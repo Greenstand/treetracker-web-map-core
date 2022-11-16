@@ -1,3 +1,5 @@
+import TileLoadingMonitor from './TileLoadingMonitor'
+
 export type DirectionType = 'north' | 'south' | 'east' | 'west'
 
 export type CoordinatesType = {
@@ -26,3 +28,16 @@ export type view = {
     animate?: boolean
   }
 }
+
+export type TileLoadingMonitorType = InstanceType<typeof TileLoadingMonitor>
+
+export type TileLoadingMonitorOptions = {
+  showLoadingThreshold: number
+  slowThreshold: number
+  onShowLoading: () => void
+  onSlowAlert: () => void
+  onLoad: () => void
+  onDestroy?: () => void
+ }
+ 
+
