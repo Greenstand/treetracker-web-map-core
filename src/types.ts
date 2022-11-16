@@ -15,3 +15,12 @@ export type ButtonPanelMethods = {
   mount: (e: Element) => void
   clickHandler: (e: MouseEvent) => void
 }
+
+export type TileLoadingMonitorOptions = {
+  showLoadingThreshold: number
+  slowThreshold: number
+  onShowLoading: () => void
+  onSlowAlert: () => void
+  onLoad: () => void
+  onDestroy?: () => void
+ }

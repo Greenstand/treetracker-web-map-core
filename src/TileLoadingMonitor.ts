@@ -1,10 +1,17 @@
 /*
  * A model for monitoring the loading of tiles.
  */
+import { TileErrorEvent, TileEvent, TileLayer } from 'leaflet'
 import log from 'loglevel'
+import { TileLoadingMonitorOptions } from './types'
 
 class TileLoadingMonitor {
-  constructor(tileLayer, options) {
+  tileLayer: TileLayer
+  showLoadingTimer: ReturnType<typeof setTimeout> | undefined
+  slowTimer: ReturnType<typeof setTimeout> | undefined
+  options: TileLoadingMonitorOptions
+
+  constructor(tileLayer: TileLayer, options: TileLoadingMonitorOptions) {
     // the monitor should know about the tile layer
     // and how to manipulate and listen to it
     this.tileLayer = tileLayer
@@ -23,7 +30,7 @@ class TileLoadingMonitor {
     this.slowTimer = undefined
   }
 
-  _handleLoading = (event) => {
+  _handleLoading = (_event?: TileEvent) => {
     log.warn('start loading tile...')
     log.warn(
       'wait for show loading for %d sed',
@@ -39,7 +46,7 @@ class TileLoadingMonitor {
     }, this.options.slowThreshold)
   }
 
-  _handleLoad = (event) => {
+  _handleLoad = (_event?: TileEvent) => {
     log.warn('stop loading tile...')
     clearTimeout(this.showLoadingTimer)
     delete this.showLoadingTimer
@@ -49,7 +56,7 @@ class TileLoadingMonitor {
     this.options.onLoad()
   }
 
-  _handleTileError = (event) => {
+  _handleTileError = (_event?: TileErrorEvent) => {
     log.warn('error loading tile...')
     // TODO handle error
     this.options.onLoad()
