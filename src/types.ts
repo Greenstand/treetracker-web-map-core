@@ -20,3 +20,11 @@ export type ButtonPanelMethods = {
 
 export type TileLoadingMonitorType = InstanceType<typeof TileLoadingMonitor>
 
+export type TileLoadingMonitorOptions = {
+  showLoadingThreshold: number
+  slowThreshold: number
+  onShowLoading: () => void
+  onSlowAlert: () => void
+  onLoad: () => void
+  onDestroy?: () => void
+ }
