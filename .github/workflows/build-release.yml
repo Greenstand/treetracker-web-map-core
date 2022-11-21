@@ -44,6 +44,15 @@ jobs:
         id: package-version
         uses: martinbeentjes/npm-get-version-action@master
 
-      - name: npm test
+  unit-tests:
+    name: Run unit tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: npm clean install
+        run: npm ci
+        working-directory: ${{ env.project-directory }}
+
+      - name: Jest Unit Tests'
         run: npm test
         working-directory: ${{ env.project-directory }}
