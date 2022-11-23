@@ -1296,11 +1296,27 @@ export default class Map {
   }
 
   on(eventName, handler) {
-    //TODO check event name enum
-    if (handler) {
-      log.info('register event:', eventName)
-      this.events.on(eventName, handler)
+    const events = Object.values(Map.REGISTERED_EVENTS)
+    if (!events.includes(eventName)) {
+      throw new Error(`unrecognisable event name`)
     }
+    if (typeof handler !== 'function') {
+      throw new Error(`handler isnt't of type function`)
+    }
+    log.info('register event:', eventName)
+    this.events.on(eventName, handler)
+  }
+
+  off(eventName, handler) {
+    const events = Object.values(Map.REGISTERED_EVENTS)
+    if (!events.includes(eventName)) {
+      throw new Error(`unrecognisable event name`)
+    }
+    if (typeof handler !== 'function') {
+      throw new Error(`handler isnt't of type function`)
+    }
+    log.info('register event:', eventName)
+    this.events.off(eventName, handler)
   }
 
   selectTree(tree) {
