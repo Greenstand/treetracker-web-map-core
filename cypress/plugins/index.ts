@@ -12,7 +12,7 @@
 // This function is called when a project is opened or re-opened (e.g. due to
 // the project's config changing)
 
-export default async function (_: any, config: Cypress.PluginConfig) {
-  const cypressWaRPlugins = await import('cypress-watch-and-reload/plugins')
-  cypressWaRPlugins(config)
+module.exports = (_: any, config: Cypress.PluginConfig) => {
+  require('cypress-watch-and-reload/plugins')(config)
+  return config
 }
