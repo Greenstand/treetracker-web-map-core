@@ -106,7 +106,7 @@ function getInitialBounds(
     locations.push(cornerEastSouth)
   }
 
-  const bounds = window.L.latLngBounds()
+  const bounds = window.L.latLngBounds([0, 0], [0, 0])
 
   locations.forEach((location) => {
     bounds.extend(location)
