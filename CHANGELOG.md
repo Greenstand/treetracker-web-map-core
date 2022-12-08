@@ -1,3 +1,17 @@
+# [2.6.0](https://github.com/Greenstand/treetracker-web-map-core/compare/v2.5.2...v2.6.0) (2022-12-06)
+
+### Features
+
+- new icon for tree highlight ([5f55498](https://github.com/Greenstand/treetracker-web-map-core/commit/5f55498fe48e8fbd9066179cfde7be75244b738d))
+
+## [2.5.2](https://github.com/Greenstand/treetracker-web-map-core/compare/v2.5.1...v2.5.2) (2022-11-24)
+
+### Bug Fixes
+
+- checkout to github actions repo then setup node 16 before using jest ([bcf0c63](https://github.com/Greenstand/treetracker-web-map-core/commit/bcf0c638c155a986cf96c5cf7e9381a375f06945))
+- making a CI/CD pipeline that uses Jest to unit test pushed changes ([f68640b](https://github.com/Greenstand/treetracker-web-map-core/commit/f68640b1fcd84c5b3975497cd5e1b6a7bc215189))
+- set jest as its own job ([9dc5635](https://github.com/Greenstand/treetracker-web-map-core/commit/9dc5635eb28b525e710464a26f0f1295dd96e762))
+
 ## [2.5.1](https://github.com/Greenstand/treetracker-web-map-core/compare/v2.5.0...v2.5.1) (2022-11-03)
 
 ### Bug Fixes
