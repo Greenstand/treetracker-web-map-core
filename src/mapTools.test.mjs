@@ -1,5 +1,4 @@
-import 'regenerator-runtime'
-// import * as mapTools from './mapTools'
+import * as mapTools from './mapTools'
 import mapTools from './mapTools'
 
 describe('MapTools', () => {
