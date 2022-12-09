@@ -10,7 +10,6 @@
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "typeRoots": ["./node_modules/@types"],
-    "types": ["jest"],
     "jsx": "react-jsx"
   },
   "include": ["src", "cypress"],
