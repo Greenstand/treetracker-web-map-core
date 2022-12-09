@@ -1,4 +1,10 @@
-import { Marker, TileLayer, TileEvent } from 'leaflet'
+import {
+  Marker,
+  TileLayer,
+  TileEvent,
+  Map as LeafletMap,
+  LatLng,
+} from 'leaflet'
 import Alert from './Alert'
 import Spin from './Spin'
 import TileLoadingMonitor from './TileLoadingMonitor'
@@ -35,7 +41,7 @@ export type TileLoadingMonitorOptions = {
 //  export type MapOptions = Partial<InstanceType<typeof Map>>
 export type MapOptions = {
   L: any
-  map?: any
+  map?: LeafletMap
   minZoom: number
   maxZoom: number
   initialCenter: CoordinatesType
@@ -103,10 +109,16 @@ export interface UTFGridUnloadEvent extends TileEvent {
   tile: HTMLImageElement & { cancelRequest: () => void }
 }
 
-export type TreeType = {
-  lat: string
-  lon: string
+export type Point = {
+  count: number
   id: number
+  lat: number
+  latlon: string
+  type: string
+  lon: number
+}
+
+export type TreeType = TreeInfoType & {
   time_created?: string
   time_updated?: string
   missing?: boolean
@@ -152,4 +164,14 @@ export type TreeType = {
   name?: ValueMissing | string
   earnings_id?: ValueMissing | number
   session_id?: string
+}
+
+export type IconSuiteParameters = {
+  iconSuiteClass: string
+  iconSuiteQueryString: string
+}
+
+export type View = {
+  center: LatLng
+  zoomLevel: number
 }

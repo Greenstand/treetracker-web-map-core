@@ -42,6 +42,9 @@ import {
   CustomUTFData,
   MapOptions,
   UTFGridUnloadEvent,
+  Point,
+  IconSuiteParameters,
+  View,
 } from './types'
 
 import {
@@ -50,9 +53,10 @@ import {
   Marker,
   TileLayer,
   Map as LeafletMap,
-  geoJson,
   GeoJSON,
 } from 'leaflet'
+
+import { GeoJsonObject } from 'geojson'
 
 class MapError extends Error {}
 
@@ -285,14 +289,16 @@ export default class Map {
     })
   }
 
-  async _addGeoJson(source: GeoJSON | GeoJSON[]) {
+  async _addGeoJson(source: string | GeoJsonObject | GeoJsonObject[]) {
     let geo = source
 
     if (typeof source === 'string') {
       geo = (await axios.get(source)).data
     }
 
-    const layer = window.L.geoJSON(geo).addTo(this.map)
+    const layer = window.L.geoJSON(
+      geo as GeoJsonObject | GeoJsonObject[],
+    ).addTo(this.map)
     return layer
   }
 
@@ -578,7 +584,7 @@ export default class Map {
     }
   }
 
-  _clickMarker(data: CustomUTFData) {
+  _clickMarker(data: CustomUTFData): void | never {
     this._unHighlightMarker()
     if (
       data.type === 'point' ||
@@ -653,7 +659,7 @@ export default class Map {
     }
   }
 
-  _getIconSuiteParameters(iconSuite: string) {
+  _getIconSuiteParameters(iconSuite: string): IconSuiteParameters {
     switch (iconSuite) {
       case 'ptk-s':
         return { iconSuiteClass: 'green-s', iconSuiteQueryString: 'ptk-s' }
@@ -664,7 +670,7 @@ export default class Map {
     }
   }
 
-  _getFilters() {
+  _getFilters(): FiltersType {
     const filters: FiltersType = {}
     if (this.filters.userid) {
       filters.userid = this.filters.userid
@@ -684,7 +690,7 @@ export default class Map {
     return filters
   }
 
-  _getFilterParameters() {
+  _getFilterParameters(): string {
     const filter = this._getFilters()
     const queryUrl = Object.keys(filter).reduce(
       (a, c) => `${c}=${filter[c as keyof FiltersType]}${(a && `&${a}`) || ''}`,
@@ -699,7 +705,7 @@ export default class Map {
   //    return Map.getClusterRadius(zoomLevel);
   //  }
 
-  _goNextPoint() {
+  _goNextPoint(): boolean | null | never {
     log.info('go next tree')
     const currentPoint = this.layerSelected.payload
     expect(currentPoint).match({
@@ -726,7 +732,7 @@ export default class Map {
     return null
   }
 
-  _goPrevPoint() {
+  _goPrevPoint(): boolean | null | never {
     log.info('go previous tree')
     const currentPoint = this.layerSelected.payload
     expect(currentPoint).match({
@@ -757,14 +763,14 @@ export default class Map {
    * To get all the points on the map, (tree markers), now, the way to
    * achieve this is that go through the utf grid and get all data.
    */
-  _getPoints() {
+  _getPoints(): Array<Point> {
     if (!this.layerUtfGrid) {
       log.warn('can not find the utf grid')
       return []
     }
     // fetch all the point data in the cache
     const itemList = Object.values(this.layerUtfGrid._cache)
-      .map((e) => e.data)
+      .map((e: UTFGridEvent) => e.data)
       .filter((e) => Object.keys(e).length > 0)
       .reduce((a, c) => a.concat(Object.values(c)), [])
       .map((data) => Map._parseUtfData(data))
@@ -778,7 +784,7 @@ export default class Map {
     })
 
     // update the global points
-    const points = Object.values(itemMap)
+    const points: undefined | Point[] = Object.values(itemMap)
     log.warn('find points:', points.length)
     log.warn('find points:', points)
     return points
@@ -1047,7 +1053,7 @@ export default class Map {
     }
   }
 
-  async _getNearest() {
+  async _getNearest(): Promise<CoordinatesType | ValueMissing> {
     const center = this.map.getCenter()
     log.log('current center:', center)
     const zoom_level = this.map.getZoom()
@@ -1145,7 +1151,7 @@ export default class Map {
     this.map.panTo(location)
   }
 
-  _isNeededToCheckArrow() {
+  _isNeededToCheckArrow(): boolean {
     if (this.filters.treeid || this.filters.tree_name) {
       log.info('treeid mode do not need to check arrow')
       return false
@@ -1161,11 +1167,11 @@ export default class Map {
 
   // ----------- public method -----------------------------------
 
-  getCurrentBounds() {
+  getCurrentBounds(): string {
     return this.map.getBounds().toBBoxString()
   }
 
-  async getInitialView() {
+  async getInitialView(): Promise<View> {
     let view
     const calculateInitialView = async () => {
       const url = `${
@@ -1250,7 +1256,7 @@ export default class Map {
     }
   }
 
-  getCurrentView() {
+  getCurrentView(): View {
     return {
       center: this.map.getCenter(),
       zoomLevel: this.map.getZoom(),
