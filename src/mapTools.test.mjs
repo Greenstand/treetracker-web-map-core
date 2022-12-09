@@ -1,5 +1,4 @@
 import * as mapTools from './mapTools'
-import mapTools from './mapTools'
 
 describe('MapTools', () => {
   describe("go('east/west...')", () => {
