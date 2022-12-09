@@ -1162,8 +1162,12 @@ export default class Map {
     }
   }
 
+  /**
+   * @deprecated use _goto instead
+   */
   _flyTo(lat: number, lon: number, zoomLevel: number) {
     log.info('fly to:', lat, lon, zoomLevel)
+    // @ts-ignore
     this.map.gotoView(lat, lon, zoomLevel)
   }
 
