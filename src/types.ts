@@ -4,17 +4,13 @@ import {
   TileEvent,
   Map as LeafletMap,
   LatLng,
+  LatLngLiteral,
 } from 'leaflet'
 import Alert from './Alert'
 import Spin from './Spin'
 import TileLoadingMonitor from './TileLoadingMonitor'
 
 export type DirectionType = 'north' | 'south' | 'east' | 'west'
-
-export type CoordinatesType = {
-  lat: number
-  lng: number
-}
 
 export type ButtonPanelMethods = {
   hide: () => void
@@ -54,7 +50,7 @@ export type MapOptions = {
   map?: LeafletMap
   minZoom: number
   maxZoom: number
-  initialCenter: CoordinatesType
+  initialCenter: LatLngLiteral
   tileServerUrl: string
   tileServerSubdomains: string[]
   apiServerUrl: string

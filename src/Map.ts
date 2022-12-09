@@ -24,12 +24,11 @@ import Alert from './Alert'
 import TileLoadingMonitor from './TileLoadingMonitor'
 import ButtonPanel from './ButtonPanel'
 import NearestTreeArrows from './NearestTreeArrows'
-import { GridLayerOptions, LatLngExpression } from 'leaflet'
+import { GridLayerOptions, LatLngExpression, LatLngLiteral } from 'leaflet'
 import {
   AlertType,
   FiltersType,
   SpinType,
-  CoordinatesType,
   DirectionPlacement,
   ValueMissing,
   EventHandlerFn,
@@ -93,7 +92,7 @@ export default class Map {
   moreEffect: boolean
   layerSelected: TreeLayer
   layerFreetownGeoJson: ValueMissing | GeoJSON
-  initialCenter: CoordinatesType
+  initialCenter: LatLngLiteral
   buttonPanel: ButtonPanel
   nearestTreeArrow: NearestTreeArrows
   onLoad: ValueMissing | EventHandlerFn
@@ -1056,7 +1055,7 @@ export default class Map {
     }
   }
 
-  async _getNearest(): Promise<CoordinatesType | ValueMissing> {
+  async _getNearest(): Promise<LatLngLiteral | ValueMissing> {
     const center = this.map.getCenter()
     log.log('current center:', center)
     const zoom_level = this.map.getZoom()
@@ -1083,7 +1082,7 @@ export default class Map {
    * return:
    *  west | east | north | south | in (the point is in the map view)
    */
-  _calculatePlacement(location: CoordinatesType): DirectionPlacement {
+  _calculatePlacement(location: LatLngLiteral): DirectionPlacement {
     const center = this.map.getCenter()
     log.info('calculate location', location, ' to center:', center)
     // find it
