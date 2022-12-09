@@ -1324,7 +1324,6 @@ export default class Map {
       if (zoomLevel) {
         this.map.setView([lat, lon], zoomLevel, { animate: false })
       } else {
-        const originalZoomLevel = this.map.getZoom()
         this.map.setView([lat, lon], zoomLevel, { animate: false })
       }
     }
