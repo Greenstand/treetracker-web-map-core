@@ -1270,8 +1270,9 @@ export default class Map {
   }
 
   async gotoBounds(bounds: string) {
-    const [southWestLng, southWestLat, northEastLng, northEastLat] =
-      bounds.split(',')
+    const [southWestLng, southWestLat, northEastLng, northEastLat] = bounds
+      .split(',')
+      .map((c) => parseInt(c))
     log.warn('go to bounds:', bounds)
     if (this.moreEffect) {
       this.map.flyToBounds([
