@@ -24,6 +24,39 @@ import Alert from './Alert'
 import TileLoadingMonitor from './TileLoadingMonitor'
 import ButtonPanel from './ButtonPanel'
 import NearestTreeArrows from './NearestTreeArrows'
+import { GridLayerOptions, LatLngExpression } from 'leaflet'
+import {
+  AlertType,
+  FiltersType,
+  SpinType,
+  CoordinatesType,
+  DirectionPlacement,
+  ValueMissing,
+  EventHandlerFn,
+  TreeInfoType,
+  TreeLayer,
+  GoogleLayer,
+  TreeType,
+  UTFGridEvent,
+  UTFGridEventData,
+  CustomUTFData,
+  MapOptions,
+  UTFGridUnloadEvent,
+  Point,
+  IconSuiteParameters,
+  View,
+} from './types'
+
+import {
+  Coords,
+  DoneCallback,
+  Marker,
+  TileLayer,
+  Map as LeafletMap,
+  GeoJSON,
+} from 'leaflet'
+
+import { GeoJsonObject } from 'geojson'
 
 class MapError extends Error {}
 
@@ -39,8 +72,41 @@ export default class Map {
     TREE_UNSELECTED: 'tree-unselected',
     MOVE_END: 'move-end',
   }
+  requester: Requester
+  events: EventEmitter
+  _mountDomElement: null | HTMLDivElement
+  layerGoogle: GoogleLayer
+  maxZoom: number
+  filters: ValueMissing | FiltersType
+  layerTile: TileLayer
+  L: any
+  tileServerUrl: string
+  minZoom: number
+  tileServerSubdomains: string[]
+  tileLoadingMonitor: TileLoadingMonitor
+  spin: SpinType
+  alert: AlertType
+  layerUtfGrid: any
+  apiServerUrl: string
+  layerHighlight: Marker
+  onClickTree: ValueMissing | EventHandlerFn
+  moreEffect: boolean
+  layerSelected: TreeLayer
+  layerFreetownGeoJson: ValueMissing | GeoJSON
+  initialCenter: CoordinatesType
+  buttonPanel: ButtonPanel
+  nearestTreeArrow: NearestTreeArrows
+  onLoad: ValueMissing | EventHandlerFn
+  debug: boolean
+  onError: ValueMissing | EventHandlerFn
+  onFindNearestAt: EventHandlerFn
+  map: LeafletMap
+  iconSuite: string
+  defaultZoomLevelForTreePoint: number
+  width: number
+  height: number
 
-  constructor(options) {
+  constructor(options: MapOptions) {
     // default
     const mapOptions = {
       ...{
@@ -62,7 +128,7 @@ export default class Map {
     }
 
     Object.keys(mapOptions).forEach((key) => {
-      this[key] = mapOptions[key]
+      this[key as keyof MapOptions] = mapOptions[key as keyof MapOptions]
     })
 
     // memeber/properties/statuses
@@ -80,14 +146,14 @@ export default class Map {
   }
 
   /** *************************** static *************************** */
-  static _formatClusterText(count) {
+  static _formatClusterText(count: number): string | number {
     if (count > 1000) {
       return `${Math.floor(count / 1000)}K`
     }
     return count
   }
 
-  static _getClusterRadius(zoom) {
+  static _getClusterRadius(zoom: number): number {
     switch (zoom) {
       case 1:
         return 10
@@ -130,7 +196,7 @@ export default class Map {
     }
   }
 
-  static _parseUtfData(utfData) {
+  static _parseUtfData(utfData: UTFGridEventData): CustomUTFData {
     const [lon, lat] = JSON.parse(utfData.latlon).coordinates
     return {
       ...utfData,
@@ -140,8 +206,8 @@ export default class Map {
   }
 
   async _loadGoogleSatellite() {
-    const GoogleLayer = window.L.TileLayer.extend({
-      createTile(coords, done) {
+    const GoogleLayer: any = window.L.TileLayer.extend({
+      createTile(coords: Coords, done: DoneCallback) {
         const tile = document.createElement('img')
 
         window.L.DomEvent.on(
@@ -218,7 +284,7 @@ export default class Map {
       },
     )
     this.layerGoogle.addTo(this.map)
-    await new Promise((res) => {
+    await new Promise<void>((res) => {
       this.layerGoogle.once('load', async () => {
         log.warn('google layer loaded')
         res()
@@ -226,14 +292,16 @@ export default class Map {
     })
   }
 
-  async _addGeoJson(source) {
+  async _addGeoJson(source: string | GeoJsonObject | GeoJsonObject[]) {
     let geo = source
 
     if (typeof source === 'string') {
       geo = (await axios.get(source)).data
     }
 
-    const layer = window.L.geoJSON(geo).addTo(this.map)
+    const layer = window.L.geoJSON(
+      geo as GeoJsonObject | GeoJsonObject[],
+    ).addTo(this.map)
     return layer
   }
 
@@ -311,19 +379,19 @@ export default class Map {
           subdomains: this.tileServerSubdomains,
         },
       )
-      this.layerUtfGrid.on('click', (e) => {
+      this.layerUtfGrid.on('click', (e: UTFGridEvent) => {
         log.warn('click:', e)
         if (e.data) {
           this._clickMarker(Map._parseUtfData(e.data))
         }
       })
 
-      this.layerUtfGrid.on('mouseover', (e) => {
+      this.layerUtfGrid.on('mouseover', (e: UTFGridEvent) => {
         log.debug('mouseover:', e)
         this._highlightMarker(Map._parseUtfData(e.data))
       })
 
-      this.layerUtfGrid.on('mouseout', (e) => {
+      this.layerUtfGrid.on('mouseout', (e: UTFGridEvent) => {
         log.debug('e:', e)
         this._unHighlightMarker()
       })
@@ -332,7 +400,7 @@ export default class Map {
         log.info('all grid loaded!')
       })
 
-      this.layerUtfGrid.on('tileunload', (e) => {
+      this.layerUtfGrid.on('tileunload', (e: UTFGridUnloadEvent) => {
         log.warn('tile unload:', e)
         e.tile.cancelRequest()
       })
@@ -411,7 +479,7 @@ export default class Map {
   async _loadDebugLayer() {
     // debug
     this.L.GridLayer.GridDebug = this.L.GridLayer.extend({
-      createTile(coords) {
+      createTile(coords: Coords) {
         const tile = document.createElement('div')
         tile.style.outline = '1px solid green'
         tile.style.fontWeight = 'bold'
@@ -421,7 +489,8 @@ export default class Map {
         return tile
       },
     })
-    this.L.gridLayer.gridDebug = (opts) => new this.L.GridLayer.GridDebug(opts)
+    this.L.gridLayer.gridDebug = (opts: ValueMissing | GridLayerOptions) =>
+      new this.L.GridLayer.GridDebug(opts)
     this.map.addLayer(this.L.gridLayer.gridDebug())
 
     // debug marker
@@ -455,7 +524,7 @@ export default class Map {
     })
   }
 
-  async _loadTree(treeid, treeName) {
+  async _loadTree(treeid?: number, treeName?: string) {
     let res
     if (treeid) {
       res = await this.requester.request({
@@ -477,7 +546,7 @@ export default class Map {
     this._selectMarker(data)
   }
 
-  _highlightMarker(data) {
+  _highlightMarker(data: CustomUTFData) {
     const { iconSuiteClass } = this._getIconSuiteParameters(this.iconSuite)
     if (data.type === 'point') {
       this.layerHighlight = new this.L.marker([data.lat, data.lon], {
@@ -518,7 +587,7 @@ export default class Map {
     }
   }
 
-  _clickMarker(data) {
+  _clickMarker(data: CustomUTFData): void | never {
     this._unHighlightMarker()
     if (
       data.type === 'point' ||
@@ -556,7 +625,7 @@ export default class Map {
     }
   }
 
-  _selectMarker(data) {
+  _selectMarker(data: TreeType | TreeInfoType) {
     const { iconSuiteClass } = this._getIconSuiteParameters(this.iconSuite)
     log.info('change tree mark selected with data:', data)
     // before set the selected tree icon, remote if any
@@ -593,7 +662,7 @@ export default class Map {
     }
   }
 
-  _getIconSuiteParameters(iconSuite) {
+  _getIconSuiteParameters(iconSuite: string): IconSuiteParameters {
     switch (iconSuite) {
       case 'ptk-s':
         return { iconSuiteClass: 'green-s', iconSuiteQueryString: 'ptk-s' }
@@ -604,8 +673,8 @@ export default class Map {
     }
   }
 
-  _getFilters() {
-    const filters = {}
+  _getFilters(): FiltersType {
+    const filters: FiltersType = {}
     if (this.filters.userid) {
       filters.userid = this.filters.userid
     }
@@ -624,10 +693,10 @@ export default class Map {
     return filters
   }
 
-  _getFilterParameters() {
+  _getFilterParameters(): string {
     const filter = this._getFilters()
     const queryUrl = Object.keys(filter).reduce(
-      (a, c) => `${c}=${filter[c]}${(a && `&${a}`) || ''}`,
+      (a, c) => `${c}=${filter[c as keyof FiltersType]}${(a && `&${a}`) || ''}`,
       '',
     )
     return queryUrl
@@ -639,7 +708,7 @@ export default class Map {
   //    return Map.getClusterRadius(zoomLevel);
   //  }
 
-  _goNextPoint() {
+  _goNextPoint(): boolean | null | never {
     log.info('go next tree')
     const currentPoint = this.layerSelected.payload
     expect(currentPoint).match({
@@ -666,7 +735,7 @@ export default class Map {
     return null
   }
 
-  _goPrevPoint() {
+  _goPrevPoint(): boolean | null | never {
     log.info('go previous tree')
     const currentPoint = this.layerSelected.payload
     expect(currentPoint).match({
@@ -697,14 +766,14 @@ export default class Map {
    * To get all the points on the map, (tree markers), now, the way to
    * achieve this is that go through the utf grid and get all data.
    */
-  _getPoints() {
+  _getPoints(): Array<Point> {
     if (!this.layerUtfGrid) {
       log.warn('can not find the utf grid')
       return []
     }
     // fetch all the point data in the cache
     const itemList = Object.values(this.layerUtfGrid._cache)
-      .map((e) => e.data)
+      .map((e: UTFGridEvent) => e.data)
       .filter((e) => Object.keys(e).length > 0)
       .reduce((a, c) => a.concat(Object.values(c)), [])
       .map((data) => Map._parseUtfData(data))
@@ -718,7 +787,7 @@ export default class Map {
     })
 
     // update the global points
-    const points = Object.values(itemMap)
+    const points: undefined | Point[] = Object.values(itemMap)
     log.warn('find points:', points.length)
     log.warn('find points:', points)
     return points
@@ -727,7 +796,7 @@ export default class Map {
   async _loadFreetownLayer() {
     log.info('load freetown layer')
     this.L.TileLayer.FreeTown = this.L.TileLayer.extend({
-      getTileUrl(coords) {
+      getTileUrl(coords: Coords) {
         const y = 2 ** coords.z - coords.y - 1
         const url = `https://treetracker-map-tiles.nyc3.cdn.digitaloceanspaces.com/freetown/${coords.z}/${coords.x}/${y}.png`
         if (coords.z === 10 && coords.x === 474 && y < 537 && y > 534) {
@@ -920,7 +989,7 @@ export default class Map {
         () => this._goPrevPoint(),
       )
       this.buttonPanel.mount(mountButtonPanelTarget)
-      this.on(Map.REGISTERED_EVENTS.TREE_SELECTED, () => {
+      this.on(Map.REGISTERED_EVENTS.TREE_SELECTED, (): void => {
         const currentPoint = this.layerSelected.payload
         const points = this._getPoints()
         const index = points.reduce((a, c, i) => {
@@ -963,7 +1032,7 @@ export default class Map {
       log.info('no marker')
       const nearest = await this._getNearest()
       if (nearest) {
-        const placement = this._calculatePlacement(nearest)
+        const placement: DirectionPlacement = this._calculatePlacement(nearest)
         this._handleNearestArrowDisplay(placement)
       } else {
         log.warn("Can't get the nearest:", nearest)
@@ -972,7 +1041,7 @@ export default class Map {
     }
   }
 
-  _handleNearestArrowDisplay(placement) {
+  _handleNearestArrowDisplay(placement?: DirectionPlacement) {
     !placement || placement === 'in'
       ? this.nearestTreeArrow.hideArrow()
       : this.nearestTreeArrow.showArrow(placement)
@@ -987,7 +1056,7 @@ export default class Map {
     }
   }
 
-  async _getNearest() {
+  async _getNearest(): Promise<CoordinatesType | ValueMissing> {
     const center = this.map.getCenter()
     log.log('current center:', center)
     const zoom_level = this.map.getZoom()
@@ -1014,14 +1083,14 @@ export default class Map {
    * return:
    *  west | east | north | south | in (the point is in the map view)
    */
-  _calculatePlacement(location) {
+  _calculatePlacement(location: CoordinatesType): DirectionPlacement {
     const center = this.map.getCenter()
     log.info('calculate location', location, ' to center:', center)
     // find it
     // get nearest markers
     expect(location.lat).number()
     expect(location.lng).number()
-    let result
+    let result: DirectionPlacement
     if (
       !this.map.getBounds().contains({
         lat: location.lat,
@@ -1080,12 +1149,12 @@ export default class Map {
     return result
   }
 
-  _goto(location) {
+  _goto(location: LatLngExpression) {
     log.info('goto:', location)
     this.map.panTo(location)
   }
 
-  _isNeededToCheckArrow() {
+  _isNeededToCheckArrow(): boolean {
     if (this.filters.treeid || this.filters.tree_name) {
       log.info('treeid mode do not need to check arrow')
       return false
@@ -1094,18 +1163,18 @@ export default class Map {
     }
   }
 
-  _flyTo(lat, lon, zoomLevel) {
+  _flyTo(lat: number, lon: number, zoomLevel: number) {
     log.info('fly to:', lat, lon, zoomLevel)
     this.map.gotoView(lat, lon, zoomLevel)
   }
 
   // ----------- public method -----------------------------------
 
-  getCurrentBounds() {
+  getCurrentBounds(): string {
     return this.map.getBounds().toBBoxString()
   }
 
-  async getInitialView() {
+  async getInitialView(): Promise<View> {
     let view
     const calculateInitialView = async () => {
       const url = `${
@@ -1190,14 +1259,14 @@ export default class Map {
     }
   }
 
-  getCurrentView() {
+  getCurrentView(): View {
     return {
       center: this.map.getCenter(),
       zoomLevel: this.map.getZoom(),
     }
   }
 
-  async gotoBounds(bounds) {
+  async gotoBounds(bounds: string) {
     const [southWestLng, southWestLat, northEastLng, northEastLat] =
       bounds.split(',')
     log.warn('go to bounds:', bounds)
@@ -1207,7 +1276,7 @@ export default class Map {
         [northEastLat, northEastLng],
       ])
       log.warn('waiting bound load...')
-      await new Promise((res) => {
+      await new Promise<void>((res) => {
         const boundFinished = () => {
           log.warn('fire bound finished')
           // this.map.off('moveend')
@@ -1227,7 +1296,7 @@ export default class Map {
     }
   }
 
-  async gotoView(lat, lon, zoomLevel) {
+  async gotoView(lat: number, lon: number, zoomLevel?: number) {
     expect(lat).a('number')
     expect(lon).a('number')
     if (zoomLevel) {
@@ -1240,7 +1309,7 @@ export default class Map {
         this.map.panTo([lat, lon])
       }
       log.warn('waiting initial view load...')
-      await new Promise((res) => {
+      await new Promise<void>((res) => {
         const finished = () => {
           log.warn('fire initial view finished')
           // this.map.off('moveend')
@@ -1258,7 +1327,7 @@ export default class Map {
     }
   }
 
-  async mount(domElement) {
+  async mount(domElement: HTMLDivElement) {
     try {
       this._mountDomElement = domElement
 
@@ -1300,7 +1369,7 @@ export default class Map {
     }
   }
 
-  on(eventName, handler) {
+  on(eventName: string, handler: () => void) {
     //TODO check event name enum
     if (handler) {
       log.info('register event:', eventName)
@@ -1308,7 +1377,7 @@ export default class Map {
     }
   }
 
-  selectTree(tree) {
+  selectTree(tree: TreeType) {
     // TODO validate tree data
     this._selectMarker(tree)
   }
@@ -1316,7 +1385,7 @@ export default class Map {
   /*
    * reset the config of map instance
    */
-  async setFilters(filters) {
+  async setFilters(filters: FiltersType) {
     log.warn('new, old filter:', filters, this.filters)
     if (_.isEqual(filters, this.filters)) {
       log.warn('filters is not changed, do nothing')

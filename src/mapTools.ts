@@ -106,7 +106,7 @@ function getInitialBounds(
     locations.push(cornerEastSouth)
   }
 
-  const bounds = new window.L.latLngBounds()
+  const bounds = window.L.latLngBounds([0, 0], [0, 0])
 
   locations.forEach((location) => {
     bounds.extend(location)
@@ -172,15 +172,15 @@ function getLatLngCoordinateByPixel(
   expect(left).number()
   expect(map).defined()
   const northWest = window.L.latLng(
-    map.getBounds().getNorthEast().lat,
-    map.getBounds().getSouthWest().lng,
+    map.getBounds().getNorthEast().lat(),
+    map.getBounds().getSouthWest().lng(),
   )
   const northWestPixel = map.getProjection().fromLatLngToPoint(northWest)
   const pixelSize = 2 ** -map.getZoom()
   const result = window.L.point(
     northWestPixel.x + left * pixelSize,
     northWestPixel.y + top * pixelSize,
-  )
+  ) as google.maps.Point
   const resultLatLng = map.getProjection().fromPointToLatLng(result)
   expect(resultLatLng).property('lat').a(expect.any(Function))
   return resultLatLng
@@ -195,8 +195,8 @@ function getPixelCoordinateByLatLng(
   expect(lng).number()
   expect(map).defined()
   const northWest = window.L.latLng(
-    map.getBounds().getNorthEast().lat,
-    map.getBounds().getSouthWest().lng,
+    map.getBounds().getNorthEast().lat(),
+    map.getBounds().getSouthWest().lng(),
   )
   const northWestPixel = map.getProjection().fromLatLngToPoint(northWest)
   const target = window.L.latLng(lat, lng)
