@@ -1,3 +1,9 @@
+# [2.6.0](https://github.com/Greenstand/treetracker-web-map-core/compare/v2.5.2...v2.6.0) (2022-12-06)
+
+### Features
+
+- new icon for tree highlight ([5f55498](https://github.com/Greenstand/treetracker-web-map-core/commit/5f55498fe48e8fbd9066179cfde7be75244b738d))
+
 ## [2.5.2](https://github.com/Greenstand/treetracker-web-map-core/compare/v2.5.1...v2.5.2) (2022-11-24)
 
 ### Bug Fixes
