@@ -1,8 +1,8 @@
 /*
  * The main model for the treetracker model
  */
-import regeneratorRuntime from 'regenerator-runtime'
 import axios from 'axios'
+// @ts-ignore
 import expect from 'expect-runtime'
 import log from 'loglevel'
 import _ from 'lodash'
@@ -127,6 +127,7 @@ export default class Map {
     }
 
     Object.keys(mapOptions).forEach((key) => {
+      // @ts-ignore
       this[key as keyof MapOptions] = mapOptions[key as keyof MapOptions]
     })
 
@@ -780,7 +781,7 @@ export default class Map {
     log.info('loaded data in utf cache:', itemList.length)
 
     // filter the duplicate points
-    const itemMap = {}
+    const itemMap: { [index: number]: any } = {}
     itemList.forEach((e) => {
       itemMap[e.id] = e
     })
@@ -1189,7 +1190,7 @@ export default class Map {
       const response = await this.requester.request({
         url,
       })
-      const items = response.data.map((i) => {
+      const items = response.data.map((i: any) => {
         if (i.type === 'cluster') {
           const c = JSON.parse(i.centroid)
           return {
@@ -1256,6 +1257,8 @@ export default class Map {
     return {
       center: {
         lat: view.center.lat,
+        // TODO: fix this with lng lon conversion
+        // @ts-ignore
         lon: view.center.lng || view.center.lon,
       },
       zoomLevel: view.zoomLevel,

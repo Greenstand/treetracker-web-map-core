@@ -3,7 +3,6 @@ import {
   TileLayer,
   TileEvent,
   Map as LeafletMap,
-  LatLng,
   LatLngLiteral,
 } from 'leaflet'
 import Alert from './Alert'
@@ -21,17 +20,6 @@ export type ButtonPanelMethods = {
   show: () => void
   mount: (e: Element) => void
   clickHandler: (e: MouseEvent) => void
-}
-
-export type view = {
-  [k: string]: {
-    center: {
-      lat: number
-      lng: number
-    }
-    zoomLevel: number
-    animate?: boolean
-  }
 }
 
 export type TileLoadingMonitorType = InstanceType<typeof TileLoadingMonitor>
@@ -178,6 +166,6 @@ export type IconSuiteParameters = {
 }
 
 export type View = {
-  center: LatLng
+  center: LatLngLiteral
   zoomLevel: number
 }

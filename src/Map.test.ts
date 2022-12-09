@@ -2,7 +2,6 @@
 import Map from './Map'
 import Requester from './Requester'
 import { expect } from '@jest/globals'
-import type { view } from './types'
 jest.mock('./Requester')
 let requester = Requester as jest.Mock
 const response = {}
@@ -22,7 +21,7 @@ describe('Map', () => {
     requester.mockImplementation(() => ({
       request,
     }))
-    const view: view = {}
+    const view: any = {}
     const map = new Map({
       userid: '1',
       width: 1440,
@@ -32,6 +31,7 @@ describe('Map', () => {
         wallet: 'mayeda',
       },
       map: {
+        // @ts-ignore
         setView: jest.fn((center, zoomLevel, animate) => {
           view.center = center
           view.zoomLevel = zoomLevel

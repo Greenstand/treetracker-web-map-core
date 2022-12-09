@@ -3,6 +3,7 @@
  */
 import 'leaflet'
 
+// @ts-ignore
 import expect from 'expect-runtime'
 import log from 'loglevel'
 import { DirectionType } from './types'

@@ -1,7 +1,9 @@
+// @ts-ignore
 import expectRuntime from 'expect-runtime'
 import React from 'react'
 
 import * as mapTools from './mapTools'
+// @ts-ignore
 import { mountWithTheme as mount } from './test-utils'
 
 const TILE_SIZE = 256
