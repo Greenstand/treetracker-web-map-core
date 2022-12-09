@@ -2,7 +2,7 @@
   "compilerOptions": {
     "outDir": "./dist/",
     "noImplicitAny": true,
-    "lib": ["es5", "dom"],
+    "lib": ["es5", "dom", "ES2015"],
     "module": "commonjs",
     "target": "es5",
     "allowJs": true,
@@ -10,6 +10,7 @@
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "typeRoots": ["./node_modules/@types"],
+    "types": ["jest"],
     "jsx": "react-jsx"
   },
   "include": ["src", "cypress"],

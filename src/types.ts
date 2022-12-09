@@ -27,6 +27,17 @@ export type ButtonPanelMethods = {
   clickHandler: (e: MouseEvent) => void
 }
 
+export type view = {
+  [k: string]: {
+    center: {
+      lat: number
+      lng: number
+    }
+    zoomLevel: number
+    animate?: boolean
+  }
+}
+
 export type TileLoadingMonitorType = InstanceType<typeof TileLoadingMonitor>
 
 export type TileLoadingMonitorOptions = {
@@ -38,7 +49,6 @@ export type TileLoadingMonitorOptions = {
   onDestroy?: () => void
 }
 
-//  export type MapOptions = Partial<InstanceType<typeof Map>>
 export type MapOptions = {
   L: any
   map?: LeafletMap
