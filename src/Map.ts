@@ -574,7 +574,7 @@ export default class Map {
         }),
       })
     } else {
-      throw new Error('wrong type:', data)
+      throw new Error(`wrong type: $data.type`)
     }
     this.layerHighlight.addTo(this.map)
   }
@@ -621,7 +621,7 @@ export default class Map {
         })
       }
     } else {
-      throw new Error('do not support type:', data.type)
+      throw new Error(`do not support type: ${data.type}`)
     }
   }
 
