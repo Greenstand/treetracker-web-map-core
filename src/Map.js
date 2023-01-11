@@ -987,7 +987,7 @@ export default class Map {
     log.log('current center:', center)
     const zoom_level = this.map.getZoom()
     const res = await this.requester.request({
-      url: `${this.apiServerUrl}nearest?zoom_level=${zoom_level}&lat=${center.lat}&lon=${center.lon}`,
+      url: `${this.apiServerUrl}nearest?zoom_level=${zoom_level}&lat=${center.lat}&lng=${center.lng}`,
     })
     if (!res) {
       log.warn('Return undefined trying to get nearest, the api return null')
@@ -997,7 +997,7 @@ export default class Map {
     nearest = nearest
       ? {
           lat: nearest.coordinates[1],
-          lon: nearest.coordinates[0],
+          lng: nearest.coordinates[0],
         }
       : undefined
     log.log('get nearest:', nearest)
@@ -1015,39 +1015,39 @@ export default class Map {
     // find it
     // get nearest markers
     expect(location.lat).number()
-    expect(location.lon).number()
+    expect(location.lng).number()
     let result
     if (
       !this.map.getBounds().contains({
         lat: location.lat,
-        lon: location.lon,
+        lng: location.lng,
       })
     ) {
       log.log('out of bounds, display arrow')
       const dist = {
         lat: location.lat,
-        lon: location.lon,
+        lng: location.lng,
       }
       const distanceLat = window.L.CRS.EPSG3857.distance(
         center,
-        window.L.latLng(dist.lat, center.lon),
+        window.L.latLng(dist.lat, center.lng),
       )
       log.log('distanceLat:', distanceLat)
       expect(distanceLat).number()
-      const distanceLon = window.L.CRS.EPSG3857.distance(
+      const distanceLng = window.L.CRS.EPSG3857.distance(
         center,
-        window.L.latLng(center.lat, dist.lon),
+        window.L.latLng(center.lat, dist.lng),
       )
-      log.log('distanceLon:', distanceLon)
-      expect(distanceLon).number()
+      log.log('distanceLng:', distanceLng)
+      expect(distanceLng).number()
       log.log('dist:', dist)
       log.log('center:', center, center.lat)
       if (dist.lat > center.lat) {
         log.log('On the north')
-        if (distanceLat > distanceLon) {
+        if (distanceLat > distanceLng) {
           log.log('On the north')
           result = 'north'
-        } else if (dist.lon > center.lon) {
+        } else if (dist.lng > center.lng) {
           log.log('On the east')
           result = 'east'
         } else {
@@ -1056,10 +1056,10 @@ export default class Map {
         }
       } else {
         log.log('On the south')
-        if (distanceLat > distanceLon) {
+        if (distanceLat > distanceLng) {
           log.log('On the south')
           result = 'south'
-        } else if (dist.lon > center.lon) {
+        } else if (dist.lng > center.lng) {
           log.log('On the east')
           result = 'east'
         } else {
@@ -1117,13 +1117,13 @@ export default class Map {
           const c = JSON.parse(i.centroid)
           return {
             lat: c.coordinates[1],
-            lon: c.coordinates[0],
+            lng: c.coordinates[0],
           }
         }
         if (i.type === 'point') {
           return {
             lat: i.lat,
-            lon: i.lon,
+            lng: i.lon,
           }
         }
         return null
@@ -1167,7 +1167,7 @@ export default class Map {
         view = {
           center: {
             lat: center.lat,
-            lon: center.lon,
+            lon: center.lng,
           },
           zoomLevel: zoom,
         }
@@ -1179,7 +1179,7 @@ export default class Map {
     return {
       center: {
         lat: view.center.lat,
-        lon: view.center.lon,
+        lon: view.center.lng || view.center.lon,
       },
       zoomLevel: view.zoomLevel,
     }
