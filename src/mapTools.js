@@ -9,13 +9,13 @@ import log from 'loglevel'
 function go(direction, location, degree) {
   expect(direction).oneOf(['east', 'west', 'north', 'south'])
   expect(location).property('lat').number()
-  expect(location).property('lon').number()
+  expect(location).property('lng').number()
   expect(degree).number()
-  const result = { lat: location.lat, lon: location.lon }
+  const result = { lat: location.lat, lng: location.lng }
   if (direction === 'east') {
-    result.lon += degree
+    result.lng += degree
   } else if (direction === 'west') {
-    result.lon -= degree
+    result.lng -= degree
   } else if (direction === 'north') {
     result.lat += degree
   } else if (direction === 'south') {
@@ -23,10 +23,10 @@ function go(direction, location, degree) {
   }
   // correct
   if (direction === 'east' || direction === 'west') {
-    if (result.lon > 180) {
-      result.lon = (result.lon % 180) - 180
-    } else if (result.lon < -180) {
-      result.lon = (result.lon % 180) + 180
+    if (result.lng > 180) {
+      result.lng = (result.lng % 180) - 180
+    } else if (result.lng < -180) {
+      result.lng = (result.lng % 180) + 180
     }
   } else if (direction === 'north' || direction === 'south') {
     if (result.lat > 90) {
@@ -72,12 +72,12 @@ function getInitialBounds(rawLocations, width, height) {
   const locations = rawLocations.map((location) => ({
     ...location,
     lat: parseFloat(location.lat),
-    lon: parseFloat(location.lon),
+    lng: parseFloat(location.lng),
   }))
 
   locations.forEach((location) => {
     expect(location).property('lat').number()
-    expect(location).property('lon').number()
+    expect(location).property('lng').number()
   })
   expect(width).above(0)
   expect(height).above(0)
@@ -106,7 +106,7 @@ function getInitialBounds(rawLocations, width, height) {
   log.log('bounds:', bounds)
   const center = {
     lat: bounds.getCenter().lat,
-    lon: bounds.getCenter().lng,
+    lng: bounds.getCenter().lng,
   }
   // cal zoom
   let zoom
@@ -173,16 +173,16 @@ function getLatLngCoordinateByPixel(top, left, map) {
   return resultLatLng
 }
 
-function getPixelCoordinateByLatLng(lat, lon, map) {
+function getPixelCoordinateByLatLng(lat, lng, map) {
   expect(lat).number()
-  expect(lon).number()
+  expect(lng).number()
   expect(map).defined()
   const northWest = window.L.latLng(
     map.getBounds().getNorthEast().lat,
     map.getBounds().getSouthWest().lng,
   )
   const northWestPixel = map.getProjection().fromLatLngToPoint(northWest)
-  const target = window.L.latLng(lat, lon)
+  const target = window.L.latLng(lat, lng)
   const targetPixel = map.getProjection().fromLatLngToPoint(target)
   const pixelSize = 2 ** -map.getZoom()
   const result = {
