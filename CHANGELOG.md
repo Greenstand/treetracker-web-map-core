@@ -1,3 +1,9 @@
+## [2.6.1](https://github.com/Greenstand/treetracker-web-map-core/compare/v2.6.0...v2.6.1) (2023-01-12)
+
+### Bug Fixes
+
+- change jest test files to mjs since it uses esm syntax and cypress tests to .cy.js ([29d9a05](https://github.com/Greenstand/treetracker-web-map-core/commit/29d9a05c8ae3f72bf201141f3fa10262af1c1507))
+
 # [2.6.0](https://github.com/Greenstand/treetracker-web-map-core/compare/v2.5.2...v2.6.0) (2022-12-06)
 
 ### Features
