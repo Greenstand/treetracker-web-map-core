@@ -53,9 +53,6 @@ export default class Map {
         moreEffect: true,
         filters: null,
         defaultZoomLevelForTreePoint: 15,
-        showLoadingThreshold: 4000,
-        slowThreshold: 8000,
-        disableSpinIcon: false,
       },
       ...options,
     }
@@ -271,32 +268,31 @@ export default class Map {
         },
       )
       // spin monitor
-      if (!this.disableSpinIcon)
-        this.tileLoadingMonitor = new TileLoadingMonitor(this.layerTile, {
-          showLoadingThreshold: this.showLoadingThreshold,
-          slowThreshold: this.slowThreshold,
-          onShowLoading: () => {
-            log.warn('show loading')
-            this.spin.show()
-          },
-          onSlowAlert: () => {
-            log.warn('slow alert')
-            this.alert.show(
-              'Trees grow slower than this map loads, be patient...',
-            )
-          },
-          onLoad: () => {
-            log.warn('load finished')
-            this.spin.hide()
-            this.alert.hide()
-            this._checkArrow()
-          },
-          onDestroy: () => {
-            log.warn('destroy')
-            this.spin.hide()
-            this.alert.hide()
-          },
-        })
+      this.tileLoadingMonitor = new TileLoadingMonitor(this.layerTile, {
+        showLoadingThreshold: 4000,
+        slowThreshold: 8000,
+        onShowLoading: () => {
+          log.warn('show loading')
+          this.spin.show()
+        },
+        onSlowAlert: () => {
+          log.warn('slow alert')
+          this.alert.show(
+            'Trees grow slower than this map loads, be patient...',
+          )
+        },
+        onLoad: () => {
+          log.warn('load finished')
+          this.spin.hide()
+          this.alert.hide()
+          this._checkArrow()
+        },
+        onDestroy: () => {
+          log.warn('destroy')
+          this.spin.hide()
+          this.alert.hide()
+        },
+      })
       this.layerTile.addTo(this.map)
 
       this.layerUtfGrid = new this.L.utfGrid(
