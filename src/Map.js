@@ -36,7 +36,6 @@ export default class Map {
   }
 
   constructor(options) {
-    const mapCanvas = document.getElementById('map-canvas')
     // default
     const mapOptions = {
       ...{
@@ -47,8 +46,6 @@ export default class Map {
         tileServerUrl: 'https://{s}.treetracker.org/tiles/',
         tileServerSubdomains: ['dev-k8s'],
         apiServerUrl: 'https://dev-k8s.treetracker.org/webmap/',
-        width: mapCanvas == null ? window.innerWidth : mapCanvas.clientWidth,
-        height: mapCanvas == null ? window.innerHeight : mapCanvas.clientHeight,
         debug: false,
         moreEffect: true,
         filters: null,
@@ -905,6 +902,12 @@ export default class Map {
       this.events.emit(Map.REGISTERED_EVENTS.MOVE_END)
     })
 
+    this.map.on('resize', (e) => {
+      log.warn('resize', e)
+      this.width = e.newSize.x
+      this.height = e.newSize.y
+    })
+
     // button prev next
     {
       // next tree buttons
@@ -1278,7 +1281,10 @@ export default class Map {
 
       // load google map
       await this._loadGoogleSatellite()
-
+      const mapCanvas = document.getElementById('map-canvas')
+      this.width = mapCanvas == null ? window.innerWidth : mapCanvas.clientWidth
+      this.height =
+        mapCanvas == null ? window.innerHeight : mapCanvas.clientHeight
       // /*
       //  * The logic is:
       //  * If there is a filter, then try to zoom in and set the zoom is
