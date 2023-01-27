@@ -1187,6 +1187,7 @@ export default class Map {
         this.filters.map_name
       ) ||
         mapConfig[this.filters.map_name] === undefined) &&
+      view &&
       view.zoomLevel > 15
     ) {
       //TODO: in this situation center can change so dramatically that view will be empty,
@@ -1279,12 +1280,12 @@ export default class Map {
 
       this._mountComponents()
 
+      this.width = domElement.clientWidth
+      this.height = domElement.clientHeight
+
       // load google map
       await this._loadGoogleSatellite()
-      const mapCanvas = document.getElementById('map-canvas')
-      this.width = mapCanvas == null ? window.innerWidth : mapCanvas.clientWidth
-      this.height =
-        mapCanvas == null ? window.innerHeight : mapCanvas.clientHeight
+
       // /*
       //  * The logic is:
       //  * If there is a filter, then try to zoom in and set the zoom is
