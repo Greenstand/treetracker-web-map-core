@@ -46,8 +46,6 @@ export default class Map {
         tileServerUrl: 'https://{s}.treetracker.org/tiles/',
         tileServerSubdomains: ['dev-k8s'],
         apiServerUrl: 'https://dev-k8s.treetracker.org/webmap/',
-        width: window.innerWidth,
-        height: window.innerHeight,
         debug: false,
         moreEffect: true,
         filters: null,
@@ -904,6 +902,12 @@ export default class Map {
       this.events.emit(Map.REGISTERED_EVENTS.MOVE_END)
     })
 
+    this.map.on('resize', (e) => {
+      log.warn('resize', e)
+      this.width = e.newSize.x
+      this.height = e.newSize.y
+    })
+
     // button prev next
     {
       // next tree buttons
@@ -1102,12 +1106,13 @@ export default class Map {
 
   async getInitialView() {
     let view
-    const calculateInitialView = async () => {
+    const initRadius = 10
+    const calculateInitialView = async (radius = initRadius) => {
       const url = `${
         this.apiServerUrl
       }trees?clusterRadius=${Map._getClusterRadius(
-        10,
-      )}&zoom_level=10&${this._getFilterParameters()}`
+        radius,
+      )}&zoom_level=${radius}&${this._getFilterParameters()}`
       log.info('calculate initial view with url:', url)
       const response = await this.requester.request({
         url,
@@ -1174,6 +1179,22 @@ export default class Map {
       } else {
         view = await calculateInitialView()
       }
+    }
+    if (
+      (!(
+        this.filters.treeid ||
+        this.filters.tree_name ||
+        this.filters.map_name
+      ) ||
+        mapConfig[this.filters.map_name] === undefined) &&
+      view &&
+      view.zoomLevel > 15
+    ) {
+      //TODO: in this situation center can change so dramatically that view will be empty,
+      //we need recalculate view, but we can't use view.zoomLevel, because it can be a lot of trees in new zoom.
+      //so it more like a hack, we need to try research this issue on the Server with the height and width of the map
+      view = await calculateInitialView(14)
+      view.zoomLevel = 14
     }
     log.warn('get initial view:', view)
     return {
@@ -1258,6 +1279,9 @@ export default class Map {
       this._mountDomElement = domElement
 
       this._mountComponents()
+
+      this.width = domElement.clientWidth
+      this.height = domElement.clientHeight
 
       // load google map
       await this._loadGoogleSatellite()
