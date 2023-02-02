@@ -1194,7 +1194,7 @@ export default class Map {
       //we need recalculate view, but we can't use view.zoomLevel, because it can be a lot of trees in new zoom.
       //so it more like a hack, we need to try research this issue on the Server with the height and width of the map
       view = await calculateInitialView(14)
-      view.zoomLevel = 14
+      if (view.zoomLevel > 14) view.zoomLevel = 14
     }
     log.warn('get initial view:', view)
     return {
