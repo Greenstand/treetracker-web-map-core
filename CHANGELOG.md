@@ -1,3 +1,9 @@
+## [2.6.3](https://github.com/Greenstand/treetracker-web-map-core/compare/v2.6.2...v2.6.3) (2023-02-03)
+
+### Bug Fixes
+
+- wrong calculation to get the initial view of map for planters [#153](https://github.com/Greenstand/treetracker-web-map-core/issues/153) ([31c534a](https://github.com/Greenstand/treetracker-web-map-core/commit/31c534a829ac817c8b61292630126972ffb89c46))
+
 ## [2.6.2](https://github.com/Greenstand/treetracker-web-map-core/compare/v2.6.1...v2.6.2) (2023-01-28)
 
 ### Bug Fixes
