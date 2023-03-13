@@ -45,7 +45,7 @@ jobs:
         uses: martinbeentjes/npm-get-version-action@master
 
       - name: Get current version number
-        run: echo "VERSION=$(node -p 'require(\"./package.json\").version')" >> $GITHUB_ENV
+        run: echo "VERSION=$(node -p 'require("./package.json").version')" >> $GITHUB_ENV
 
       - name: Bump version number
         run: npm version ${{ env.VERSION }}
