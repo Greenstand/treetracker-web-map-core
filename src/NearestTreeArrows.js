@@ -10,8 +10,8 @@ export default class NearestTreeArrows {
     this.arrow.innerHTML = `
     <div class="round">
       <div id="cta">
-        <span class="arrow primera next "></span>
-        <span class="arrow segunda next "></span>
+        <span class="arrow first next "></span>
+        <span class="arrow second next "></span>
       </div>
     </div>
     `
