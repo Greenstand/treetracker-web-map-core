@@ -45,19 +45,18 @@ jobs:
         uses: martinbeentjes/npm-get-version-action@master
 
       - name: Get current version number
-        run: echo ::set-env name=VERSION::$(node -p "require('./package.json').version")
+        id: get_version
+        run: echo ::set-output name=version::$(node -p "require('./package.json').version")
 
       - name: Bump version number
-        run: |
-          npm version ${VERSION}
-          echo ::set-env name=NEW_VERSION::$(node -p "require('./package.json').version")
+        run: npm version ${{ env.VERSION }}
 
       - name: Commit changes
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git commit -am "Bump version to ${NEW_VERSION}"
-          git tag ${NEW_VERSION}
+          git commit -am "Bump version to v${{ env.VERSION }}"
+          git tag v${{ env.VERSION }}
           git push origin main --tags
 
   unit-tests:
