@@ -1,3 +1,9 @@
+## [2.6.4](https://github.com/Greenstand/treetracker-web-map-core/compare/v2.6.3...v2.6.4) (2023-05-09)
+
+### Bug Fixes
+
+- the single tree cluster bug ([4b20f8d](https://github.com/Greenstand/treetracker-web-map-core/commit/4b20f8dcf9cc9d5edaf8c94429525a0bb6c98d70))
+
 ## [2.6.3](https://github.com/Greenstand/treetracker-web-map-core/compare/v2.6.2...v2.6.3) (2023-02-03)
 
 ### Bug Fixes
