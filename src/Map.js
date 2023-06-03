@@ -44,8 +44,9 @@ export default class Map {
         maxZoom: 20,
         initialCenter: [20, 0],
         tileServerUrl: 'https://{s}.treetracker.org/tiles/',
-        tileServerSubdomains: ['dev-k8s'],
-        apiServerUrl: 'https://dev-k8s.treetracker.org/webmap/',
+        tileServerSubdomains: ['prod-k8s'],
+        apiServerUrl: 'https://prod-k8s.treetracker.org/webmap/',
+        queryApiServerUrl: 'https://prod-k8s.treetracker.org/query/',
         debug: false,
         moreEffect: true,
         filters: null,
@@ -982,8 +983,18 @@ export default class Map {
     const center = this.map.getCenter()
     log.log('current center:', center)
     const zoom_level = this.map.getZoom()
+    const filter = this._getFilters()
+    let filterString = ''
+    //now nearest just support: wallet, org, planter
+    if (filter.userid) {
+      filterString = `&planter_id=${filter.userid}`
+    } else if (filter.map_name) {
+      filterString = `&map_name=${filter.map_name}`
+    } else if (filter.wallet) {
+      filterString = `&wallet_id=${filter.wallet}`
+    }
     const res = await this.requester.request({
-      url: `${this.apiServerUrl}nearest?zoom_level=${zoom_level}&lat=${center.lat}&lng=${center.lng}`,
+      url: `${this.queryApiServerUrl}gis/location/nearest?zoom_level=${zoom_level}&lat=${center.lat}&lng=${center.lng}${filterString}`,
     })
     if (!res) {
       log.warn('Return undefined trying to get nearest, the api return null')
