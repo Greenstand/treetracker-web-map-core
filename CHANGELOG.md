@@ -1,3 +1,9 @@
+# [2.7.0](https://github.com/Greenstand/treetracker-web-map-core/compare/v2.6.4...v2.7.0) (2023-06-03)
+
+### Features
+
+- new nearest api ([926f7e7](https://github.com/Greenstand/treetracker-web-map-core/commit/926f7e7dbfc5ca75b5f71136ed88a1d758b8f76c))
+
 ## [2.6.4](https://github.com/Greenstand/treetracker-web-map-core/compare/v2.6.3...v2.6.4) (2023-05-09)
 
 ### Bug Fixes
