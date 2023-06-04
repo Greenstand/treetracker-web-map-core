@@ -1,3 +1,9 @@
+## [2.7.1](https://github.com/Greenstand/treetracker-web-map-core/compare/v2.7.0...v2.7.1) (2023-06-04)
+
+### Bug Fixes
+
+- path rule ([5b38e5a](https://github.com/Greenstand/treetracker-web-map-core/commit/5b38e5a0aa2faa448a28c9cebbf0ebcc85623879))
+
 # [2.7.0](https://github.com/Greenstand/treetracker-web-map-core/compare/v2.6.4...v2.7.0) (2023-06-03)
 
 ### Features
