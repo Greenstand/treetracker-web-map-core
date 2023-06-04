@@ -46,7 +46,7 @@ export default class Map {
         tileServerUrl: 'https://{s}.treetracker.org/tiles/',
         tileServerSubdomains: ['prod-k8s'],
         apiServerUrl: 'https://prod-k8s.treetracker.org/webmap/',
-        queryApiServerUrl: 'https://prod-k8s.treetracker.org/query/',
+        queryApiServerUrl: 'https://prod-k8s.treetracker.org/query',
         debug: false,
         moreEffect: true,
         filters: null,
@@ -994,7 +994,7 @@ export default class Map {
       filterString = `&wallet_id=${filter.wallet}`
     }
     const res = await this.requester.request({
-      url: `${this.queryApiServerUrl}gis/location/nearest?zoom_level=${zoom_level}&lat=${center.lat}&lng=${center.lng}${filterString}`,
+      url: `${this.queryApiServerUrl}/gis/location/nearest?zoom_level=${zoom_level}&lat=${center.lat}&lng=${center.lng}${filterString}`,
     })
     if (!res) {
       log.warn('Return undefined trying to get nearest, the api return null')
