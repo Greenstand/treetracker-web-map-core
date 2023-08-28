@@ -3,9 +3,9 @@
  */
 import axios from 'axios'
 // @ts-ignore
-import expect from 'expect-runtime'
+import * as expect from 'expect-runtime'
 import log from 'loglevel'
-import _ from 'lodash'
+import { isEqual } from 'lodash'
 import 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet-utfgrid/L.UTFGrid'
@@ -15,9 +15,9 @@ import mapConfig from './mapConfig'
 import { getInitialBounds } from './mapTools'
 import Requester from './Requester'
 
-import pack from '../package.json'
+import * as pack from '../package.json'
 
-import EventEmitter from 'events'
+import { EventEmitter } from 'events'
 
 import Spin from './Spin'
 import Alert from './Alert'
@@ -464,12 +464,12 @@ export default class Map {
   }
 
   async _unloadTileServer() {
-    if (this.map.hasLayer(this.layerTile)) {
+    if (this.layerTile && this.map.hasLayer(this.layerTile)) {
       this.map.removeLayer(this.layerTile)
     } else {
       log.warn('try to remove nonexisting tile layer')
     }
-    if (this.map.hasLayer(this.layerUtfGrid)) {
+    if (this.layerUtfGrid && this.map.hasLayer(this.layerUtfGrid)) {
       this.map.removeLayer(this.layerUtfGrid)
     } else {
       log.warn('try to remove nonexisting grid layer')
@@ -580,7 +580,7 @@ export default class Map {
   }
 
   _unHighlightMarker() {
-    if (this.map.hasLayer(this.layerHighlight)) {
+    if (this.layerHighlight && this.map.hasLayer(this.layerHighlight)) {
       this.map.removeLayer(this.layerHighlight)
     } else {
       log.warn('try to remove nonexisting layer')
@@ -655,7 +655,7 @@ export default class Map {
       this.layerSelected?.payload,
     )
 
-    if (this.map.hasLayer(this.layerSelected)) {
+    if (this.layerSelected && this.map.hasLayer(this.layerSelected)) {
       this.map.removeLayer(this.layerSelected)
     } else {
       log.warn('try to remove nonexisting layer selected')
@@ -932,7 +932,10 @@ export default class Map {
           }
         } else {
           log.debug('should hide geo json')
-          if (this.map.hasLayer(this.layerFreetownGeoJson)) {
+          if (
+            this.layerFreetownGeoJson &&
+            this.map.hasLayer(this.layerFreetownGeoJson)
+          ) {
             this.map.removeLayer(this.layerFreetownGeoJson)
           }
         }
@@ -1393,7 +1396,7 @@ export default class Map {
    */
   async setFilters(filters: FiltersType) {
     log.warn('new, old filter:', filters, this.filters)
-    if (_.isEqual(filters, this.filters)) {
+    if (isEqual(filters, this.filters)) {
       log.warn('filters is not changed, do nothing')
     } else {
       this.filters = filters
