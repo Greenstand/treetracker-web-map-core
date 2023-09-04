@@ -1,11 +1,11 @@
 /*
  * The main model for the treetracker model
  */
-import regeneratorRuntime from 'regenerator-runtime'
 import axios from 'axios'
-import expect from 'expect-runtime'
+// @ts-ignore
+import * as expect from 'expect-runtime'
 import log from 'loglevel'
-import _ from 'lodash'
+import { isEqual } from 'lodash'
 import 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet-utfgrid/L.UTFGrid'
@@ -15,21 +15,20 @@ import mapConfig from './mapConfig'
 import { getInitialBounds } from './mapTools'
 import Requester from './Requester'
 
-import pack from '../package.json'
+import * as pack from '../package.json'
 
-import EventEmitter from 'events'
+import { EventEmitter } from 'events'
 
 import Spin from './Spin'
 import Alert from './Alert'
 import TileLoadingMonitor from './TileLoadingMonitor'
 import ButtonPanel from './ButtonPanel'
 import NearestTreeArrows from './NearestTreeArrows'
-import { GridLayerOptions, LatLngExpression } from 'leaflet'
+import { GridLayerOptions, LatLngExpression, LatLngLiteral } from 'leaflet'
 import {
   AlertType,
   FiltersType,
   SpinType,
-  CoordinatesType,
   DirectionPlacement,
   ValueMissing,
   EventHandlerFn,
@@ -93,7 +92,7 @@ export default class Map {
   moreEffect: boolean
   layerSelected: TreeLayer
   layerFreetownGeoJson: ValueMissing | GeoJSON
-  initialCenter: CoordinatesType
+  initialCenter: LatLngLiteral
   buttonPanel: ButtonPanel
   nearestTreeArrow: NearestTreeArrows
   onLoad: ValueMissing | EventHandlerFn
@@ -128,6 +127,7 @@ export default class Map {
     }
 
     Object.keys(mapOptions).forEach((key) => {
+      // @ts-ignore
       this[key as keyof MapOptions] = mapOptions[key as keyof MapOptions]
     })
 
@@ -464,12 +464,12 @@ export default class Map {
   }
 
   async _unloadTileServer() {
-    if (this.map.hasLayer(this.layerTile)) {
+    if (this.layerTile && this.map.hasLayer(this.layerTile)) {
       this.map.removeLayer(this.layerTile)
     } else {
       log.warn('try to remove nonexisting tile layer')
     }
-    if (this.map.hasLayer(this.layerUtfGrid)) {
+    if (this.layerUtfGrid && this.map.hasLayer(this.layerUtfGrid)) {
       this.map.removeLayer(this.layerUtfGrid)
     } else {
       log.warn('try to remove nonexisting grid layer')
@@ -574,13 +574,13 @@ export default class Map {
         }),
       })
     } else {
-      throw new Error('wrong type:', data)
+      throw new Error(`wrong type: $data.type`)
     }
     this.layerHighlight.addTo(this.map)
   }
 
   _unHighlightMarker() {
-    if (this.map.hasLayer(this.layerHighlight)) {
+    if (this.layerHighlight && this.map.hasLayer(this.layerHighlight)) {
       this.map.removeLayer(this.layerHighlight)
     } else {
       log.warn('try to remove nonexisting layer')
@@ -621,7 +621,7 @@ export default class Map {
         })
       }
     } else {
-      throw new Error('do not support type:', data.type)
+      throw new Error(`do not support type: ${data.type}`)
     }
   }
 
@@ -655,7 +655,7 @@ export default class Map {
       this.layerSelected?.payload,
     )
 
-    if (this.map.hasLayer(this.layerSelected)) {
+    if (this.layerSelected && this.map.hasLayer(this.layerSelected)) {
       this.map.removeLayer(this.layerSelected)
     } else {
       log.warn('try to remove nonexisting layer selected')
@@ -781,7 +781,7 @@ export default class Map {
     log.info('loaded data in utf cache:', itemList.length)
 
     // filter the duplicate points
-    const itemMap = {}
+    const itemMap: { [index: number]: any } = {}
     itemList.forEach((e) => {
       itemMap[e.id] = e
     })
@@ -932,7 +932,10 @@ export default class Map {
           }
         } else {
           log.debug('should hide geo json')
-          if (this.map.hasLayer(this.layerFreetownGeoJson)) {
+          if (
+            this.layerFreetownGeoJson &&
+            this.map.hasLayer(this.layerFreetownGeoJson)
+          ) {
             this.map.removeLayer(this.layerFreetownGeoJson)
           }
         }
@@ -1056,7 +1059,7 @@ export default class Map {
     }
   }
 
-  async _getNearest(): Promise<CoordinatesType | ValueMissing> {
+  async _getNearest(): Promise<LatLngLiteral | ValueMissing> {
     const center = this.map.getCenter()
     log.log('current center:', center)
     const zoom_level = this.map.getZoom()
@@ -1083,7 +1086,7 @@ export default class Map {
    * return:
    *  west | east | north | south | in (the point is in the map view)
    */
-  _calculatePlacement(location: CoordinatesType): DirectionPlacement {
+  _calculatePlacement(location: LatLngLiteral): DirectionPlacement {
     const center = this.map.getCenter()
     log.info('calculate location', location, ' to center:', center)
     // find it
@@ -1163,8 +1166,12 @@ export default class Map {
     }
   }
 
+  /**
+   * @deprecated use _goto instead
+   */
   _flyTo(lat: number, lon: number, zoomLevel: number) {
     log.info('fly to:', lat, lon, zoomLevel)
+    // @ts-ignore
     this.map.gotoView(lat, lon, zoomLevel)
   }
 
@@ -1186,7 +1193,7 @@ export default class Map {
       const response = await this.requester.request({
         url,
       })
-      const items = response.data.map((i) => {
+      const items = response.data.map((i: any) => {
         if (i.type === 'cluster') {
           const c = JSON.parse(i.centroid)
           return {
@@ -1253,6 +1260,8 @@ export default class Map {
     return {
       center: {
         lat: view.center.lat,
+        // TODO: fix this with lng lon conversion
+        // @ts-ignore
         lon: view.center.lng || view.center.lon,
       },
       zoomLevel: view.zoomLevel,
@@ -1267,8 +1276,9 @@ export default class Map {
   }
 
   async gotoBounds(bounds: string) {
-    const [southWestLng, southWestLat, northEastLng, northEastLat] =
-      bounds.split(',')
+    const [southWestLng, southWestLat, northEastLng, northEastLat] = bounds
+      .split(',')
+      .map((c) => parseInt(c))
     log.warn('go to bounds:', bounds)
     if (this.moreEffect) {
       this.map.flyToBounds([
@@ -1321,7 +1331,6 @@ export default class Map {
       if (zoomLevel) {
         this.map.setView([lat, lon], zoomLevel, { animate: false })
       } else {
-        const originalZoomLevel = this.map.getZoom()
         this.map.setView([lat, lon], zoomLevel, { animate: false })
       }
     }
@@ -1387,7 +1396,7 @@ export default class Map {
    */
   async setFilters(filters: FiltersType) {
     log.warn('new, old filter:', filters, this.filters)
-    if (_.isEqual(filters, this.filters)) {
+    if (isEqual(filters, this.filters)) {
       log.warn('filters is not changed, do nothing')
     } else {
       this.filters = filters

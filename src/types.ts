@@ -3,18 +3,13 @@ import {
   TileLayer,
   TileEvent,
   Map as LeafletMap,
-  LatLng,
+  LatLngLiteral,
 } from 'leaflet'
 import Alert from './Alert'
 import Spin from './Spin'
 import TileLoadingMonitor from './TileLoadingMonitor'
 
 export type DirectionType = 'north' | 'south' | 'east' | 'west'
-
-export type CoordinatesType = {
-  lat: number
-  lng: number
-}
 
 export type ButtonPanelMethods = {
   hide: () => void
@@ -25,17 +20,6 @@ export type ButtonPanelMethods = {
   show: () => void
   mount: (e: Element) => void
   clickHandler: (e: MouseEvent) => void
-}
-
-export type view = {
-  [k: string]: {
-    center: {
-      lat: number
-      lng: number
-    }
-    zoomLevel: number
-    animate?: boolean
-  }
 }
 
 export type TileLoadingMonitorType = InstanceType<typeof TileLoadingMonitor>
@@ -54,7 +38,7 @@ export type MapOptions = {
   map?: LeafletMap
   minZoom: number
   maxZoom: number
-  initialCenter: CoordinatesType
+  initialCenter: LatLngLiteral
   tileServerUrl: string
   tileServerSubdomains: string[]
   apiServerUrl: string
@@ -182,6 +166,6 @@ export type IconSuiteParameters = {
 }
 
 export type View = {
-  center: LatLng
+  center: LatLngLiteral
   zoomLevel: number
 }

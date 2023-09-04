@@ -3,20 +3,18 @@
  */
 import 'leaflet'
 
+// @ts-ignore
 import expect from 'expect-runtime'
 import log from 'loglevel'
-import { CoordinatesType, DirectionType } from './types'
+import { DirectionType } from './types'
+import { LatLngLiteral } from 'leaflet'
 
-function go(
-  direction: DirectionType,
-  location: CoordinatesType,
-  degree: number,
-) {
+function go(direction: DirectionType, location: LatLngLiteral, degree: number) {
   expect(direction).oneOf(['east', 'west', 'north', 'south'])
   expect(location).property('lat').number()
   expect(location).property('lng').number()
   expect(degree).number()
-  const result = { lat: location.lat, lng: location.lng }
+  const result: LatLngLiteral = { lat: location.lat, lng: location.lng }
   if (direction === 'east') {
     result.lng += degree
   } else if (direction === 'west') {
@@ -72,19 +70,19 @@ function getAngleLat(north: number, south: number) {
  *
  */
 function getInitialBounds(
-  rawLocations: CoordinatesType[],
+  rawLocations: LatLngLiteral[],
   width: number,
   height: number,
 ) {
   expect(rawLocations).lengthOf.above(0)
   // convert
-  const locations = rawLocations.map((location: CoordinatesType) => ({
+  const locations = rawLocations.map((location: LatLngLiteral) => ({
     ...location,
     lat: location.lat,
     lng: location.lng,
   }))
 
-  locations.forEach((location: CoordinatesType) => {
+  locations.forEach((location: LatLngLiteral) => {
     expect(location).property('lat').number()
     expect(location).property('lng').number()
   })
