@@ -27,7 +27,7 @@
     "format": "prettier ./ --write",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "pre-publish": "npm version patch && webpack --mode=production",
+    "pre-publish": "webpack --mode=production",
     "prepare": "husky install",
     "test": "jest"
   },
