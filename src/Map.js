@@ -524,14 +524,18 @@ export default class Map {
         const [lon, lat] = JSON.parse(data.zoom_to).coordinates
         // NOTE do cluster click
         if (this.moreEffect) {
-          this.map.flyTo([lat, lon], this.map.getZoom() + 2)
+          this.map.flyTo([lat, lon], this.map.getZoom() + 2, {
+            duration: 0.5,
+          })
         } else {
           this.map.setView([lat, lon], this.map.getZoom() + 2, {
             animate: false,
           })
         }
       } else if (this.moreEffect) {
-        this.map.flyTo([data.lat, data.lon], this.map.getZoom() + 2)
+        this.map.flyTo([data.lat, data.lon], this.map.getZoom() + 2, {
+          duration: 0.5,
+        })
       } else {
         this.map.setView([data.lat, data.lon], this.map.getZoom() + 2, {
           animate: false,
@@ -1254,7 +1258,9 @@ export default class Map {
     }
     if (this.moreEffect) {
       if (zoomLevel) {
-        this.map.flyTo([lat, lon], zoomLevel)
+        this.map.flyTo([lat, lon], zoomLevel, {
+          duration: 0.5,
+        })
       } else {
         this.map.panTo([lat, lon])
       }
