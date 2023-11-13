@@ -33,6 +33,10 @@ export default class Map {
     TREE_SELECTED: 'tree-selected',
     TREE_UNSELECTED: 'tree-unselected',
     MOVE_END: 'move-end',
+    LOAD: 'load',
+    TREE_CLICKED: 'tree-clicked',
+    FIND_NEAREST: 'find-nearest',
+    ERROR: 'error',
   }
 
   constructor(options) {
@@ -70,6 +74,19 @@ export default class Map {
     this._mountDomElement = null
 
     log.warn('map core version:', require('../package.json').version)
+
+    // Deprecation warnings
+    let deprecatedMethods = [
+      'onLoad',
+      'onClickTree',
+      'onFindNearestAt',
+      'onError',
+    ]
+    deprecatedMethods.forEach((method) => {
+      if (this[method]) {
+        log.warn(`${method} is deprecated. Use map.on() instead.`)
+      }
+    })
   }
 
   /** *************************** static *************************** */
@@ -517,6 +534,10 @@ export default class Map {
       this._selectMarker(data)
       if (this.onClickTree) {
         this.onClickTree(data)
+      } else if (
+        this.events.listenerCount(Map.REGISTERED_EVENTS.TREE_CLICKED) > 0
+      ) {
+        this.events.emit(Map.REGISTERED_EVENTS.TREE_CLICKED, data)
       }
     } else if (data.type === 'cluster') {
       if (data.zoom_to) {
@@ -1306,6 +1327,8 @@ export default class Map {
       // fire load event
       if (this.onLoad) {
         this.onLoad()
+      } else if (this.events.listenerCount(Map.REGISTERED_EVENTS.LOAD) > 0) {
+        this.events.emit(Map.REGISTERED_EVENTS.LOAD)
       }
 
       if (this.debug) {
@@ -1317,16 +1340,61 @@ export default class Map {
         log.error('map error:', e)
         if (this.onError) {
           this.onError(e)
+        } else if (this.events.listenerCount(Map.REGISTERED_EVENTS.ERROR) > 0) {
+          this.events.emit(Map.REGISTERED_EVENTS.ERROR, e)
         }
       }
     }
   }
 
   on(eventName, handler) {
-    //TODO check event name enum
+    const isValidEvent = Object.values(Map.REGISTERED_EVENTS).includes(
+      eventName,
+    )
+    if (!isValidEvent) {
+      log.error('Invalid event name:', eventName)
+      return
+    }
+
     if (handler) {
       log.info('register event:', eventName)
       this.events.on(eventName, handler)
+    } else {
+      log.error('No handler provided for event:', eventName)
+    }
+  }
+
+  off(eventName, handler) {
+    const isValidEvent = Object.values(Map.REGISTERED_EVENTS).includes(
+      eventName,
+    )
+    if (!isValidEvent) {
+      log.error('Invalid event name:', eventName)
+      return
+    }
+
+    if (handler) {
+      log.info('remove event:', eventName)
+      this.events.off(eventName, handler)
+    } else {
+      log.error('No handler provided for event removal:', eventName)
+    }
+  }
+
+  once(eventName, handler) {
+    const isValidEvent = Object.values(Map.REGISTERED_EVENTS).includes(
+      eventName,
+    )
+    if (!isValidEvent) {
+      log.error('Invalid event name:', eventName)
+      return
+    }
+
+    if (handler) {
+      log.info('register one-time event:', eventName)
+      this.events.once(eventName, handler)
+    } else {
+      log.error('No handler provided for this one-time event:', eventName)
     }
   }
 
