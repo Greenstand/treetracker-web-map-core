@@ -28,14 +28,14 @@ export default class Alert {
     element.appendChild(this.alert)
   }
 
-  show(message, times) {
+  show(message, time) {
     clearTimeout(this.id)
     document.getElementsByClassName(
       'greenstand-alert-message-box',
     )[0].innerHTML = message
     this.alert.style.display = 'block'
-    if (times) {
-      this.id = setTimeout(() => this.hide(), times)
+    if (time) {
+      this.id = setTimeout(() => this.hide(), time)
     }
   }
 
