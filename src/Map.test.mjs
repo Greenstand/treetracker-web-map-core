@@ -45,4 +45,28 @@ describe('Map', () => {
       zoomLevel: 3,
     })
   })
+
+  // it("Test trigger events",async()=>{
+  //   const request = jest.fn(() => response)
+  //   Requester.mockImplementation(() => ({
+  //     request,
+  //   }))
+  //   const event_check = {
+  //     tree_selected:0,
+  //   }
+  //   const map = new Map({
+  //     userid: '1',
+  //     width: 1440,
+  //     height: 510,
+  //     moreEffect: false,
+  //     filters: {
+  //       wallet: 'mayeda',
+  //     },
+  //     //function to test error event
+  //     _mountComponents: ()=>{
+  //       throw new Error("Error event");
+  //     }
+  //   })
+  //   map.on(map.REGISTERED_EVENTS.TREE_SELECTED)
+  // })
 })

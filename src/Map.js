@@ -33,8 +33,14 @@ export default class Map {
   // events
   static REGISTERED_EVENTS = {
     TREE_SELECTED: 'tree-selected',
+    MULTIPLE_TREES_SELECTED: 'multiple-trees-selected',
     TREE_UNSELECTED: 'tree-unselected',
     MOVE_END: 'move-end',
+    LOAD: 'load',
+    TREE_CLICKED: 'tree-clicked',
+    //not implemented this event yet
+    // FIND_NEAREST: 'find-nearest',
+    ERROR: 'error',
   }
 
   constructor(options) {
@@ -48,7 +54,8 @@ export default class Map {
         tileServerUrl: 'https://{s}.treetracker.org/tiles/',
         tileServerSubdomains: ['prod-k8s'],
         apiServerUrl: 'https://prod-k8s.treetracker.org/webmap/',
-        queryApiServerUrl: 'https://prod-k8s.treetracker.org/query',
+        // queryApiServerUrl: 'https://prod-k8s.treetracker.org/query',
+        queryApiServerUrl: 'http://localhost:3006',
         debug: false,
         moreEffect: true,
         filters: null,
@@ -73,7 +80,21 @@ export default class Map {
 
     //check if in drawing mode
     this.isDrawingMode = false
+
     log.warn('map core version:', require('../package.json').version)
+
+    // Deprecation warnings
+    let deprecatedMethods = [
+      'onLoad',
+      'onClickTree',
+      'onFindNearestAt',
+      'onError',
+    ]
+    deprecatedMethods.forEach((method) => {
+      if (this[method]) {
+        log.warn(`${method} is deprecated. Use map.on() instead.`)
+      }
+    })
   }
 
   /** *************************** static *************************** */
@@ -521,6 +542,9 @@ export default class Map {
       this._selectMarker(data)
       if (this.onClickTree) {
         this.onClickTree(data)
+      }
+      if (this.events.listenerCount(Map.REGISTERED_EVENTS.TREE_CLICKED) > 0) {
+        this.events.emit(Map.REGISTERED_EVENTS.TREE_CLICKED, data)
       }
     } else if (data.type === 'cluster') {
       if (data.zoom_to) {
@@ -1342,7 +1366,9 @@ export default class Map {
       if (this.onLoad) {
         this.onLoad()
       }
-
+      if (this.events.listenerCount(Map.REGISTERED_EVENTS.LOAD) > 0) {
+        this.events.emit(Map.REGISTERED_EVENTS.LOAD)
+      }
       if (this.debug) {
         await this._loadDebugLayer()
       }
@@ -1353,15 +1379,61 @@ export default class Map {
         if (this.onError) {
           this.onError(e)
         }
+        if (this.events.listenerCount(Map.REGISTERED_EVENTS.ERROR) > 0) {
+          this.events.emit(Map.REGISTERED_EVENTS.ERROR, e)
+        }
       }
     }
   }
 
   on(eventName, handler) {
+    const isValidEvent = Object.values(Map.REGISTERED_EVENTS).includes(
+      eventName,
+    )
+    if (!isValidEvent) {
+      log.error('Invalid event name:', eventName)
+      return
+    }
     //TODO check event name enum
     if (handler) {
       log.info('register event:', eventName)
       this.events.on(eventName, handler)
+    } else {
+      log.error('No handler provided for event:', eventName)
+    }
+  }
+
+  off(eventName, handler) {
+    const isValidEvent = Object.values(Map.REGISTERED_EVENTS).includes(
+      eventName,
+    )
+    if (!isValidEvent) {
+      log.error('Invalid event name:', eventName)
+      return
+    }
+
+    if (handler) {
+      log.info('remove event:', eventName)
+      this.events.off(eventName, handler)
+    } else {
+      log.error('No handler provided for event removal:', eventName)
+    }
+  }
+
+  once(eventName, handler) {
+    const isValidEvent = Object.values(Map.REGISTERED_EVENTS).includes(
+      eventName,
+    )
+    if (!isValidEvent) {
+      log.error('Invalid event name:', eventName)
+      return
+    }
+
+    if (handler) {
+      log.info('register one-time event:', eventName)
+      this.events.once(eventName, handler)
+    } else {
+      log.error('No handler provided for this one-time event:', eventName)
     }
   }
 
@@ -1413,6 +1485,15 @@ export default class Map {
         },
       },
     })
+    var editOnlyControl = new window.L.Control.Draw({
+      draw: false,
+      edit: {
+        featureGroup: drawnItems,
+        poly: {
+          allowIntersection: false,
+        },
+      },
+    })
     this.map.addControl(drawControl)
     var panel = window.L.control({ position: 'topright' })
     panel.onAdd = function (map) {
@@ -1431,18 +1512,51 @@ export default class Map {
       let type = e.layerType,
         layer = e.layer
       let points = layer._latlngs[0]
-      //if polygone is valid, insert polygon to the map
       drawnItems.addLayer(layer)
+      //disable draw tool
+      this.map.removeControl(drawControl)
+      this.map.addControl(editOnlyControl)
       const result = await this._getTreesFromPoly(points)
       var total = result?.trees?.length || 0
       document.getElementById('treeTotal').innerHTML = total
+      if (
+        this.events.listenerCount(
+          Map.REGISTERED_EVENTS.MULTIPLE_TREES_SELECTED,
+        ) > 0
+      ) {
+        this.events.emit(
+          Map.REGISTERED_EVENTS.MULTIPLE_TREES_SELECTED,
+          result?.trees || [],
+        )
+      }
     })
     this.map.on('draw:edited', async (e) => {
       let layers = e.layers._layers
       let polygon = Object.values(layers)[0]
-      const result = await this._getTreesFromPoly(polygon._latlngs[0])
-      var total = result?.trees?.length || 0
-      document.getElementById('treeTotal').innerHTML = total
+      //if no polygon edited
+      if (polygon) {
+        const result = await this._getTreesFromPoly(polygon._latlngs[0])
+        var total = result?.trees?.length || 0
+        document.getElementById('treeTotal').innerHTML = total
+        if (
+          this.events.listenerCount(
+            Map.REGISTERED_EVENTS.MULTIPLE_TREES_SELECTED,
+          ) > 0
+        ) {
+          this.events.emit(
+            Map.REGISTERED_EVENTS.MULTIPLE_TREES_SELECTED,
+            result?.trees || [],
+          )
+        }
+      }
+    })
+    this.map.on('draw:deleted', async (e) => {
+      //enable draw tool if all polygons deleted
+      if (drawnItems.getLayers().length == 0) {
+        this.map.removeControl(editOnlyControl)
+        this.map.addControl(drawControl)
+        document.getElementById('treeTotal').innerHTML = 0
+      }
     })
     //enable drawing mode which prevent user move when clicking on icon tree or group
     this.map.on('draw:drawstart	', (e) => {

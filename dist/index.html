@@ -201,11 +201,12 @@
         const parameters = getParameters();
         map = new greenstand.Map({
             onLoad: () => console.log("onload"),
-            onClickTree: () => console.log("onClickTree"),
             onFindNearestAt: () => console.log("onFindNearstAt"),
             onError: () => console.log("onError"),
         });
         map.on(greenstand.Map.REGISTERED_EVENTS.MOVE_END, handleMoveEnd);
+        map.on(greenstand.Map.REGISTERED_EVENTS.TREE_SELECTED, (data) => console.log(data));
+        map.on(greenstand.Map.REGISTERED_EVENTS.MULTIPLE_TREES_SELECTED, (data) => console.log(data));
         map.mount(document.getElementById("map"));
         map.setFilters(parameters);
     };
