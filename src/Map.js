@@ -55,7 +55,7 @@ export default class Map {
         tileServerUrl: 'https://{s}.treetracker.org/tiles/',
         tileServerSubdomains: ['prod-k8s'],
         apiServerUrl: 'https://prod-k8s.treetracker.org/webmap/',
-        queryApiServerUrl: 'http://localhost:3006',
+        queryApiServerUrl: 'https://prod-k8s.treetracker.org/query',
         debug: false,
         moreEffect: true,
         filters: null,
@@ -77,9 +77,6 @@ export default class Map {
 
     // mount element
     this._mountDomElement = null
-
-    //check if in drawing mode
-    this.isDrawingMode = false
 
     log.warn('map core version:', require('../package.json').version)
 
@@ -331,7 +328,7 @@ export default class Map {
       )
       this.layerUtfGrid.on('click', (e) => {
         log.warn('click:', e)
-        if (e.data && !this.isDrawingMode) {
+        if (e.data && !this.drawTool.isDrawingMode) {
           this._clickMarker(Map._parseUtfData(e.data))
         }
       })
