@@ -24,6 +24,7 @@ import Alert from './Alert'
 import TileLoadingMonitor from './TileLoadingMonitor'
 import ButtonPanel from './ButtonPanel'
 import NearestTreeArrows from './NearestTreeArrows'
+import DrawTool from './DrawTool'
 
 class MapError extends Error {}
 
@@ -54,7 +55,7 @@ export default class Map {
         tileServerUrl: 'https://{s}.treetracker.org/tiles/',
         tileServerSubdomains: ['prod-k8s'],
         apiServerUrl: 'https://prod-k8s.treetracker.org/webmap/',
-        queryApiServerUrl: 'https://prod-k8s.treetracker.org/query',
+        queryApiServerUrl: 'http://localhost:3006',
         debug: false,
         moreEffect: true,
         filters: null,
@@ -1460,40 +1461,10 @@ export default class Map {
   }
 
   async _loadEditor() {
-    //var map = L.map('map', {drawControl: true}).setView([51.505, -0.09], 13);
-    //  L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-    //  attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-    //  }).addTo(this.map);
-    // FeatureGroup is to store editable layers
-    var drawnItems = new window.L.FeatureGroup()
-    this.map.addLayer(drawnItems)
-    var drawControl = new window.L.Control.Draw({
-      draw: {
-        marker: false,
-        polyline: false,
-        circlemarker: false,
-        circle: false,
-        polygon: {
-          allowIntersection: false,
-        },
-      },
-      edit: {
-        featureGroup: drawnItems,
-        poly: {
-          allowIntersection: false,
-        },
-      },
-    })
-    var editOnlyControl = new window.L.Control.Draw({
-      draw: false,
-      edit: {
-        featureGroup: drawnItems,
-        poly: {
-          allowIntersection: false,
-        },
-      },
-    })
-    this.map.addControl(drawControl)
+    //create draw tool
+    this.drawTool = new DrawTool(this.map)
+
+    //add panel to track how many selected
     var panel = window.L.control({ position: 'topright' })
     panel.onAdd = function (map) {
       var div = window.L.DomUtil.create('div', 'info')
@@ -1506,15 +1477,9 @@ export default class Map {
       return div
     }
     panel.addTo(this.map)
-    //using leaflet to draw a polygon, when finished, the polygon will be added to the map
-    this.map.on('draw:created', async (e) => {
-      let type = e.layerType,
-        layer = e.layer
-      let points = layer._latlngs[0]
-      drawnItems.addLayer(layer)
-      //disable draw tool
-      this.map.removeControl(drawControl)
-      this.map.addControl(editOnlyControl)
+
+    //create event for select multiple trees event
+    const onSelectMultTrees = async (points) => {
       const result = await this._getTreesFromPoly(points)
       var total = result?.trees?.length || 0
       document.getElementById('treeTotal').innerHTML = total
@@ -1528,48 +1493,9 @@ export default class Map {
           result?.trees || [],
         )
       }
-    })
-    this.map.on('draw:edited', async (e) => {
-      let layers = e.layers._layers
-      let polygon = Object.values(layers)[0]
-      //if no polygon edited
-      if (polygon) {
-        const result = await this._getTreesFromPoly(polygon._latlngs[0])
-        var total = result?.trees?.length || 0
-        document.getElementById('treeTotal').innerHTML = total
-        if (
-          this.events.listenerCount(
-            Map.REGISTERED_EVENTS.MULTIPLE_TREES_SELECTED,
-          ) > 0
-        ) {
-          this.events.emit(
-            Map.REGISTERED_EVENTS.MULTIPLE_TREES_SELECTED,
-            result?.trees || [],
-          )
-        }
-      }
-    })
-    this.map.on('draw:deleted', async (e) => {
-      //enable draw tool if all polygons deleted
-      if (drawnItems.getLayers().length == 0) {
-        this.map.removeControl(editOnlyControl)
-        this.map.addControl(drawControl)
-        document.getElementById('treeTotal').innerHTML = 0
-      }
-    })
-    //enable drawing mode which prevent user move when clicking on icon tree or group
-    this.map.on('draw:drawstart	', (e) => {
-      this.isDrawingMode = true
-    })
-    this.map.on('draw:drawstop	', (e) => {
-      this.isDrawingMode = false
-    })
-    this.map.on('draw:editstart	', (e) => {
-      this.isDrawingMode = true
-    })
-    this.map.on('draw:editstop	', (e) => {
-      this.isDrawingMode = false
-    })
+    }
+    //add select multiple trees event to the draw tool
+    this.drawTool.onSelecetMultiplePoints(onSelectMultTrees)
   }
 
   clearSelection() {
