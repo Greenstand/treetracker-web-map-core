@@ -7,7 +7,9 @@ import expect from 'expect-runtime'
 import log from 'loglevel'
 import _ from 'lodash'
 import 'leaflet'
+import 'leaflet-draw'
 import 'leaflet/dist/leaflet.css'
+import 'leaflet-draw/dist/leaflet.draw.css'
 import 'leaflet-utfgrid/L.UTFGrid'
 import 'leaflet.gridlayer.googlemutant'
 
@@ -22,6 +24,7 @@ import Alert from './Alert'
 import TileLoadingMonitor from './TileLoadingMonitor'
 import ButtonPanel from './ButtonPanel'
 import NearestTreeArrows from './NearestTreeArrows'
+import DrawTool from './DrawTool'
 
 class MapError extends Error {}
 
@@ -31,8 +34,14 @@ export default class Map {
   // events
   static REGISTERED_EVENTS = {
     TREE_SELECTED: 'tree-selected',
+    MULTIPLE_TREES_SELECTED: 'multiple-trees-selected',
     TREE_UNSELECTED: 'tree-unselected',
     MOVE_END: 'move-end',
+    LOAD: 'load',
+    TREE_CLICKED: 'tree-clicked',
+    //not implemented this event yet
+    // FIND_NEAREST: 'find-nearest',
+    ERROR: 'error',
   }
 
   constructor(options) {
@@ -70,6 +79,19 @@ export default class Map {
     this._mountDomElement = null
 
     log.warn('map core version:', require('../package.json').version)
+
+    // Deprecation warnings
+    let deprecatedMethods = [
+      'onLoad',
+      'onClickTree',
+      'onFindNearestAt',
+      'onError',
+    ]
+    deprecatedMethods.forEach((method) => {
+      if (this[method]) {
+        log.warn(`${method} is deprecated. Use map.on() instead.`)
+      }
+    })
   }
 
   /** *************************** static *************************** */
@@ -306,7 +328,7 @@ export default class Map {
       )
       this.layerUtfGrid.on('click', (e) => {
         log.warn('click:', e)
-        if (e.data) {
+        if (e.data && !this.drawTool.isDrawingMode) {
           this._clickMarker(Map._parseUtfData(e.data))
         }
       })
@@ -517,6 +539,9 @@ export default class Map {
       this._selectMarker(data)
       if (this.onClickTree) {
         this.onClickTree(data)
+      }
+      if (this.events.listenerCount(Map.REGISTERED_EVENTS.TREE_CLICKED) > 0) {
+        this.events.emit(Map.REGISTERED_EVENTS.TREE_CLICKED, data)
       }
     } else if (data.type === 'cluster') {
       if (data.zoom_to) {
@@ -970,6 +995,37 @@ export default class Map {
       : this.nearestTreeArrow.showArrow(placement)
   }
 
+  async _getTreesFromPoly(poly) {
+    try {
+      let polypoints = poly.map(({ lat, lng }) => {
+        return {
+          lat,
+          lon: lng,
+        }
+      })
+      //add another first point to make polygon enclosed
+      polypoints.push({ lat: poly[0].lat, lon: poly[0].lng })
+      this.alert.show('Collecting trees data')
+      const result = await this.requester.request({
+        url: `${this.queryApiServerUrl}/gis`,
+        data: {
+          polygon: polypoints,
+        },
+        headers: { 'Content-Type': 'application/json' },
+        method: 'post',
+      })
+      this.alert.hide()
+      return result
+    } catch (err) {
+      this.alert.show(
+        'Can not collecting tree data, please try again later',
+        5000,
+      )
+      console.info(err.message || 'Unknown')
+      return null
+    }
+  }
+
   async _moveToNearestTree() {
     const nearest = await this._getNearest()
     if (nearest) {
@@ -1307,7 +1363,9 @@ export default class Map {
       if (this.onLoad) {
         this.onLoad()
       }
-
+      if (this.events.listenerCount(Map.REGISTERED_EVENTS.LOAD) > 0) {
+        this.events.emit(Map.REGISTERED_EVENTS.LOAD)
+      }
       if (this.debug) {
         await this._loadDebugLayer()
       }
@@ -1318,15 +1376,61 @@ export default class Map {
         if (this.onError) {
           this.onError(e)
         }
+        if (this.events.listenerCount(Map.REGISTERED_EVENTS.ERROR) > 0) {
+          this.events.emit(Map.REGISTERED_EVENTS.ERROR, e)
+        }
       }
     }
   }
 
   on(eventName, handler) {
+    const isValidEvent = Object.values(Map.REGISTERED_EVENTS).includes(
+      eventName,
+    )
+    if (!isValidEvent) {
+      log.error('Invalid event name:', eventName)
+      return
+    }
     //TODO check event name enum
     if (handler) {
       log.info('register event:', eventName)
       this.events.on(eventName, handler)
+    } else {
+      log.error('No handler provided for event:', eventName)
+    }
+  }
+
+  off(eventName, handler) {
+    const isValidEvent = Object.values(Map.REGISTERED_EVENTS).includes(
+      eventName,
+    )
+    if (!isValidEvent) {
+      log.error('Invalid event name:', eventName)
+      return
+    }
+
+    if (handler) {
+      log.info('remove event:', eventName)
+      this.events.off(eventName, handler)
+    } else {
+      log.error('No handler provided for event removal:', eventName)
+    }
+  }
+
+  once(eventName, handler) {
+    const isValidEvent = Object.values(Map.REGISTERED_EVENTS).includes(
+      eventName,
+    )
+    if (!isValidEvent) {
+      log.error('Invalid event name:', eventName)
+      return
+    }
+
+    if (handler) {
+      log.info('register one-time event:', eventName)
+      this.events.once(eventName, handler)
+    } else {
+      log.error('No handler provided for this one-time event:', eventName)
     }
   }
 
@@ -1349,7 +1453,46 @@ export default class Map {
       await this._unselectMarker()
       await this._unloadTileServer()
       await this._loadTileServer()
+      await this._loadEditor()
     }
+  }
+
+  async _loadEditor() {
+    //create draw tool
+    this.drawTool = new DrawTool(this.map)
+
+    //add panel to track how many selected
+    var panel = window.L.control({ position: 'topright' })
+    panel.onAdd = function (map) {
+      var div = window.L.DomUtil.create('div', 'info')
+      div.innerHTML = `
+      <div
+      style="background-color: white; padding: 10px; border-radius: 5px;"
+      >
+      <h4>Tree Count: <span id="treeTotal" >0</span></h4>
+      </div>`
+      return div
+    }
+    panel.addTo(this.map)
+
+    //create event for select multiple trees event
+    const onSelectMultTrees = async (points) => {
+      const result = await this._getTreesFromPoly(points)
+      var total = result?.trees?.length || 0
+      document.getElementById('treeTotal').innerHTML = total
+      if (
+        this.events.listenerCount(
+          Map.REGISTERED_EVENTS.MULTIPLE_TREES_SELECTED,
+        ) > 0
+      ) {
+        this.events.emit(
+          Map.REGISTERED_EVENTS.MULTIPLE_TREES_SELECTED,
+          result?.trees || [],
+        )
+      }
+    }
+    //add select multiple trees event to the draw tool
+    this.drawTool.onSelecetMultiplePoints(onSelectMultTrees)
   }
 
   clearSelection() {

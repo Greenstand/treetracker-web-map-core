@@ -37,6 +37,7 @@
     "events": "^3.3.0",
     "expect-runtime": "^0.10.1",
     "leaflet": "^1.7.1",
+    "leaflet-draw": "^1.0.4",
     "leaflet-utfgrid": "git+https://github.com/dadiorchen/Leaflet.UTFGrid.git",
     "leaflet.gridlayer.googlemutant": "^0.12.1",
     "lodash": "^4.17.21",
