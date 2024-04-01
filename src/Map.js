@@ -217,7 +217,7 @@ export default class Map {
 
     log.warn('load google satellite map')
     this.layerGoogle = new GoogleLayer(
-      'http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}',
+      'https://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}',
       {
         maxZoom: this.maxZoom,
         attribution:
