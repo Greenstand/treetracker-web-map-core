@@ -1,3 +1,11 @@
+## [2.7.3](https://github.com/Greenstand/treetracker-web-map-core/compare/v2.7.2...v2.7.3) (2024-04-10)
+
+### Bug Fixes
+
+- can not embed map to android because of https ([beaea45](https://github.com/Greenstand/treetracker-web-map-core/commit/beaea45df4dedb9acca38fc29cb683053d89a41d))
+- package file ([42fbc31](https://github.com/Greenstand/treetracker-web-map-core/commit/42fbc31d34f1db801277fdecc50d18c5a221bf64))
+- upgrade node to 20 ([41be7c9](https://github.com/Greenstand/treetracker-web-map-core/commit/41be7c9f890b02f46352acea8ba990abdce74618))
+
 ## [2.7.2](https://github.com/Greenstand/treetracker-web-map-core/compare/v2.7.1...v2.7.2) (2023-09-16)
 
 ### Bug Fixes
