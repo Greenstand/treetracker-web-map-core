@@ -115,11 +115,15 @@ _check `dist/index.html` for a demo_
 
 # how to debug the core on the client side
 
-The senerio: sometime we need to find a easy way to debug the core in the client side, for example, the web map client repo, it's installing the core by npm, so it's hard to change code in core on the client side, we can install the core by `folder` locally, and get the change on the client side immediately, to do so:
+The scenario: sometimes we need to find an easy way to debug the core web map in the parent client side application
+(for example, the web map client repo). The web map client repo is installing web map core as a npm package using npm,
+so it's hard to change code in core and see the results in the parent client application. One way around this is by
+installing web map core by a reference to its local `folder`, which allows changes made to web map core locally
+to propagate to the parent client application immediately. To do so:
 
-1. Download the web map core repository, `git clonet [path to repo]`
+1. Download the web map core repository: `git clone https://github.com/Greenstand/treetracker-web-map-core.git`
 1. Change to code you want in core
-1. Change the version number in `package.json` (this is neccessary, if don't do it, it's posssible the client will ignore/skip the installment)
-1. Generate the bundle: `npm run pre-publish` (this is nessessary, the npm will fetch the bundle file rather than the src files)
+1. Change the version number in `package.json` (this is necessary, if don't do it, it's possible the client will ignore/skip the installment)
+1. Generate the bundle: `npm run pre-publish` (this is necessary, the npm will fetch the bundle file rather than the src files)
 1. Install the core in web map client: `npm install --save [relative path to the core folder]`
 1. Restart the web map client
