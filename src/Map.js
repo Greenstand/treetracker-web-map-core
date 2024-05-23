@@ -1,7 +1,6 @@
 /*
- * The main model for the treetracker model
+ * The main model for the treetracker map
  */
-import regeneratorRuntime from 'regenerator-runtime'
 import axios from 'axios'
 import expect from 'expect-runtime'
 import log from 'loglevel'
@@ -25,8 +24,6 @@ import NearestTreeArrows from './NearestTreeArrows'
 
 class MapError extends Error {}
 
-console.log('Greenstand web map core, version:')
-
 export default class Map {
   // events
   static REGISTERED_EVENTS = {
@@ -40,7 +37,7 @@ export default class Map {
   }
 
   constructor(options) {
-    // default
+    // merge constructor parameter options with default map options
     const mapOptions = {
       ...{
         L: window.L,
@@ -62,15 +59,8 @@ export default class Map {
       this[key] = mapOptions[key]
     })
 
-    // memeber/properties/statuses
-
-    // requester
     this.requester = new Requester()
-
-    // events
     this.events = new EventEmitter()
-
-    // mount element
     this._mountDomElement = null
 
     log.warn('map core version:', require('../package.json').version)
@@ -639,12 +629,6 @@ export default class Map {
     )
     return queryUrl
   }
-
-  //  getClusterRadius(zoomLevel){
-  //    //old code
-  //    //var clusterRadius = getQueryStringValue("clusterRadius") || getClusterRadius(queryZoomLevel);
-  //    return Map.getClusterRadius(zoomLevel);
-  //  }
 
   _goNextPoint() {
     log.info('go next tree')
@@ -1423,29 +1407,4 @@ export default class Map {
   clearSelection() {
     this._unselectMarker()
   }
-
-  // async rerender() {
-  //   log.info('rerender')
-  //   log.info('reload tile')
-
-  //   // unslect the current selected point
-  //   this._unselectMarker()
-
-  //   await this._unloadTileServer()
-
-  //   // load tile
-  //   if (this.filters.treeid) {
-  //     log.info('treeid mode do not need tile server')
-  //     log.info('load tree by id')
-  //     await this._loadTree(this.filters.treeid)
-  //     this.tileLoadingMonitor && this.tileLoadingMonitor.destroy()
-  //   } else if (this.filters.tree_name) {
-  //     log.info('tree name mode do not need tile server')
-  //     log.info('load tree by name')
-  //     this.tileLoadingMonitor && this.tileLoadingMonitor.destroy()
-  //     await this._loadTree(undefined, this.filters.tree_name)
-  //   } else {
-  //     await this._loadTileServer()
-  //   }
-  // }
 }
