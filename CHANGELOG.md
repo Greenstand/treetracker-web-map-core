@@ -1,3 +1,9 @@
+## [2.7.4](https://github.com/Greenstand/treetracker-web-map-core/compare/v2.7.3...v2.7.4) (2024-05-23)
+
+### Bug Fixes
+
+- check objects are defined before passing to leaflet's hasLayer method ([2941fae](https://github.com/Greenstand/treetracker-web-map-core/commit/2941faeb8018e29702375ae4351667cc246f64c4))
+
 ## [2.7.3](https://github.com/Greenstand/treetracker-web-map-core/compare/v2.7.2...v2.7.3) (2024-04-10)
 
 ### Bug Fixes
