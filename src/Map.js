@@ -406,12 +406,12 @@ export default class Map {
   }
 
   async _unloadTileServer() {
-    if (this.map.hasLayer(this.layerTile)) {
+    if (this.layerTile && this.map.hasLayer(this.layerTile)) {
       this.map.removeLayer(this.layerTile)
     } else {
       log.warn('try to remove nonexisting tile layer')
     }
-    if (this.map.hasLayer(this.layerUtfGrid)) {
+    if (this.layerUtfGrid && this.map.hasLayer(this.layerUtfGrid)) {
       this.map.removeLayer(this.layerUtfGrid)
     } else {
       log.warn('try to remove nonexisting grid layer')
@@ -593,7 +593,7 @@ export default class Map {
       this.layerSelected?.payload,
     )
 
-    if (this.map.hasLayer(this.layerSelected)) {
+    if (this.layerSelected && this.map.hasLayer(this.layerSelected)) {
       this.map.removeLayer(this.layerSelected)
     } else {
       log.warn('try to remove nonexisting layer selected')
