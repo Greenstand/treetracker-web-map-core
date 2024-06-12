@@ -618,6 +618,9 @@ export default class Map {
     if (this.filters.map_name) {
       filters.map_name = this.filters.map_name
     }
+    if (this.filters.bounds) {
+      filters.bounds = this.filters.bounds
+    }
     return filters
   }
 
